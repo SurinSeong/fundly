@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'accounts',
     'community',
     'finance',
+    'goals',
+    'recommendations',
 
     # library
     'rest_framework',
