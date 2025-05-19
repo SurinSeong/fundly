@@ -49,6 +49,10 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # app
     'accounts',
+    'community',
+    'finance',
+    'goals',
+    'recommendations',
 
     # library
     'rest_framework',
@@ -69,6 +73,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'allauth.account.middleware.AccountMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
