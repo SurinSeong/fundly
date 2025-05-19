@@ -1,0 +1,12 @@
+asgiref==3.8.1
+Django==4.2.21
+django-allauth==65.8.0
+django-cors-headers==4.7.0
+django-environ==0.12.0
+django-rest-auth==0.9.5
+djangorestframework==3.16.0
+oauthlib==3.2.2
+six==1.17.0
+sqlparse==0.5.3
+typing_extensions==4.13.2
+tzdata==2025.2
