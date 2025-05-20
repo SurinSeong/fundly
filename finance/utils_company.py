@@ -36,7 +36,7 @@ def get_comp_data(topFinGrpNo):
 
 
 # fixture 만들기 >> 회사
-def create_fixture_company():
+def create_company_data():
 
     all_extracted_companies = []
 

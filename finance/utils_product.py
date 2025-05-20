@@ -159,7 +159,7 @@ def create_fixture():
 
 
 # 전처리하기
-def preprocessing():
+def create_finance_data():
     all_data = create_fixture()
     
     product_data = all_data['financialproduct']
