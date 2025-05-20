@@ -14,7 +14,7 @@ class FinancialCompany(models.Model):
     # 회사명
     name = models.CharField(max_length=20)
     # 홈페이지 주소
-    homepage_url = models.URLField()
+    homepage_url = models.CharField(max_length=200)
     # 콜센터 전화번호
     phone_number = models.CharField(max_length=20)
 
@@ -31,11 +31,11 @@ class FinancialProduct(models.Model):
         (3, '일부제한'),
     ]
     # 상품 코드
-    code = models.CharField(max_length=20, unique=True)
+    code = models.CharField(max_length=50)
     # 공시 제출년월
     published_date = models.CharField(max_length=6)
     # 상품명
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
     # 종류 (D: 예금, S: 적금)
     product_type = models.CharField(max_length=5,
                                     choices=TYPE_CHOICES)
@@ -44,14 +44,14 @@ class FinancialProduct(models.Model):
     # 우대 조건
     special_condition = models.TextField(null=True, blank=True)
     # 가입 방법
-    join_way = models.TextField()
+    join_way = models.TextField(null=True, blank=True)
     # 만기 후 이자율
-    end_interest_rate = models.FloatField()
+    end_interest_rate = models.TextField(null=True, blank=True)
     # 가입 제한
     join_deny = models.CharField(max_length=10,
                                  choices=DENY_CHOICES)
     # 가입 대상
-    join_member = models.CharField(max_length=50)
+    join_member = models.TextField(null=True, blank=True)
     # 기타 유의사항
     etc_note = models.TextField(null=True, blank=True)
     # 최고한도
@@ -80,13 +80,13 @@ class AdditionalProduct(models.Model):
     # 우대조건
     special_condition = models.TextField(null=True, blank=True)
     # 가입 방법
-    join_way = models.TextField()
+    join_way = models.TextField(null=True, blank=True)
     # 만기 후 이자율
-    end_interest_rate = models.FloatField()
+    end_interest_rate = models.TextField(null=True, blank=True)
     # 가입 제한
     join_deny = models.CharField(max_length=10)
     # 가입 대상
-    join_member = models.CharField(max_length=20)
+    join_member = models.TextField(null=True, blank=True)
     # 기타 유의사항
     etc_note = models.TextField(null=True, blank=True)
     # 최고한도

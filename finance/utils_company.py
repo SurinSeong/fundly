@@ -72,7 +72,7 @@ def create_company_data():
     company_result_string = json.dumps(company_data)
     company_result = json.loads(company_result_string)
 
-    print(f'총 {len(company_data)}개의 fixture 항목이 저장되었습니다.')
+    print(f'총 {len(company_data)}개의 fixture.financialcompany 항목이 저장되었습니다.')
 
     return company_result
 

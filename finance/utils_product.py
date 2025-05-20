@@ -1,8 +1,7 @@
 # 금감원 API 사용해서 데이터 받아오기
 import requests
 import json
-import re
-import os
+from datetime import datetime
 
 from django.conf import settings
 
@@ -104,7 +103,7 @@ def create_fixture():
                     if extracted_data == all_extracted_products:
                         fixture_fields['code'] = data[key]
                     elif extracted_data == all_extracted_options:
-                        fixture_fields['finance_product_id'] = data[key]
+                        fixture_fields['financial_product_id'] = data[key]
 
                 elif key == 'fin_prdt_nm':
                     fixture_fields['name'] = data[key]
@@ -174,6 +173,18 @@ def create_finance_data():
             if key == 'etc_note' or key == 'special_condition':
                 if product[key] == '없음':
                     product[key] = None
+
+            if key == 'submit_date':
+                dt = datetime.strptime(product[key], "%Y%m%d%H%M")
+                product[key] = dt.isoformat()
+
+            if key == 'product_start_date' or key == 'product_end_date':
+                if product[key]:
+                    dt = datetime.strptime(product[key], "%Y%m%d")
+                    product[key] = dt.date().isoformat()
+                else:
+                    product[key] = None
+                
 
     # 옵션 데이터 전처리
     for option in option_data:

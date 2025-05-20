@@ -21,7 +21,7 @@ def save_financial_data(request):
 
     # 금융 상품 저장
     for product in products:
-        financial_company = FinancialCompany.objects.get(code=product['finance_company_id'])
+        financial_company = FinancialCompany.objects.get(code=product['financial_company_id'])
         product['financial_company'] = financial_company.id
         serializer = FinancialProductSerializer(data=product)
         if serializer.is_valid(raise_exception=True):
@@ -29,7 +29,7 @@ def save_financial_data(request):
 
     # 금융 옵션 저장
     for option in options:
-        financial_product = FinancialProduct.objects.get(code=option['finance_product_id'])
+        financial_product = FinancialProduct.objects.get(code=option['financial_product_id'])
         option['financial_product'] = financial_product.id
         serializer = OptionProductSerializer(data=option)
         if serializer.is_valid(raise_exception=True):
