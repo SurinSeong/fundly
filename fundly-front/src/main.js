@@ -31,29 +31,20 @@ const MyPreset = definePreset(Lara, {
           background: '{slate.900}',
           color: 'white',
           border: '{slate.900}',
-          hoverBg: '{slate.800}',
-          focusShadow: '0 0 0 2px #ffffff, 0 0 0 4px {slate.700}',
         },
         label: {
-          fontWeight: 400,
+          fontWeight: 500,
         },
       },
       text: {
         primary: {
           color: '{slate.900}',
-          fontWeight: 100,
-
-          hoverBg: '{slate.100}',
-          focusShadow: '0 0 0 2px #ffffff, 0 0 0 4px {slate.700}',
         },
       },
       outlined: {
         primary: {
-          fontWeight: 100,
           color: '{slate.900}',
           border: '{slate.500}',
-          hoverBg: '{slate.100}',
-          focusShadow: '0 0 0 2px #ffffff, 0 0 0 4px {slate.700}',
         },
       },
     },
