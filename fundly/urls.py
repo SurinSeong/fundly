@@ -22,4 +22,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/finance/', include('finance.urls')),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)    # 업로드된 파일의 URL, MEDIA_URL을 통해 참조하는 파일의 실제 위치

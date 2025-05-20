@@ -36,7 +36,7 @@ def get_comp_data(topFinGrpNo):
 
 
 # fixture 만들기 >> 회사
-def create_fixture_company():
+def create_company_data():
 
     all_extracted_companies = []
 
@@ -72,7 +72,7 @@ def create_fixture_company():
     company_result_string = json.dumps(company_data)
     company_result = json.loads(company_result_string)
 
-    print(f'총 {len(company_data)}개의 fixture 항목이 저장되었습니다.')
+    print(f'총 {len(company_data)}개의 fixture.financialcompany 항목이 저장되었습니다.')
 
     return company_result
 
