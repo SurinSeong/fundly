@@ -7,6 +7,7 @@ import PrimeVue from 'primevue/config'
 import App from './App.vue'
 import router from './router'
 import Button from 'primevue/button'
+import 'primeicons/primeicons.css'
 
 const MyPreset = definePreset(Lara, {
   semantic: {

@@ -1,6 +1,7 @@
 import CheckGoal from '@/views/CheckGoal.vue'
 import CheckProducts from '@/views/CheckProducts.vue'
 import Community from '@/views/Community.vue'
+import CommunityDetail from '@/views/CommunityDetail.vue'
 import EditPersonalInfo from '@/views/EditPersonalInfo.vue'
 import ExchangeRate from '@/views/ExchangeRate.vue'
 import LikeProducts from '@/views/LikeProducts.vue'
@@ -29,6 +30,11 @@ const router = createRouter({
       path: '/community',
       name: 'community',
       component: Community,
+    },
+    {
+      path: '/community/detail/:id',
+      name: 'detail',
+      component: CommunityDetail,
     },
     {
       path: '/edit/personalinfo',
