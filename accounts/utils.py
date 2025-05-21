@@ -3,20 +3,16 @@ import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # GOOGLE
 GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET = settings.GOOGLE_CLIENT_SECRET
+
 # KAKAO
 KAKAO_CLIENT_ID = settings.KAKAO_CLIENT_ID
-# APPLE
-APPLE_CLIENT_ID = settings.APPLE_CLIENT_ID
-APPLE_CLIENT_SECRET = settings.APPLE_CLIENT_SECRET
 
-BASE_URL = 'http://127.0.0.1:5173/api/auth/'
+BASE_URL = 'http://127.0.0.1:8000/api/auth/'
 
 User = get_user_model()
 
@@ -25,7 +21,6 @@ def get_access_token(code, provider):
     redirect_uri = BASE_URL + provider + '/callback/'
 
     if provider == 'google':
-        
         token_url = 'https://oauth2.googleapis.com/token'
         data = {
             'code': code,
@@ -44,16 +39,6 @@ def get_access_token(code, provider):
             "code": code
         }
 
-    elif provider == 'apple':
-        token_url = 'https://appleid.apple.com/auth/oauth2/v2/token'
-        data = {
-            'client_id': APPLE_CLIENT_ID,
-            'client_secret': APPLE_CLIENT_SECRET,
-            'code': code,
-            'grant_type': 'authorization_code',
-            'redirect_uri': redirect_uri
-        }
-
     response = requests.post(token_url, data=data)
     token_data = response.json()
     access_token = token_data.get('access_token')
@@ -65,11 +50,10 @@ def get_user_info(access_token, provider):
     if provider == 'google':
         userinfo_url = 'https://www.googleapis.com/oauth2/v3/userinfo'
 
+
     elif provider == 'kakao':
         userinfo_url = 'https://kapi.kakao.com/v2/user/me'
-    
-    elif provider == 'apple':
-        userinfo_url = 'https://appleid.apple.com/auth/oauth2/v2/keys'
+
 
     userinfo_response = requests.get(
         userinfo_url,
@@ -77,14 +61,17 @@ def get_user_info(access_token, provider):
     )
 
     userinfo = userinfo_response.json()
-    social_id = userinfo.get('id')
+
     if provider == 'google':
+        social_id = userinfo.get('sub')
         email = userinfo.get('email')
+
     elif provider == 'kakao':
-        email = userinfo.get("kakao_account", {}).get("email")
+        social_id = userinfo.get('id')
+        email = userinfo.get('kakao_account').get('email')
 
     if not email:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        raise ValueError("No email provided")
     
     return email, social_id
 
@@ -92,6 +79,7 @@ def get_user_info(access_token, provider):
 def get_or_create_social_user(provider, social_id, email):
     try:
         user = User.objects.get(provider=provider, social_id=social_id)
+
     except User.DoesNotExist:
         user = User.objects.create_user(
             username=f"{provider}_{social_id}",

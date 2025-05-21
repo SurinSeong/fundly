@@ -32,6 +32,7 @@ environ.Env.read_env(
 # 환경 변수 읽어오기
 GOOGLE_CLIENT_ID = env('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = env('GOOGLE_CLIENT_SECRET')
+KAKAO_CLIENT_ID = env('KAKAO_CLIENT_ID')
 FINANCE_API_KEY = env('FINANCE_API_KEY')
 
 # Quick-start development settings - unsuitable for production
@@ -65,8 +66,8 @@ INSTALLED_APPS = [
     # 로그인 관련
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
 
     # django 기본
     'django.contrib.admin',
