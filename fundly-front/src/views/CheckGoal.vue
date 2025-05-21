@@ -1,19 +1,18 @@
 <template>
   <div v-if="data" class="checkgoal-container"></div>
   <div v-else class="checkgoal-container">
-    <h2>
+    <h2 class="title">
       현재 설정되어 있는 목표가 없습니다.
       <br />
       함께 목표를 설정해볼까요?
     </h2>
     <RouterLink :to="{ name: 'setgoal' }"
-      ><Button class="btn" label="목표 설정하러 가기"></Button
-    ></RouterLink>
+      ><CustomButton :labelname="'목표 설정 하기'"/></RouterLink>
   </div>
 </template>
 
 <script setup>
-import { Button } from 'primevue'
+import CustomButton from '@/components/button/CustomButton.vue'
 import { RouterLink } from 'vue-router'
 import { ref } from 'vue'
 const data = ref()
@@ -29,9 +28,7 @@ const data = ref()
   align-items: center;
 }
 
-.btn {
-  background-color: var(--p-indigo-500) !important;
-  color: var(--p-primary-100) !important;
-  border: none;
+.title {
+  margin-bottom: 3rem;
 }
 </style>
