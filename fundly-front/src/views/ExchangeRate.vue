@@ -3,31 +3,33 @@
     <h2>환율</h2>
     <div class="money">
       <Form:get>
-        <InputNumber id="won" v-model="input"></InputNumber>
-        <label for="won">₩</label>
+        <CustomInputNumber :inputid="'won'" v-model="input" :unit="'₩'"></CustomInputNumber>
       </Form:get>
     </div>
     <div class="money">
       <Form:get>
-        <InputNumber id="dollar" v-model="output"></InputNumber>
-        <label for="dollar">$</label>
+        <CustomInputNumber :inputid="'dollar'" v-model="output" :unit="'$'"></CustomInputNumber>
       </Form:get>
     </div>
   </div>
 </template>
 
 <script setup>
-import InputNumber from 'primevue/inputnumber'
+import InputNumber from "primevue/inputnumber";
+import CustomInputNumber from "@/components/input/CustomInputNumber.vue";
+import { Form } from "@primevue/forms";
 
-import { Form } from '@primevue/forms'
+import { ref } from "vue";
 
-import { ref } from 'vue'
-
-const input = ref()
-const output = ref()
+const input = ref();
+const output = ref();
 </script>
 
 <style scoped>
+.exchange-container {
+  width: 60%;
+}
+
 label {
   padding-left: 1rem;
 }

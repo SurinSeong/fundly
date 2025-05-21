@@ -1,5 +1,5 @@
 <template>
-  <main class="bank-container">
+  <div class="bank-container">
     <div class="title">
       <h2>주변의 가까운 은행, ATM기를 찾아보세요.</h2>
     </div>
@@ -18,6 +18,7 @@
             placeholder="광역시 / 도를 선택해주세요."
             @change="updateSi"
             class="w-full"
+            fluid
           />
 
           <p>시 / 군 / 구</p>
@@ -27,6 +28,7 @@
             placeholder="시 / 군 / 구를 선택해주세요."
             :disabled="!siList.length"
             class="w-full"
+            fluid
           />
 
           <p>은행</p>
@@ -35,33 +37,42 @@
             :options="mapStore.bankData"
             placeholder="은행을 선택해주세요."
             class="w-full"
+            fluid
           />
         </div>
-        <Button label="찾기" severity="secondary" @click="mapStore.search" size="medium" />
+        <div class="button-container">
+          <CustomButton
+            label="찾기"
+            severity="secondary"
+            @click="mapStore.search"
+            size="medium"
+          />
+        </div>
       </section>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue'
-import { useMapStore } from '@/stores/kakaoMapStore'
-import Select from 'primevue/select'
+import { onMounted, computed } from "vue";
+import { useMapStore } from "@/stores/kakaoMapStore";
+import CustomButton from "@/components/button/CustomButton.vue";
+import Select from "primevue/select";
 
-const mapStore = useMapStore()
+const mapStore = useMapStore();
 
 onMounted(async () => {
-  await mapStore.initMap('map')
-  await mapStore.loadData()
-})
+  await mapStore.initMap("map");
+  await mapStore.loadData();
+});
 
 const siList = computed(() => {
-  const selected = mapStore.mapData.find((d) => d.name === mapStore.selectedDo)
-  return selected ? selected.countries : []
-})
+  const selected = mapStore.mapData.find(d => d.name === mapStore.selectedDo);
+  return selected ? selected.countries : [];
+});
 
 function updateSi() {
-  mapStore.selectedSi = ''
+  mapStore.selectedSi = "";
 }
 </script>
 
@@ -73,6 +84,11 @@ function updateSi() {
   height: 100%;
   width: 100%;
 }
+
+.title {
+  margin: 3rem 0 1rem 0;
+}
+
 .container {
   width: 100%;
   display: flex;
@@ -94,8 +110,8 @@ function updateSi() {
 }
 
 #map {
+  height: 25rem;
   width: 100%;
-  min-height: 500px;
 }
 
 .address {
@@ -103,6 +119,10 @@ function updateSi() {
 }
 .select-address {
   margin-bottom: 2rem;
+}
+.button-container {
+  display: flex;
+  justify-content: flex-end;
 }
 
 @media (max-width: 768px) {
