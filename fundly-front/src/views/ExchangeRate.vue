@@ -17,14 +17,14 @@
 </template>
 
 <script setup>
-import InputNumber from 'primevue/inputnumber';
+import InputNumber from 'primevue/inputnumber'
 
 import { Form } from '@primevue/forms'
 
 import { ref } from 'vue'
 
-const input = ref(0)
-const output = ref(0)
+const input = ref()
+const output = ref()
 </script>
 
 <style scoped>
@@ -33,5 +33,5 @@ label {
 }
 .money {
   margin-bottom: 1rem;
-} 
+}
 </style>

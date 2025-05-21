@@ -4,48 +4,48 @@
       <div class="basic-menu">
         <h3>기본 메뉴</h3>
         <div class="basic-menu-list">
-          <RouterLink to="/"
+          <RouterLink :to="{ name: 'checkgoal' }"
             ><Button class="btn" :class="{ active: route.path === '/' }" label="목표 확인" text
           /></RouterLink>
           <RouterLink to="/setgoal"
             ><Button
               class="btn"
-              :class="{ active: route.path === '/setgoal' }"
+              :class="{ active: route.name === 'setgoal' }"
               label="목표 추가하기"
               text
           /></RouterLink>
-          <RouterLink to="/checkproducts"
+          <RouterLink :to="{ name: 'checkproducts' }"
             ><Button
               class="btn"
-              :class="{ active: route.path === '/checkproducts' }"
+              :class="{ active: route.name === 'checkproducts' }"
               label="금융 상품 확인"
               text
           /></RouterLink>
-          <RouterLink to="/recommendproducts"
+          <RouterLink :to="{ name: 'recommendproducts' }"
             ><Button
               class="btn"
-              :class="{ active: route.path === '/recommendproducts' }"
+              :class="{ active: route.name === 'recommendproducts' }"
               label="금융 상품 추천"
               text
           /></RouterLink>
-          <RouterLink to="/searchbank"
+          <RouterLink :to="{ name: 'searchbank' }"
             ><Button
               class="btn"
-              :class="{ active: route.path === '/searchbank' }"
+              :class="{ active: route.name === 'searchbank' }"
               label="주변 은행 / ATM 찾기"
               text
           /></RouterLink>
-          <RouterLink to="/community"
+          <RouterLink :to="{ name: 'community' }"
             ><Button
               class="btn"
-              :class="{ active: route.path === '/community' }"
+              :class="{ active: route.name === 'community' || route.name === 'detail' }"
               label="커뮤니티"
               text
           /></RouterLink>
-          <RouterLink to="/exchangerate"
+          <RouterLink :to="{ name: 'exchangerate' }"
             ><Button
               class="btn"
-              :class="{ active: route.path === '/exchangerate' }"
+              :class="{ active: route.name === 'exchangerate' }"
               label="환율 계산"
               text
           /></RouterLink>
@@ -54,24 +54,24 @@
       <div class="my-page">
         <h3>마이 페이지</h3>
         <div class="my-page-list">
-          <RouterLink to="/edit/personalinfo"
+          <RouterLink :to="{ name: 'editpersonalInfo' }"
             ><Button
               class="btn"
-              :class="{ active: route.path === '/edit/personalinfo' }"
+              :class="{ active: route.name === 'editpersonalInfo' }"
               label="개인 정보 수정"
               text
           /></RouterLink>
-          <RouterLink to="/likeproducts"
+          <RouterLink :to="{ name: 'likeproducts' }"
             ><Button
               class="btn"
-              :class="{ active: route.path === '/likeproducts' }"
+              :class="{ active: route.name === 'likeproducts' }"
               label="찜한 상품 확인"
               text
           /></RouterLink>
-          <RouterLink to="/qna"
+          <RouterLink :to="{ name: 'qna' }"
             ><Button
               class="btn"
-              :class="{ active: route.path === '/qna' }"
+              :class="{ active: route.name === 'qna' }"
               label="자주 묻는 질문"
               text
           /></RouterLink>
@@ -126,7 +126,7 @@ const route = useRoute()
   margin-bottom: 4rem;
 }
 
-button.btn:hover {
+.btn:hover {
   background-color: var(--p-indigo-50) !important;
   color: var(--p-indigo-700) !important;
 }
@@ -134,13 +134,8 @@ button.btn:hover {
 .btn.active {
   background-color: var(--p-indigo-50);
   color: var(--p-indigo-700);
-  font-weight: bold;
 }
 
-.btn:active {
-  background-color: var(--p-indigo-50);
-  color: var(--p-indigo-700);
-}
 
 .btn:focus {
   background-color: var(--p-indigo-50);
