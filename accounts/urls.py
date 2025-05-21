@@ -1,8 +1,9 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('auth/signup/', views.signup),    # 회원가입
+    # path('auth/signup/', views.signup),    # 회원가입
+    path('auth/signup/', include('dj_rest_auth.registration.urls')),
     path('auth/login/', views.login),    # 로그인
     path('auth/<str:provider>/social-login/', views.social_login),    # 소셜 로그인
     path('auth/social-logout/', views.social_logout),    # 소셜 로그아웃

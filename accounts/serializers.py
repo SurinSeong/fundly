@@ -2,12 +2,20 @@ from rest_framework import serializers
 
 from django.contrib.auth import get_user_model, authenticate
 
+
 # 회원 가입을 위한 시리얼라이저
 class UserSignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'nickname', 'email', 'password', )
-
+        fields = '__all__'
+        
+    def create(self, validated_data):
+        username = validated_data.get('username')
+        email = validated_data.get('email')
+        nickname = validated_data.get('nickname')
+        password = validated_data.get('password')
+        age = validated_data.get('age')
+    
 
 # 로그인을 위한 시리얼라이저
 class UserLoginSerializer(serializers.Serializer):
