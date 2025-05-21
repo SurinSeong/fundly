@@ -1,28 +1,26 @@
 import urllib.parse
 
 from django.conf import settings
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
-from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.decorators import login_required
 
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 
-from .serializers import UserSerializer
+
+from .serializers import UserSignupSerializer, UserLoginSerializer, UserProfileSerializer
 from .utils import get_access_token, get_user_info, generate_jwt_for_user, get_or_create_social_user
 
 GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
+KAKAO_CLIENT_ID = settings.KAKAO_CLIENT_ID
 
 # 회원가입하기 - 일반 이메일 가입
 @api_view(['POST'])
 def signup(request):
     if request.method == 'POST':
-        serializer = UserSerializer(data=request.data)
+        serializer = UserSignupSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -34,12 +32,13 @@ def signup(request):
 @api_view(['POST'])
 def login(request):
     if request.method == 'POST':
-        serializer = UserSerializer(data=request.data)
+        serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            auth_login(request, serializer.data)
+            user = serializer.validated_data['user']
+            auth_login(request, user)
             return Response(status=status.HTTP_202_ACCEPTED)
-    return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
-
+        
+    return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 # 로그아웃
 def logout(request):
@@ -70,18 +69,43 @@ def social_login(request, provider):
 
         return redirect(google_auth_url)
     
+    if provider == 'kakao':
+        client_id = KAKAO_CLIENT_ID
+        response_type = 'code'
+        scope = 'openid'
+
+        kakao_auth_url = (
+            'https://kauth.kakao.com/oauth/authorize?' + 
+            urllib.parse.urlencode({
+                'response_type': response_type,
+                'client_id': client_id,
+                'redirect_uri': redirect_uri,
+                'scope': scope,
+                'prompt': 'select_account',
+            })
+        )
+
+        return redirect(kakao_auth_url)
+
+
+# # 소셜 로그아웃
+# @api_view(['POST'])
+# def social_logout(request, provider):
+#     url = 'https://kapi.kakao.com/v1/user/logout'
+
+#     get_access_token()
 
 # 콜백 함수
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def callback(request, provider):
-    code = request.GET.get('code')
+    code = request.data.get('code') or request.GET.get('code')
     if not code:
         return Response({'error': 'No code provided'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         # 소셜 로그인 토큰 요청
-        access_token = get_access_token(code)
+        access_token = get_access_token(code, provider)
         # 사용자 정보 요청
-        email, social_id = get_user_info(access_token)
+        email, social_id = get_user_info(access_token, provider)
         # 생성하거나 존재하는 정보 가져오거나
         user = get_or_create_social_user(provider, social_id, email)
         # JWT 토큰 생성
