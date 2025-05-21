@@ -12,7 +12,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import UserSignupSerializer, UserLoginSerializer, UserProfileSerializer
+from .serializers import UserLoginSerializer, UserProfileSerializer
 from .utils import get_access_token, get_user_info, generate_jwt_for_user, get_or_create_social_user
 
 GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
@@ -21,15 +21,15 @@ KAKAO_CLIENT_ID = settings.KAKAO_CLIENT_ID
 User = get_user_model()
 
 # 회원가입하기 - 일반 이메일 가입
-@api_view(['POST'])
-def signup(request):
-    if request.method == 'POST':
-        serializer = UserSignupSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+# @api_view(['POST'])
+# def signup(request):
+#     if request.method == 'POST':
+#         serializer = UserSignupSerializer(data=request.data)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+#     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 # 기본 로그인
