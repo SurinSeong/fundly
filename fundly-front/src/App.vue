@@ -126,7 +126,7 @@ const route = useRoute()
   margin-bottom: 4rem;
 }
 
-button.btn:hover {
+.btn:hover {
   background-color: var(--p-indigo-50) !important;
   color: var(--p-indigo-700) !important;
 }
@@ -134,13 +134,8 @@ button.btn:hover {
 .btn.active {
   background-color: var(--p-indigo-50);
   color: var(--p-indigo-700);
-  font-weight: bold;
 }
 
-.btn:active {
-  background-color: var(--p-indigo-50);
-  color: var(--p-indigo-700);
-}
 
 .btn:focus {
   background-color: var(--p-indigo-50);

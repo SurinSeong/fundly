@@ -1,6 +1,6 @@
 <template>
   <div class="community-container">
-    <h2>커뮤니티</h2>
+    <h2>자유롭게 의견과 정보를 공유할 수 있어요.</h2>
     <DataTable
       v-model:filters="filters"
       :value="posts"
