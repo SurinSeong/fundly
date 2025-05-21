@@ -12,7 +12,7 @@ class Goal(models.Model):
     # 사용자
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # 목표명
-    name = models.CharField(max_length=100)
+    goal_name = models.CharField(max_length=100)
     # 목표 실현 방식 (상품 타입)
     product_type = models.CharField(max_length=10,
                                     choices=TYPE_CHOICES,

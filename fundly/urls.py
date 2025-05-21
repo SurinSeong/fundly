@@ -22,9 +22,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/finance/', include('finance.urls')),
-    path('api/', include('accounts.urls')),
-    path('api/community/', include('community.urls')),
+    path('api/finance/', include('finance.urls')),        # 금융 데이터
+    path('api/', include('accounts.urls')),               # 계정
+    path('api/community/', include('community.urls')),    # 커뮤니티
+    path('api/goals/', include('goals.urls')),            # 목표
     
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)    # 업로드된 파일의 URL, MEDIA_URL을 통해 참조하는 파일의 실제 위치
