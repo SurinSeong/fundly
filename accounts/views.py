@@ -1,20 +1,24 @@
 import urllib.parse
 
 from django.conf import settings
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import get_user_model
 
-from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
-
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import UserSignupSerializer, UserLoginSerializer, UserProfileSerializer
 from .utils import get_access_token, get_user_info, generate_jwt_for_user, get_or_create_social_user
 
 GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
 KAKAO_CLIENT_ID = settings.KAKAO_CLIENT_ID
+
+User = get_user_model()
 
 # 회원가입하기 - 일반 이메일 가입
 @api_view(['POST'])
@@ -40,10 +44,12 @@ def login(request):
         
     return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-# 로그아웃
-def logout(request):
-    auth_logout(request)
-    return Response(status=status.HTTP_200_OK)
+# # 로그아웃
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def logout(request):
+#     auth_logout(request)
+#     return Response(status=status.HTTP_200_OK)
 
 
 # 소셜 로그인
@@ -88,13 +94,20 @@ def social_login(request, provider):
         return redirect(kakao_auth_url)
 
 
-# # 소셜 로그아웃
-# @api_view(['POST'])
-# def social_logout(request, provider):
-#     url = 'https://kapi.kakao.com/v1/user/logout'
-
-#     get_access_token()
-
+# 소셜 로그아웃
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def social_logout(request):
+    if request.method == 'POST':
+        try:
+            refresh_token = request.data['refresh']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    
 # 콜백 함수
 @api_view(['GET', 'POST'])
 def callback(request, provider):
@@ -115,3 +128,41 @@ def callback(request, provider):
 
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+# 닉네임 설정
+@api_view(['GET', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def set_nickname(request):
+    user = request.user
+
+    if request.method == 'PATCH':
+        nickname = request.data.get('nickname')
+        user.nickname = nickname
+        user.save()
+        return Response(status=status.HTTP_200_OK)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        
+# 프로필 조회
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def profile(request):
+    user = request.user
+    serializer = UserProfileSerializer(user)
+    return Response(serializer.data)
+
+
+# 비밀번호 수정
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    user = request.user
+    if request.method == 'PATCH':
+        password = request.data.get('password')
+        user.password = password
+        user.save()
+        return Response(status=status.HTTP_200_OK)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
