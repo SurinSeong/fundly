@@ -60,6 +60,8 @@ class FinancialProduct(models.Model):
     product_end_date = models.DateField(null=True, blank=True)
     # 금융회사 제출일
     submit_date = models.DateTimeField()
+    # 데이터 출처
+    come_from = models.CharField(max_length=3, default='API')
 
 
 # 추가 금융 상품
@@ -71,8 +73,7 @@ class AdditionalProduct(models.Model):
     # 상품명
     product_name = models.CharField(max_length=100)
     # 종류
-    product_type = models.CharField(max_length=5,
-                                    choices=TYPE_CHOICES)
+    product_type = models.CharField(max_length=5, choices=TYPE_CHOICES)
     # 금융회사
     financial_company = models.ForeignKey(FinancialCompany, on_delete=models.CASCADE)
     # 우대조건
@@ -82,7 +83,7 @@ class AdditionalProduct(models.Model):
     # 만기 후 이자율
     end_interest_rate = models.TextField(null=True, blank=True)
     # 가입 제한
-    join_deny = models.CharField(max_length=10)
+    join_deny = models.CharField(max_length=10, null=True, blank=True)
     # 가입 대상
     join_member = models.TextField(null=True, blank=True)
     # 기타 유의사항
@@ -91,6 +92,9 @@ class AdditionalProduct(models.Model):
     max_limit = models.IntegerField(null=True, blank=True)
     # 생성날짜
     created_at = models.DateTimeField(auto_now_add=True)
+    # 데이터 출처
+    come_from = models.CharField(max_length=4, default='USER')
+
     
 
 # 금융 상품 옵션
