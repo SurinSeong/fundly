@@ -2,9 +2,10 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import serializers
 
-from .models import Goal, WishList
-from finance.models import FinancialProduct, AdditionalProduct
+from .models import Goal, WishList, UserCustomProduct
 from accounts.serializers import UserSimpleInfoSerializer
+from finance.models import FinancialProduct, AdditionalProduct
+from finance.serializers import OptionProductSerializer
 
 
 # 목표 시리얼라이저
@@ -57,3 +58,31 @@ class WishListCreateSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("잘못된 상품입니다.")
         
+        
+# 사용자 설정 상품 전체 조회용 시리얼라이저
+class TotalCustomReadSerializer(serializers.ModelSerializer):
+    goal = GoalTitleSerializer(read_only=True, many=True)
+    
+    class Meta:
+        model = UserCustomProduct
+        fields = ('id', 'goal', 'start_date', 'duration_months', 'is_active', )
+
+
+# 사용자 설정 상품 생성용 시리얼라이저
+class CustomCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserCustomProduct
+        fields = '__all__'
+        
+        
+# 사용자 설정 상품 상세 정보 시리얼라이저
+class CustomDetailSerializer(serializers.ModelSerializer):
+    
+    goal = GoalTitleSerializer()
+    option_product = OptionProductSerializer()
+    
+    class Meta:
+        model = UserCustomProduct
+        fields = ('id', 'goal', 'option_product', 'amount', 'duration_months', 'is_active', )
+        
+
