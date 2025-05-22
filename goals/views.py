@@ -5,9 +5,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from .serializers import GoalSerializer, GoalTitleSerializer, WishListReadSerializer
+from .serializers import GoalSerializer, GoalTitleSerializer, WishListReadSerializer, WishListCreateSerializer
 from .models import Goal, WishList
-from finance.models import FinancialProduct, AdditionalProduct
 
 # Create your views here.
 # 목표 조회, 생성
@@ -50,35 +49,37 @@ def goal_detail(request, goal_pk):
             return Response(status=status.HTTP_204_NO_CONTENT)
         
 
-# 찜한 상품 전체 목록 조회 >> 마이페이지용
-@api_view(['GET'])
+# 찜한 상품 전체 목록 조회 (마이페이지에서), 상품 찜하기/삭제하기 (상품 목록에서)
+@api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def wish_list(request):
     user = request.user
-    wish_list = WishList.objects.filter(user=user)
-    serialzier = WishListReadSerializer(wish_list)
-    return Response(serialzier.data)
-
-
-# 찜하기
-@api_view(['POST', 'DELETE'])
-def wish(request, product_pk):
-    user = request.user
-    come_from = request.data.get('come_from')
-    if come_from == 'API':
-        product = FinancialProduct.objects.get(pk=product_pk)
-    elif come_from == 'USER':
-        product = AdditionalProduct.objects.get(pk=product_pk)
-
-    if request.method == 'POST':
-        pass
-
-    if request.method == 'DELETE':
-        if come_from == 'API':
-            wish_list = get_object_or_404(WishList, user=user, financial_product=product)
-        elif come_from == 'USER':
-            wish_list = get_object_or_404(WishList, user=user, financial_product=product)
-
     
+    if request.method == 'GET':
+        wish_list = WishList.objects.filter(user=user)
+        serialzier = WishListReadSerializer(wish_list)
+        return Response(serialzier.data)
+    
+    if request.method == 'POST':
+        serializer = WishListCreateSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            product = serializer.validated_data['product']
+            come_from = serializer.validated_data['come_from']
+            if come_from == 'API':
+                wish_list, created = WishList.objects.get_or_create(
+                    user=user, financial_product=product
+                )
+            elif come_from == 'USER':
+                wish_list, created = WishList.objects.get_or_create(
+                    user=user, additional_product=product
+                )
+            
+            # 이미 찜한 상품이라면
+            if not created:
+                wish_list.delete()    # 삭제
+                return Response({'message': '찜 해재'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': '찜 등록'}, status=status.HTTP_201_CREATED)
+
        
     
