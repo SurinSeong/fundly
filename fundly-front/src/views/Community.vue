@@ -42,8 +42,6 @@ import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import { FilterMatchMode } from '@primevue/core/api'
-import ColumnGroup from 'primevue/columngroup' // optional
-import Row from 'primevue/row'
 import { ref } from 'vue'
 
 const filters = ref({

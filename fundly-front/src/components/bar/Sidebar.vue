@@ -38,7 +38,7 @@ const route = useRoute();
 
 const basicMenu = ref([
   {
-    name: ["checkgoal"],
+    name: ["checkgoal", "goaldetail"],
     labelname: "목표 확인 하기",
     path: "/"
   },

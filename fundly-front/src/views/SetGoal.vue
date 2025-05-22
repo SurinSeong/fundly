@@ -5,6 +5,7 @@
         <div class="goal-name">
           <CustomInputText
             :labelname="'어떤 목표를 달성하고 싶으신가요?'"
+            :inputtext="goalName"
             :isicon="true"
             :iconclass="'pi pi-star'"
             :inputid="'target-amount'"
@@ -17,12 +18,12 @@
             :isicon="true"
             :iconclass="'pi pi-star'"
             :inputid="'target-amount'"
-            :inputnumber="0"
+            :inputnumber="targetAmount"
             :inputplaceholder="'0'"
             :unit="'원'"
           />
         </div>
-        <div class="goal-name">
+        <div class="goal-method">
           <label for=""><h3>목표를 달성할 방식을 알려주세요.</h3></label>
           <SelectButton
             v-model="selectedProductType"
@@ -34,15 +35,16 @@
           />
         </div>
       </div>
-      <div class="btn-container">
-        <CustomButton label="목표 설정하기" type="submit"></CustomButton>
-      </div>
+      <CustomButton
+        labelname="목표 설정하기"
+        type="submit"
+        justify="end"
+      ></CustomButton>
     </Form>
   </div>
 </template>
 
 <script setup>
-import InputText from "primevue/inputtext";
 import CustomInputNumber from "@/components/input/CustomInputNumber.vue";
 import CustomInputText from "@/components/input/CustomInputText.vue";
 

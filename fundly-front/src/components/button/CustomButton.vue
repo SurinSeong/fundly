@@ -1,12 +1,15 @@
 <template>
-  <Button class="btn-primary" :class="classname" :label="labelname" />
+  <div :class="justify">
+    <Button class="btn-primary" :class="classname" :label="labelname" />
+  </div>
 </template>
 
 <script setup>
 import Button from "primevue/button";
 defineProps({
   classname: Object,
-  labelname: String
+  labelname: String,
+  justify: String
 });
 </script>
 
@@ -30,5 +33,16 @@ defineProps({
 .btn-primary:focus {
   background-color: var(--p-indigo-50);
   color: var(--p-indigo-700);
+}
+
+.center {
+  display: flex;
+
+  justify-content: center;
+}
+.end {
+  display: flex;
+
+  justify-content: flex-end;
 }
 </style>
