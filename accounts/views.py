@@ -1,9 +1,7 @@
 import urllib.parse
 
 from django.conf import settings
-from django.shortcuts import redirect, get_object_or_404
-from django.contrib.auth import login as auth_login
-from django.contrib.auth import logout as auth_logout
+from django.shortcuts import redirect
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
@@ -12,7 +10,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import UserLoginSerializer, UserProfileSerializer
+from .serializers import UserLoginSerializer, UserProfileSerializer, UserSignupSerializer
 from .utils import get_access_token, get_user_info, generate_jwt_for_user, get_or_create_social_user
 
 GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
@@ -21,15 +19,21 @@ KAKAO_CLIENT_ID = settings.KAKAO_CLIENT_ID
 User = get_user_model()
 
 # 회원가입하기 - 일반 이메일 가입
-# @api_view(['POST'])
-# def signup(request):
-#     if request.method == 'POST':
-#         serializer = UserSignupSerializer(data=request.data)
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-#     return Response(status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST'])
+def signup(request):
+    if request.method == 'POST':
+        serializer = UserSignupSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.save()
+            user_data = UserLoginSerializer(user).data
+            # 토큰 발급
+            tokens = generate_jwt_for_user(user)
+            refresh = tokens.get('refresh')
+            access = tokens.get('access')
+            return Response(
+                {'user': user_data, 'access': access, 'refresh': refresh},
+                status=status.HTTP_201_CREATED
+            )
 
 
 # 기본 로그인
@@ -39,17 +43,12 @@ def login(request):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.validated_data['user']
-            auth_login(request, user)
-            return Response(status=status.HTTP_202_ACCEPTED)
+            user_data = UserProfileSerializer(user).data
+            refresh = serializer.validated_data['refresh']
+            access = serializer.validated_data['access']
+            return Response({'user': user_data, 'access': access, 'refresh': refresh}, status=status.HTTP_202_ACCEPTED)
         
     return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-# # 로그아웃
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def logout(request):
-#     auth_logout(request)
-#     return Response(status=status.HTTP_200_OK)
 
 
 # 소셜 로그인
@@ -94,10 +93,10 @@ def social_login(request, provider):
         return redirect(kakao_auth_url)
 
 
-# 소셜 로그아웃
+# 로그아웃
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def social_logout(request):
+def logout(request):
     if request.method == 'POST':
         try:
             refresh_token = request.data['refresh']
@@ -146,7 +145,7 @@ def set_nickname(request):
 
         
 # 프로필 조회
-@api_view(['GET'])
+@api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def profile(request):
     user = request.user
