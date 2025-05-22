@@ -1,6 +1,9 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework import serializers
 
 from .models import Goal, WishList
+from finance.models import FinancialProduct, AdditionalProduct
 from accounts.serializers import UserSimpleInfoSerializer
 
 
@@ -32,24 +35,25 @@ class WishListReadSerializer(serializers.ModelSerializer):
 
 
 # 찜한 상품 등록 및 삭제
-class WishListCDSerializer(serializers.ModelSerializer):
-    product_name = serializers.SerializerMethodField()
-    product_type = serializers.SerializerMethodField()
-
-    class Meta:
-        model = WishList
-        fields = ('id', 'product_name', 'product_name', )
-
-    def get_product_name(self, obj):
-        if obj.financial_product:
-            return obj.financial_product.name
-        elif obj.additional_product:
-            return obj.additional_product.product_name
-        return None
+class WishListCreateSerializer(serializers.ModelSerializer):
     
-    def get_product_type(self, obj):
-        if obj.financial_product:
-            return "API"
-        elif obj.additional_product:
-            return "USER"
-        return None
+    product_pk = serializers.IntegerField()
+    come_from = serializers.CharField()
+
+    def validate(self, data):
+        product_pk = data['product_pk']
+        come_from = data['come_from']
+        
+        if come_from == 'API':
+            product = get_object_or_404(FinancialProduct, pk=product_pk)
+            data['product'] = product
+            return data
+        
+        elif come_from == 'USER':
+            product = get_object_or_404(AdditionalProduct, pk=product_pk)
+            data['product'] = product
+            return data
+        
+        else:
+            raise serializers.ValidationError("잘못된 상품입니다.")
+        
