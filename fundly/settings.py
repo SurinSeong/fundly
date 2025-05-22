@@ -84,9 +84,9 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 REST_USE_JWT = True
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
 
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'nickname*', 'password1*', 'password2*']
 
 # JWT 인증 설정
 REST_FRAMEWORK = {
@@ -96,7 +96,7 @@ REST_FRAMEWORK = {
     ],
     # Permission
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
     ],
 }
 
@@ -210,6 +210,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-REST_AUTH = {
-    'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
-}

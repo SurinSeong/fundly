@@ -1,45 +1,73 @@
 from rest_framework import serializers
 
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import get_user_model
 
+from .utils import generate_jwt_for_user
+
+User = get_user_model()
 
 # 회원 가입을 위한 시리얼라이저
 class UserSignupSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = get_user_model()
-        fields = '__all__'
+        model = User
+        fields = ('id', 'username', 'nickname', 'email', 'password', )
+        extra_kwargs = {
+            'password': {
+            'style': {
+                'input_type': 'password'
+                },
+            }
+        }
         
     def create(self, validated_data):
-        username = validated_data.get('username')
-        email = validated_data.get('email')
-        nickname = validated_data.get('nickname')
-        password = validated_data.get('password')
-        age = validated_data.get('age')
-    
+        return User.objects.create_user(**validated_data)
+        
 
 # 로그인을 위한 시리얼라이저
-class UserLoginSerializer(serializers.Serializer):
+class UserLoginSerializer(serializers.ModelSerializer):
 
-    username = serializers.CharField(required=True)    # 이메일, 유저네임 둘다 받게 하자
-    password = serializers.CharField(required=True, write_only=True)
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'password', )
+        extra_kwargs = {
+            'email': {
+                'validators': [],    # 유효성 검사 제거하기
+                'style': {
+                    'input_type': 'email',
+                }
+            },
+            'password': {
+                'style': {
+                    'input_type': 'password',
+                }
+            }
+        }
 
     def validate(self, data):
-        username = data.get('username')
-        password = data.get('password')
+        email = data.get('email', None)
+        password = data.get('password', None)
 
-        # 사용자 인증
-        user = authenticate(username=username, password=password)
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
 
-        if user is None:
-            raise serializers.ValidationError('아이디 (또는 이메일) 또는 비밀번호가 올바르지 않습니다.')
+            if not user.check_password(password):
+                raise serializers.ValidationError('잘못된 비밀번호 입니다.')
         
-        if not user.is_acitve:
-            raise serializers.ValidationError("비활성화된 계정입니다.")
+        else:
+            raise serializers.ValidationError("존재하지 않는 사용자 입니다.")
         
-        data['user'] = user
+        jwt = generate_jwt_for_user(user)
+        refresh = jwt.get('refresh')
+        access = jwt.get('access')
+
+        data = {
+            'user': user,
+            'refresh': refresh,
+            'access': access,
+        }
 
         return data
-
 
 
 # 프로필 시리얼라이저
