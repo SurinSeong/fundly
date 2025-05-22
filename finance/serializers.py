@@ -12,7 +12,7 @@ class FinancialCompanySerializer(serializers.ModelSerializer):
 class FinancialProductSerializer(serializers.ModelSerializer):
 
     # 외래 키인 금융회사에 대해 시리얼라이저 적용
-    financial_company = FinancialCompanySerializer(read_only=True)
+    financial_company = FinancialCompanySerializer(many=True, read_only=True)
 
     class Meta:
         model = FinancialProduct
@@ -23,7 +23,7 @@ class FinancialProductSerializer(serializers.ModelSerializer):
 class OptionProductSerializer(serializers.ModelSerializer):
 
     # 외래 키인 금융 상품에 대해 시리얼 라이저 적용
-    financial_product = FinancialProductSerializer(read_only=True)
+    financial_product = FinancialProductSerializer(many=True, read_only=True)
 
     class Meta:
         model = OptionProduct
@@ -34,8 +34,65 @@ class OptionProductSerializer(serializers.ModelSerializer):
 class AdditionalProductSerializer(serializers.ModelSerializer):
 
     # 외래 키인 금융 회사에 대해 시리얼라이저 적용
-    financial_company = FinancialCompanySerializer(read_only=True)
+    financial_company = FinancialCompanySerializer(many=True, read_only=True)
 
     class Meta:
         model = AdditionalProduct
         fields = '__all__'
+
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------
+# 특정 금융 상품의 옵션 조회, 생성 시리얼라이저 (저축 금리 유형, 금리, 기간)
+class ProductOptionSimpleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OptionProduct
+        fields = ('id', 'save_type', 'interest_rate', 'max_interest_rate', 'save_month', )
+
+
+# 금융 상품 조회 시리얼라이저 (상품명, 금리, 기간, 찜 여부)
+class ProductReadSerializer(serializers.ModelSerializer):
+
+    financial_company = FinancialCompanySerializer(read_only=True)
+    options = ProductOptionSimpleSerializer(many=True, source='optionproduct_set')    # 역참조
+
+    class Meta:
+        model = FinancialProduct
+        fields = ('id', 'product_name', 'financial_company', 'options', )
+
+
+class AdditionalProductReadSerializer(serializers.ModelSerializer):
+
+    financial_company = FinancialCompanySerializer(read_only=True)
+    options = ProductOptionSimpleSerializer(many=True, source='optionproduct_set')    # 역참조
+
+    class Meta:
+        model = AdditionalProduct
+        fields = ('id', 'product_name', 'financial_company', 'options', )
+
+
+# 금융 상품 생성 시리얼라이저 (회사, 상품명, 타입, 옵션)
+class ProductCreateSerializer(serializers.ModelSerializer):
+
+    financial_company_name = serializers.CharField(write_only=True)
+    options = ProductOptionSimpleSerializer(many=True, source='optionproduct_set')    # 역참조
+
+    class Meta:
+        model = AdditionalProduct
+        fields = ('id', 'product_name', 'product_type', 'join_way', 'end_interest_rate', 'max_limit', 'financial_company_name', 'options', )
+
+    def create(self, validated_data):
+        # 1. 회사명으로 금융회사 인스턴스 조회
+        company_name = validated_data.pop('financial_company_name')
+        options_data = validated_data.pop('options')
+
+        # 2. 없으면 생성하기
+        company, _ = FinancialCompany.objects.get_or_create(name=company_name)
+        product = AdditionalProduct.objects.create(financial_company=company, **validated_data)
+
+        for option_data in options_data:
+            OptionProduct.objects.create(financial_company=company, **option_data)
+
+        return product
+    
+

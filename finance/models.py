@@ -12,7 +12,7 @@ class FinancialCompany(models.Model):
     # 회사 코드
     code = models.CharField(max_length=20, unique=True)
     # 회사명
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, unique=True)
     # 홈페이지 주소
     homepage_url = models.CharField(max_length=200)
     # 콜센터 전화번호
@@ -35,10 +35,9 @@ class FinancialProduct(models.Model):
     # 공시 제출년월
     published_date = models.CharField(max_length=6)
     # 상품명
-    name = models.CharField(max_length=100)
+    product_name = models.CharField(max_length=100)
     # 종류 (D: 예금, S: 적금)
-    product_type = models.CharField(max_length=5,
-                                    choices=TYPE_CHOICES)
+    product_type = models.CharField(max_length=5, choices=TYPE_CHOICES)
     # 금융회사
     financial_company = models.ForeignKey(FinancialCompany, on_delete=models.CASCADE)
     # 우대 조건
@@ -48,8 +47,7 @@ class FinancialProduct(models.Model):
     # 만기 후 이자율
     end_interest_rate = models.TextField(null=True, blank=True)
     # 가입 제한
-    join_deny = models.CharField(max_length=10,
-                                 choices=DENY_CHOICES)
+    join_deny = models.CharField(max_length=10, choices=DENY_CHOICES)
     # 가입 대상
     join_member = models.TextField(null=True, blank=True)
     # 기타 유의사항
@@ -71,7 +69,7 @@ class AdditionalProduct(models.Model):
         ('S', '적금'),
     ]
     # 상품명
-    name = models.CharField(max_length=100)
+    product_name = models.CharField(max_length=100)
     # 종류
     product_type = models.CharField(max_length=5,
                                     choices=TYPE_CHOICES)
@@ -106,11 +104,13 @@ class OptionProduct(models.Model):
         ('S', '정액적립식'),
         ('F', '자유적립식'),
     ]
+
     # 금융 상품
     finance_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE)
+    additional_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE)
+
     # 저축 금리 유형
-    save_type = models.CharField(max_length=1,
-                                 choices=SAVE_TYPE_CHOICES)
+    save_type = models.CharField(max_length=1, choices=SAVE_TYPE_CHOICES)
     # 적립 유형
     reward_type = models.CharField(max_length=1,
                                    choices=REWARD_TYPE_CHOICES,
