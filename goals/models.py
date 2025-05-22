@@ -67,7 +67,7 @@ class UserCustomProduct(models.Model):
     # 시작 날짜
     start_date = models.DateField()
     # 지속 기간
-    duration_months = models.IntegerField()
+    duration_months = models.IntegerField(null=True, blank=True)
     # 중도 해지 여부
     is_active = models.BooleanField(default=False)
     # 생성 날짜

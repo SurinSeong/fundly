@@ -5,8 +5,17 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from .serializers import GoalSerializer, GoalTitleSerializer, WishListReadSerializer, WishListCreateSerializer
-from .models import Goal, WishList
+from .serializers import (
+                            GoalSerializer, 
+                            GoalTitleSerializer, 
+                            WishListReadSerializer, 
+                            WishListCreateSerializer,
+                            TotalCustomReadSerializer,
+                            CustomCreateSerializer,
+                            CustomDetailSerializer,
+                        )
+
+from .models import Goal, WishList, UserCustomProduct
 
 # Create your views here.
 # 목표 조회, 생성
@@ -82,4 +91,38 @@ def wish_list(request):
                 return Response({'message': '찜 등록'}, status=status.HTTP_201_CREATED)
 
        
+# 사용자가 설정한 상품 전체 조회 및 생성
+@api_view(['GET', 'POST'])
+def custom_product(request):
+    if request.method == 'GET':
+        user_custom_products = UserCustomProduct.objects.all()
+        serializer = TotalCustomReadSerializer(user_custom_products, many=True)
+        return Response(serializer.data)
     
+    if request.method == 'POST':
+        serializer = CustomCreateSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+
+# 사용자가 설정한 특정 상품 조회, 삭제, 수정
+@api_view(['GET', 'PUT', 'DELETE'])
+def custom_detail(request, custom_pk):
+    user = request.user
+    custom_product = UserCustomProduct.objects.get(pk=custom_pk)
+    
+    if custom_product.user == user:
+        if request.method == 'GET':
+            serializer = CustomDetailSerializer(custom_product)
+            return Response(serializer.data)
+        
+        if request.method == 'PUT':
+            serializer = CustomDetailSerializer(custom_product, data=request.data, partial=True)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            
+        if request.method == 'DELETE':
+            custom_product.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)

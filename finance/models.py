@@ -96,7 +96,6 @@ class AdditionalProduct(models.Model):
     come_from = models.CharField(max_length=4, default='USER')
 
     
-
 # 금융 상품 옵션
 class OptionProduct(models.Model):
     SAVE_TYPE_CHOICES = [
