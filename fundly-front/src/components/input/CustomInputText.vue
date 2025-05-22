@@ -6,10 +6,11 @@
     <InputIcon v-if="isicon">
       <i :class="iconclass" style="color: var(--p-amber-400)" />
     </InputIcon>
-    <InputNumber
+    <InputText
       :id="inputid"
-      :v-model="inputnumber"
+      :v-model="inputtext"
       :placeholder="inputplaceholder"
+      :type="inputtype"
       fluid
     />
     <InputIcon>
@@ -21,15 +22,18 @@
 <script setup>
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
-import InputNumber from "primevue/inputnumber";
+import InputText from "primevue/inputtext";
+
 
 defineProps({
   labelname: String,
   isicon: Boolean,
   iconclass: String,
   iconcolor: String,
+  inputtext: String,
   inputid: String,
   inputplaceholder: String,
+  inputtype: String
 });
 </script>
 

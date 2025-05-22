@@ -44,6 +44,7 @@
           <CustomButton
             label="찾기"
             severity="secondary"
+            type="submit"
             @click="mapStore.search"
             size="medium"
           />
