@@ -34,14 +34,28 @@ def save_financial_data(request):
         serializer = FinancialProductSerializer(data=product)
         if serializer.is_valid(raise_exception=True):
             serializer.save(financial_company=financial_company)
+        else:
+            print(product)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    
     # 금융 옵션 저장
     for option in options:
-        financial_product = FinancialProduct.objects.get(code=option['financial_product_id'])
-        option['financial_product'] = financial_product.id
-        serializer = OptionProductSerializer(data=option)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(financial_product=financial_product)
+        financial_company = FinancialCompany.objects.get(code=option['financial_company_id'])
+        financial_products = FinancialProduct.objects.filter(code=option['financial_product_id'], financial_company=financial_company)
+
+        for financial_product in financial_products:
+
+            option['financial_company'] = financial_company.id
+            option['financial_product'] = financial_product.id
+
+            serializer = OptionProductSerializer(data=option)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(financial_company=financial_company,
+                                financial_product=financial_product)
+            else:
+                print(option)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'save': 'completed'}, status=status.HTTP_202_ACCEPTED)
 

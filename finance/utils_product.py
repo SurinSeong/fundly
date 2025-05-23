@@ -21,7 +21,7 @@ def get_fin_data(topFinGrpNo, target):
         # 요청 URL
         API_URL = BASE_URL + target + '.json'
         params = {
-            'auth': settings.FINANCE_API_KEY,
+            'auth': '7ac2fed38f15fcc85ba028f86ca2010f',    #settings.FINANCE_API_KEY, 
             'topFinGrpNo': topFinGrpNo,
             'pageNo': n
         }
@@ -32,15 +32,17 @@ def get_fin_data(topFinGrpNo, target):
             break
 
         # 상품 리스트 추출
-        products.extend(response['result']['baseList'])
+        product = response['result']['baseList']
+        products.extend(product)
 
         # 옵션 리스트 추출
-        options.extend(response['result']['optionList'])
+        option = response['result']['optionList']
+        options.extend(option)
     
     # 모든 필드 추출하기 - products
     extracted_products = []
     for product in products:
-        product_dict = {}
+        product_dict = {'come_from': 'API'}
 
         # 예금 or 적금
         if target == 'depositProductsSearch':
@@ -51,6 +53,7 @@ def get_fin_data(topFinGrpNo, target):
         for key in product.keys():
             if key not in ['kor_co_nm']:
                 product_dict[key] = product.get(key, '')
+
         extracted_products.append(product_dict)
 
     # 모든 필드 추출하기 - options
@@ -58,8 +61,9 @@ def get_fin_data(topFinGrpNo, target):
     for option in options:
         option_dict = {}
         for key in option.keys():
-            if key not in ['dcls_month', 'fin_co_no', 'intr_rate_type_nm', 'rsrv_type_nm']:
+            if key not in ['dcls_month', 'intr_rate_type_nm', 'rsrv_type_nm']:
                 option_dict[key] = option.get(key, '')
+
         extracted_options.append(option_dict)
 
     return extracted_products, extracted_options
@@ -106,7 +110,7 @@ def create_fixture():
                         fixture_fields['financial_product_id'] = data[key]
 
                 elif key == 'fin_prdt_nm':
-                    fixture_fields['name'] = data[key]
+                    fixture_fields['product_name'] = data[key]
 
                 elif key == 'spcl_cnd':
                     fixture_fields['special_condition'] = data[key]
@@ -126,14 +130,8 @@ def create_fixture():
                 elif key == 'intr_rate_type':
                     fixture_fields['save_type'] = data[key]
 
-                elif key == 'intr_rate_type_nm':
-                    fixture_fields['save_type_name'] = data[key]
-
                 elif key == 'rsrv_type':
                     fixture_fields['reward_type'] = data[key]
-
-                elif key == 'rsrv_type_nm':
-                    fixture_fields['reward_type_name'] = data[key]
 
                 elif key == 'save_trm':
                     fixture_fields['save_month'] = data[key]
@@ -150,7 +148,6 @@ def create_fixture():
             total_data.append(fixture_fields)
 
         all_data[model_name] = total_data
-
 
         print(f'총 {len(total_data)}개의 fixture.{model_name} 항목이 저장되었습니다.')
     
@@ -202,6 +199,6 @@ def create_finance_data():
     
 
 # if __name__ == "__main__":
-#     product_result, option_result = preprocessing()
+#     product_result, option_result = create_finance_data()
 #     print(product_result[:5])
 #     print(option_result[:5])
