@@ -8,20 +8,23 @@ User = get_user_model()
 
 # 회원 가입을 위한 시리얼라이저
 class UserSignupSerializer(serializers.ModelSerializer):
+    password1 = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    password2 = serializers.CharField(write_only=True, style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password', )
-        extra_kwargs = {
-            'password': {
-            'style': {
-                'input_type': 'password'
-                },
-            }
-        }
+        fields = ('id', 'username', 'email', 'password1', 'password2', )
+
+    def validate(self, data):
+        if data['password1'] != data['password2']:
+            raise serializers.ValidationError("비밀번호가 일치하지 않습니다.")
+        return data
         
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        validated_data.pop('password2')
+        password = validated_data.pop('password1')
+        user = User.objects.create_user(password=password, **validated_data)
+        return user
         
 
 # 로그인을 위한 시리얼라이저
@@ -81,4 +84,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSimpleInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'nickname', )
+        fields = ('id', 'username', )

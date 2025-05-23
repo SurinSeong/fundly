@@ -7,15 +7,17 @@ from .utils_product import create_finance_data
 from .serializers import (
                             FinancialCompanySerializer,
                             FinancialProductSerializer,
-                            OptionProductSerializer,
+                            AdditionalProductSerializer,
+                            OptionSerializer,
+                            AdditionalOptionSerializer,
                             ProductReadSerializer,
-                            ProductCreateSerializer,
+                            AdditionalProductCreateSerializer,
                             AdditionalProductReadSerializer,
                         )
-from .models import FinancialCompany, FinancialProduct, AdditionalProduct, OptionProduct
+from .models import FinancialCompany, FinancialProduct, AdditionalProduct, Option, AdditionalOption
 
 
-# 금감원 API 활용 데이터 저장하기
+# 금감원 API 활용 데이터 저장하기 >> 이미 저장된 것은 저장되지 않도록 해주기
 @api_view(['GET'])
 def save_financial_data(request):
     products, options = create_finance_data()
@@ -49,7 +51,7 @@ def save_financial_data(request):
             option['financial_company'] = financial_company.id
             option['financial_product'] = financial_product.id
 
-            serializer = OptionProductSerializer(data=option)
+            serializer = OptionSerializer(data=option)
             if serializer.is_valid(raise_exception=True):
                 serializer.save(financial_company=financial_company,
                                 financial_product=financial_product)
@@ -64,7 +66,7 @@ def save_financial_data(request):
 @api_view(['GET', 'POST'])
 def finance_product(request):
     if request.method == 'POST':
-        serializer = ProductCreateSerializer(data=request.data)
+        serializer = AdditionalProductCreateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -93,24 +95,26 @@ def finance_product(request):
 @api_view(['GET'])
 def product_detail(request, product_pk):
     # 조회하려는 상품명
-    product_name = request.data.get(product_name)
+    product_name = request.data.get('product_name')
 
     official_product = FinancialProduct.objects.get(pk=product_pk)
     additional_product = AdditionalProduct.objects.get(pk=product_pk)
     
     if official_product and official_product.product_name == product_name:
-        options = OptionProduct.objects.filter(finance_product=official_product)
+        options = Option.objects.filter(finance_product=official_product)
         product = official_product
+        product_serializer = FinancialProductSerializer(product)
+        options_serializer = OptionSerializer(options, many=True)
     
     elif additional_product and additional_product.product_name == product_name:
-        options = OptionProduct.objects.filter(finance_product=additional_product)
+        options = AdditionalOption.objects.filter(finance_product=additional_product)
         product = additional_product
+        product_serializer = AdditionalProductSerializer(product)
+        options_serializer = AdditionalOptionSerializer(options, many=True)
 
     else:
         return Response({'error':'상품이 존재하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    product_serializer = FinancialProductSerializer(product)
-    options_serializer = OptionProductSerializer(options, many=True)
     return Response({
         'product': product_serializer.data,
         'options': options_serializer.data

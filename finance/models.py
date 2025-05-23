@@ -26,9 +26,9 @@ class FinancialProduct(models.Model):
         (3, '일부제한'),
     ]
     financial_company = models.ForeignKey(FinancialCompany, on_delete=models.CASCADE)    # 금융회사
-    code = models.CharField(max_length=50)    # 상품 코드
-    published_date = models.CharField(max_length=6)    # 공시 제출년월
-    product_name = models.CharField(max_length=100)    # 상품명
+    code = models.CharField(max_length=50)                                               # 상품 코드
+    published_date = models.CharField(max_length=6)                                      # 공시 제출년월
+    product_name = models.CharField(max_length=100)                                      # 상품명
     product_type = models.CharField(max_length=5, choices=TYPE_CHOICES)    # 종류 (D: 예금, S: 적금)
     special_condition = models.TextField(null=True, blank=True)    # 우대 조건
     join_way = models.TextField(null=True, blank=True)    # 가입 방법
@@ -49,34 +49,22 @@ class AdditionalProduct(models.Model):
         ('D', '예금'),
         ('S', '적금'),
     ]
-    # 상품명
-    product_name = models.CharField(max_length=100)
-    # 종류
-    product_type = models.CharField(max_length=5, choices=TYPE_CHOICES)
-    # 금융회사
-    financial_company = models.ForeignKey(FinancialCompany, on_delete=models.CASCADE)
-    # 우대조건
-    special_condition = models.TextField(null=True, blank=True)
-    # 가입 방법
-    join_way = models.TextField(null=True, blank=True)
-    # 만기 후 이자율
-    end_interest_rate = models.TextField(null=True, blank=True)
-    # 가입 제한
-    join_deny = models.CharField(max_length=10, null=True, blank=True)
-    # 가입 대상
-    join_member = models.TextField(null=True, blank=True)
-    # 기타 유의사항
-    etc_note = models.TextField(null=True, blank=True)
-    # 최고한도
-    max_limit = models.IntegerField(null=True, blank=True)
-    # 생성날짜
-    created_at = models.DateTimeField(auto_now_add=True)
-    # 데이터 출처
-    come_from = models.CharField(max_length=4, default='USER')
+    product_name = models.CharField(max_length=100)    # 상품명
+    product_type = models.CharField(max_length=5, choices=TYPE_CHOICES)    # 종류
+    financial_company = models.ForeignKey(FinancialCompany, on_delete=models.CASCADE)    # 금융회사
+    special_condition = models.TextField(null=True, blank=True)    # 우대조건
+    join_way = models.TextField(null=True, blank=True)    # 가입 방법
+    end_interest_rate = models.TextField(null=True, blank=True)    # 만기 후 이자율
+    join_deny = models.CharField(max_length=10, null=True, blank=True)    # 가입 제한
+    join_member = models.TextField(null=True, blank=True)    # 가입 대상
+    etc_note = models.TextField(null=True, blank=True)    # 기타 유의사항
+    max_limit = models.IntegerField(null=True, blank=True)    # 최고한도
+    created_at = models.DateTimeField(auto_now_add=True)    # 생성날짜
+    come_from = models.CharField(max_length=4, default='USER')    # 데이터 출처
 
     
 # 금융 상품 옵션
-class OptionProduct(models.Model):
+class Option(models.Model):
     SAVE_TYPE_CHOICES = [
         ('S', '단리'),
         ('M', '복리'),
@@ -86,22 +74,36 @@ class OptionProduct(models.Model):
         ('S', '정액적립식'),
         ('F', '자유적립식'),
     ]
-
     financial_company = models.ForeignKey(FinancialCompany, on_delete=models.CASCADE)    # 금융 회사
     financial_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE)    # 금융 상품
-
-    # 저축 금리 유형
-    save_type = models.CharField(max_length=1, choices=SAVE_TYPE_CHOICES)
-    # 적립 유형
-    reward_type = models.CharField(max_length=1,
+    save_type = models.CharField(max_length=1, choices=SAVE_TYPE_CHOICES)    # 저축 금리 유형
+    reward_type = models.CharField(max_length=1,    # 적립 유형
                                    choices=REWARD_TYPE_CHOICES,
                                    null=True, blank=True)
-    # 저축 기간
-    save_month = models.IntegerField(null=True, blank=True)
-    # 저축 금리
-    interest_rate = models.FloatField(null=True, blank=True)
-    # 최고 우대 금리
-    max_interest_rate = models.FloatField(null=True, blank=True)
+    save_month = models.IntegerField(null=True, blank=True)    # 저축 기간
+    interest_rate = models.FloatField(null=True, blank=True)    # 저축 금리
+    max_interest_rate = models.FloatField(null=True, blank=True)    # 최고 우대 금리
+    come_from = models.CharField(max_length=3, default='API')    # 데이터 출처
 
 
-# additional_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE)
+# 사용자로부터 추가된 금융 상품 옵션
+class AdditionalOption(models.Model):
+    SAVE_TYPE_CHOICES = [
+        ('S', '단리'),
+        ('M', '복리'),
+    ]
+
+    REWARD_TYPE_CHOICES = [
+        ('S', '정액적립식'),
+        ('F', '자유적립식'),
+    ]
+    financial_company = models.ForeignKey(FinancialCompany, on_delete=models.CASCADE)    # 금융 회사
+    financial_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE)    # 금융 상품
+    save_type = models.CharField(max_length=1, choices=SAVE_TYPE_CHOICES)    # 저축 금리 유형
+    reward_type = models.CharField(max_length=1,    # 적립 유형
+                                   choices=REWARD_TYPE_CHOICES,
+                                   null=True, blank=True)
+    save_month = models.IntegerField(null=True, blank=True)    # 저축 기간
+    interest_rate = models.FloatField(null=True, blank=True)    # 저축 금리
+    max_interest_rate = models.FloatField(null=True, blank=True)    # 최고 우대 금리
+    come_from = models.CharField(max_length=4, default='USER')    # 데이터 출처

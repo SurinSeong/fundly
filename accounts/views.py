@@ -136,8 +136,8 @@ def set_nickname(request):
     user = request.user
 
     if request.method == 'PATCH':
-        nickname = request.data.get('nickname')
-        user.nickname = nickname
+        username = request.data.get('username')
+        user.username = username
         user.save()
         return Response(status=status.HTTP_200_OK)
     

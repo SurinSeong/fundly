@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FinancialCompany, FinancialProduct, AdditionalProduct, OptionProduct
+from .models import FinancialCompany, FinancialProduct, AdditionalProduct, Option, AdditionalOption
 
 # 금융 회사 직렬화 시리얼라이저
 class FinancialCompanySerializer(serializers.ModelSerializer):
@@ -20,13 +20,15 @@ class FinancialProductSerializer(serializers.ModelSerializer):
 
 
 # 금융 상품 옵션 직렬화 시리얼라이저
-class OptionProductSerializer(serializers.ModelSerializer):
+class OptionSerializer(serializers.ModelSerializer):
 
+    # 외래 키인 금융 회사에 대해
+    financial_company = FinancialCompanySerializer(read_only=True)
     # 외래 키인 금융 상품에 대해 시리얼 라이저 적용
     financial_product = FinancialProductSerializer(many=True, read_only=True)
 
     class Meta:
-        model = OptionProduct
+        model = Option
         fields = '__all__'
 
 
@@ -41,12 +43,32 @@ class AdditionalProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-#-----------------------------------------------------------------------------------------------------------------------------------------------------
-# 특정 금융 상품의 옵션 조회, 생성 시리얼라이저 (저축 금리 유형, 금리, 기간)
-class ProductOptionSimpleSerializer(serializers.ModelSerializer):
+# 추가 금융 상품 옵션 직렬화
+class AdditionalOptionSerializer(serializers.ModelSerializer):
+
+    financial_company = FinancialCompanySerializer(read_only=True)
+    # 외래 키인 금융 상품에 대해 시리얼 라이저 적용
+    financial_product = AdditionalProductSerializer(many=True, read_only=True)
 
     class Meta:
-        model = OptionProduct
+        model = AdditionalOption
+        fields = '__all__'
+
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------
+# 특정 금융 상품의 옵션 조회, 생성 시리얼라이저 (저축 금리 유형, 금리, 기간)
+class OptionSimpleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Option
+        fields = ('id', 'save_type', 'interest_rate', 'max_interest_rate', 'save_month', )
+
+
+# 특정 추가 금융 상품의 옵션 조회, 생성 시리얼라이저
+class AdditionalOptionSimpleSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = AdditionalOption
         fields = ('id', 'save_type', 'interest_rate', 'max_interest_rate', 'save_month', )
 
 
@@ -54,7 +76,7 @@ class ProductOptionSimpleSerializer(serializers.ModelSerializer):
 class ProductReadSerializer(serializers.ModelSerializer):
 
     financial_company = FinancialCompanySerializer(read_only=True)
-    options = ProductOptionSimpleSerializer(many=True, source='optionproduct_set')    # 역참조
+    options = OptionSimpleSerializer(many=True, source='option_set')    # 역참조
 
     class Meta:
         model = FinancialProduct
@@ -64,7 +86,7 @@ class ProductReadSerializer(serializers.ModelSerializer):
 class AdditionalProductReadSerializer(serializers.ModelSerializer):
 
     financial_company = FinancialCompanySerializer(read_only=True)
-    options = ProductOptionSimpleSerializer(many=True, source='optionproduct_set')    # 역참조
+    options = AdditionalOptionSimpleSerializer(many=True, source='additionaloption_set')    # 역참조
 
     class Meta:
         model = AdditionalProduct
@@ -72,10 +94,10 @@ class AdditionalProductReadSerializer(serializers.ModelSerializer):
 
 
 # 금융 상품 생성 시리얼라이저 (회사, 상품명, 타입, 옵션)
-class ProductCreateSerializer(serializers.ModelSerializer):
+class AdditionalProductCreateSerializer(serializers.ModelSerializer):
 
     financial_company_name = serializers.CharField(write_only=True)
-    options = ProductOptionSimpleSerializer(many=True, source='optionproduct_set')    # 역참조
+    options = OptionSimpleSerializer(many=True, source='option_set')    # 역참조
 
     class Meta:
         model = AdditionalProduct
@@ -91,7 +113,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         product = AdditionalProduct.objects.create(financial_company=company, **validated_data)
 
         for option_data in options_data:
-            OptionProduct.objects.create(financial_company=company, **option_data)
+            AdditionalOption.objects.create(financial_company=company, **option_data)
 
         return product
     

@@ -5,14 +5,13 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
     
-    def create_user(self, username, nickname, email, password, **kwargs):
+    def create_user(self, username, email, password, **kwargs):
         if not email:
             raise ValueError('Users must have an email address.')
         
         user = self.model(
             username=username,
             email=email,
-            nickname=nickname,
             **kwargs
         )
         user.set_password(password)
@@ -23,7 +22,6 @@ class CustomUserManager(BaseUserManager):
         superuser = self.create_user(
             username=username,
             email=email,
-            nickname=nickname,
             provider=provider,
             password=password,
         )
@@ -35,10 +33,9 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=30, null=False, blank=False)
+    username = models.CharField(max_length=30, unique=True, null=False, blank=False)
     email = models.EmailField(max_length=30, unique=True, null=False, blank=False)
     social_id = models.CharField(max_length=50, null=True, blank=True)
-    nickname = models.CharField(max_length=50, unique=True, null=False, blank=False)
     provider = models.CharField(max_length=10, default='fundly')
     age = models.PositiveIntegerField(null=True)
     is_work = models.BooleanField(default=False)
@@ -53,4 +50,4 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'nickname',]
+    REQUIRED_FIELDS = ['username',]

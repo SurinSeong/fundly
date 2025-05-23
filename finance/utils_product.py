@@ -59,7 +59,7 @@ def get_fin_data(topFinGrpNo, target):
     # 모든 필드 추출하기 - options
     extracted_options = []
     for option in options:
-        option_dict = {}
+        option_dict = {'come_from': 'API'}
         for key in option.keys():
             if key not in ['dcls_month', 'intr_rate_type_nm', 'rsrv_type_nm']:
                 option_dict[key] = option.get(key, '')
@@ -87,7 +87,7 @@ def create_fixture():
         if extracted_data == all_extracted_products:
             model_name = 'financialproduct'
         elif extracted_data == all_extracted_options:
-            model_name = 'optionproduct'
+            model_name = 'option'
 
         total_data = []
     
@@ -159,7 +159,7 @@ def create_finance_data():
     all_data = create_fixture()
     
     product_data = all_data['financialproduct']
-    option_data = all_data['optionproduct']
+    option_data = all_data['option']
 
     # 상품 데이터 전처리
     for product in product_data:

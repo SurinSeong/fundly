@@ -8,6 +8,7 @@ class Goal(models.Model):
     TYPE_CHOICES = [
         ('D', '예금'),
         ('S', '적금'),
+        ('A', '둘다'),
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)      # 사용자
     goal_name = models.CharField(max_length=100)                                      # 목표명
@@ -20,7 +21,6 @@ class Goal(models.Model):
     deposit_target_amount = models.PositiveIntegerField(null=True, blank=True)        # 예금 목표 금액
     start_date = models.DateField()                                                   # 시작 날짜
     end_date = models.DateField()                                                     # 마지막 날짜
-    achievement_rate = models.FloatField()                                            # 목표 달성률
     created_at = models.DateTimeField(auto_now_add=True)                              # 생성 날짜
     updated_at = models.DateTimeField(auto_now=True)                                  # 수정 날짜
     
