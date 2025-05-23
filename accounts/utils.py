@@ -12,7 +12,7 @@ GOOGLE_CLIENT_SECRET = settings.GOOGLE_CLIENT_SECRET
 # KAKAO
 KAKAO_CLIENT_ID = settings.KAKAO_CLIENT_ID
 
-BASE_URL = 'http://127.0.0.1:8000/api/auth/'
+BASE_URL = 'http://127.0.0.1:5173/api/auth/'
 
 User = get_user_model()
 
