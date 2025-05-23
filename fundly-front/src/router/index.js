@@ -8,6 +8,8 @@ import GoalDetail from '@/views/GoalDetail.vue'
 import GoalProductDetail from '@/views/GoalProductDetail.vue'
 import LikeProducts from '@/views/LikeProducts.vue'
 import Login from '@/views/Login.vue'
+import GoogleCallback from '@/views/oauth/GoogleCallback.vue'
+import KakaoCallback from '@/views/oauth/KakaoCallback.vue'
 import ProductDetail from '@/views/ProductDetail.vue'
 import QnA from '@/views/QnA.vue'
 import RecommendProducts from '@/views/RecommendProducts.vue'
@@ -73,6 +75,16 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login,
+    },
+    {
+      path: '/google/callback',
+      name: 'GoogleCallback',
+      component: GoogleCallback,
+    },
+    {
+      path: '/api/auth/kakao/callback',
+      name: 'KakaoCallback',
+      component: KakaoCallback,
     },
     {
       path: '/qna',

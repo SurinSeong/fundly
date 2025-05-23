@@ -1,40 +1,46 @@
 <template>
-  <label :for="iconclass"
-    ><h3>{{ labelname }}</h3></label
+  <label :for="inputId"
+    ><h3>{{ labelName }}</h3></label
   >
   <IconField>
     <InputIcon v-if="isicon">
       <i :class="iconclass" style="color: var(--p-amber-400)" />
     </InputIcon>
     <InputText
-      :id="inputid"
-      :v-model="inputtext"
+      :id="inputId"
+      :value="modelValue"
       :placeholder="inputplaceholder"
-      :type="inputtype"
+      :type="inputType"
+      @input="(e) => emit('update:modelValue', e.target.value)"
       fluid
     />
-    <InputIcon>
-      <span>{{ unit }}</span>
-    </InputIcon>
+    <Message v-if="error" size="small" severity="error" variant="simple" fluid>{{
+      message
+    }}</Message>
+
+    <InputIcon> </InputIcon>
   </IconField>
 </template>
 
 <script setup>
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
-import InputText from "primevue/inputtext";
-
-
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
+import Message from 'primevue/message'
 defineProps({
-  labelname: String,
+  labelName: String,
   isicon: Boolean,
   iconclass: String,
   iconcolor: String,
-  inputtext: String,
-  inputid: String,
+  modelValue: String,
+  inputId: String,
   inputplaceholder: String,
-  inputtype: String
-});
+  inputType: String,
+  error: Boolean,
+  message: String,
+})
+
+const emit = defineEmits(['update:modelValue'])
 </script>
 
 <style scopped></style>

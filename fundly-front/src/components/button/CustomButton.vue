@@ -1,6 +1,6 @@
 <template>
   <div :class="justify">
-    <Button class="btn-primary" :class="classname" :label="labelname" />
+    <Button class="btn-primary" :class="classname" :label="labelName" />
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 import Button from "primevue/button";
 defineProps({
   classname: Object,
-  labelname: String,
+  labelName: String,
   justify: String
 });
 </script>
