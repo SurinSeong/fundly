@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import serializers
 
-from .models import Goal, WishList, UserCustomProduct
+from .models import Goal, WishList, ConnectedToGoal
 from accounts.serializers import UserSimpleInfoSerializer
 from finance.models import FinancialProduct, AdditionalProduct
 from finance.serializers import OptionProductSerializer
@@ -64,14 +64,14 @@ class TotalCustomReadSerializer(serializers.ModelSerializer):
     goal = GoalTitleSerializer(read_only=True, many=True)
     
     class Meta:
-        model = UserCustomProduct
+        model = ConnectedToGoal
         fields = ('id', 'goal', 'start_date', 'duration_months', 'is_active', )
 
 
 # 사용자 설정 상품 생성용 시리얼라이저
 class CustomCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserCustomProduct
+        model = ConnectedToGoal
         fields = '__all__'
         
         
@@ -82,7 +82,7 @@ class CustomDetailSerializer(serializers.ModelSerializer):
     option_product = OptionProductSerializer()
     
     class Meta:
-        model = UserCustomProduct
+        model = ConnectedToGoal
         fields = ('id', 'goal', 'option_product', 'amount', 'duration_months', 'is_active', )
         
 

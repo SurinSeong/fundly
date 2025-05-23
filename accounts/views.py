@@ -144,13 +144,20 @@ def set_nickname(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
         
-# 프로필 조회
+# 프로필 조회 + 수정
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def profile(request):
     user = request.user
-    serializer = UserProfileSerializer(user)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data)
+    
+    if request.method == 'PUT':
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # 비밀번호 수정
