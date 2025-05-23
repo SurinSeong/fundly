@@ -11,6 +11,7 @@
 
 <style scopped>
 .introduction-bar {
+  color: var(--p-primary-50);
   display: flex;
   background-color: var(--p-indigo-600);
   flex: 5;

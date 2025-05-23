@@ -40,7 +40,7 @@ const router = createRouter({
       component: CheckProducts,
     },
     {
-      path: '/checkproducts/:productid',
+      path: '/checkproducts/:id',
       name: 'productdetail',
       component: ProductDetail,
     },
