@@ -15,7 +15,7 @@ from .serializers import (
                             CustomDetailSerializer,
                         )
 
-from .models import Goal, WishList, UserCustomProduct
+from .models import Goal, WishList, ConnectedToGoal
 
 # Create your views here.
 # 목표 조회, 생성
@@ -95,7 +95,7 @@ def wish_list(request):
 @api_view(['GET', 'POST'])
 def custom_product(request):
     if request.method == 'GET':
-        user_custom_products = UserCustomProduct.objects.all()
+        user_custom_products = ConnectedToGoal.objects.all()
         serializer = TotalCustomReadSerializer(user_custom_products, many=True)
         return Response(serializer.data)
     
@@ -110,7 +110,7 @@ def custom_product(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def custom_detail(request, custom_pk):
     user = request.user
-    custom_product = UserCustomProduct.objects.get(pk=custom_pk)
+    custom_product = ConnectedToGoal.objects.get(pk=custom_pk)
     
     if custom_product.user == user:
         if request.method == 'GET':
