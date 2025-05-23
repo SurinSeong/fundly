@@ -20,6 +20,7 @@
           </IconField>
         </div>
       </template>
+      <Column v-for="column in columnNames" :key="column"> </Column>
       <Column field="user" header="작성자"> </Column>
       <Column field="title" header="제목">
         <template #body="slotProps">
@@ -72,6 +73,9 @@ const posts = ref([
     likes: 2,
   },
 ])
+
+const columnNames = Object.keys(posts.value[0]).slice(1)
+console.log(columnNames)
 </script>
 
 <style scoped>

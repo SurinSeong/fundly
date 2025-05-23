@@ -1,29 +1,25 @@
 <template>
   <div v-if="data" class="checkgoal-container">
-    <RouterLink
-      class="decorate  fix-size"
-      :to="{ name: 'goaldetail', params: { goalid: goalId } }"
-    >
-      <Card>
-        <template #title>
-          {{ title }}
-        </template>
-        <template #content>
-          <ProgressBar :value="value"></ProgressBar>
-          {{ targetPeriod }}
-        </template>
-      </Card>
-    </RouterLink>
-    <RouterLink class="decorate  fix-size" :to="{ name: 'setgoal' }">
-      <Card>
-        <template #title>
-          목표 추가하기
-        </template>
-        <template #content>
-          <span class="pi pi-plus"></span>
-        </template>
-      </Card>
-    </RouterLink>
+    <RouterCard
+      class="card-item"
+      :pagename="'goaldetail'"
+      :params="{ goalid: goalId }"
+      :cardtitle="title"
+      :isprogressbar="true"
+      :isdurationmonths="true"
+      :value="value"
+      :durationmonths="durationmonths"
+    ></RouterCard>
+    <RouterCard
+      class="card-item"
+      :pagename="'setgoal'"
+      :cardtitle="'목표 추가하기'"
+      :isicon="true"
+      :isprogressbar="false"
+      :iconclass="'pi pi-plus'"
+      :isdurationmonths="false"
+      :backgroundcolor="'backgroundcolor'"
+    ></RouterCard>
   </div>
   <div v-else class="checkgoal-container">
     <h2 class="title">
@@ -38,20 +34,20 @@
 </template>
 
 <script setup>
-import CustomButton from "@/components/button/CustomButton.vue";
-import Card from "primevue/card";
-import ProgressBar from "primevue/progressbar";
-import { RouterLink } from "vue-router";
-import { ref } from "vue";
+import CustomButton from '@/components/button/CustomButton.vue'
+import RouterCard from '@/components/card/RouterCard.vue'
+import { Card } from 'primevue'
+import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
 
-const data = ref("epdlxj");
-const title = ref("유학 자금 마련하기");
-const goalId = ref(1);
-const targetPeriod = ref("3년");
-const currentAmount = ref(500);
-const targetAmount = ref(2000);
-const value = (currentAmount.value / targetAmount.value) * 100;
-console.log(value);
+const data = ref('epdlxj')
+const title = ref('유학 자금 마련하기')
+const goalId = ref(1)
+const durationmonths = ref('12')
+
+const currentAmount = ref(500)
+const targetAmount = ref(2000)
+const value = (currentAmount.value / targetAmount.value) * 100
 </script>
 
 <style scoped>
@@ -60,7 +56,8 @@ console.log(value);
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
   align-items: center;
 }
 
@@ -68,12 +65,9 @@ console.log(value);
   margin-bottom: 3rem;
 }
 
-.decorate {
-  text-decoration: none;
-}
-
-.fix-size {
-  width: 30%;
-  height: 30%;
+.card-item {
+  flex: 0 0 calc(20% - 1rem);
+  aspect-ratio: 3/2;
+  box-sizing: border-box;
 }
 </style>
