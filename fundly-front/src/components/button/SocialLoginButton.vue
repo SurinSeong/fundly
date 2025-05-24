@@ -1,16 +1,16 @@
 <template>
-  <div class="social-btn-container" :class="socialname">
-    <a href="" class="social">
-      <img :src="srcpath" alt="" />
-    </a>
+  <div class="social-btn-container" :class="socialname" @click="$emit('click')" role="button">
+    <div class="social">
+      <img :src="srcPath" :alt="socialname" />
+    </div>
   </div>
 </template>
 
 <script setup>
 defineProps({
   socialname: String,
-  srcpath: String
-});
+  srcPath: String,
+})
 </script>
 
 <style scopped>
@@ -18,6 +18,7 @@ defineProps({
   background-color: var(--p-primary-50);
   padding: 0.7rem 0.7rem 0.5rem 0.7rem;
   border-radius: 100%;
+  cursor: pointer;
 }
 
 .kakao {

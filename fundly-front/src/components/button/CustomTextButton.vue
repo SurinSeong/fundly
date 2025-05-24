@@ -1,16 +1,19 @@
 <template>
-  <Button class="btn" :class="classname" :label="labelname" text />
+  <Button class="btn" :class="classname" :label="labelname" text fluid />
 </template>
 
 <script setup>
-import Button from "primevue/button";
+import Button from 'primevue/button'
 defineProps({
   classname: Object,
   labelname: String,
-});
+})
 </script>
 
 <style scopped>
+.btn {
+  text-align: left;
+}
 .btn:hover {
   background-color: var(--p-indigo-50) !important;
   color: var(--p-indigo-700) !important;
