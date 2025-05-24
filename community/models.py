@@ -15,7 +15,7 @@ class Post(models.Model):
 # 댓글 모델
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)    # 작성자
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)                        # 게시글
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')                        # 게시글
     content = models.TextField()                                                    # 내용
     created_at = models.DateTimeField(auto_now_add=True)                            # 생성 날짜
     updated_at = models.DateTimeField(auto_now=True)                                # 수정 날짜
