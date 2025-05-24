@@ -11,6 +11,7 @@ BASE_URL = 'http://finlife.fss.or.kr/finlifeapi/'
 
 # 데이터 불러오기 >> 금융 회사
 def get_comp_data(topFinGrpNo):
+    # 1. 최대 페이지 수 받기
     # 요청 URL
     API_URL = BASE_URL + 'companySearch.json'
     params = {
@@ -20,16 +21,26 @@ def get_comp_data(topFinGrpNo):
     }
     
     response = requests.get(API_URL, params=params).json()
+    max_page_no = response['result']['max_page_no']
+    companies = []
+    
+    # 2. 최대 페이지 수 만큼 반복해서 회사 수 받기
+    for n in range(1, max_page_no+1):
+        response = requests.get(API_URL, params=params).json()
 
-    companies = response['result']['baseList']
+        company = response['result']['baseList']
+        
+        companies.extend(company)
 
     extracted_companies = []
+    
     for company in companies:
         # 금융회사 권역 코드 넣어주기
         company_dict = {'company_type': topFinGrpNo}
         for key in company:
             if key in ['fin_co_no', 'kor_co_nm', 'homp_url', 'cal_tel']:
                 company_dict[key] = company.get(key, '')
+                
         extracted_companies.append(company_dict)
 
     return extracted_companies
