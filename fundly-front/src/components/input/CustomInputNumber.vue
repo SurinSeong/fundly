@@ -1,15 +1,16 @@
 <template>
-  <label :for="iconclass"
-    ><h3>{{ labelname }}</h3></label
+  <label :for="iconClass"
+    ><h3>{{ labelName }}</h3></label
   >
   <IconField>
-    <InputIcon v-if="isicon">
-      <i :class="iconclass" style="color: var(--p-amber-400)" />
+    <InputIcon v-if="isIcon">
+      <i :class="iconClass" style="color: var(--p-amber-400)" />
     </InputIcon>
     <InputNumber
-      :id="inputid"
-      :v-model="inputnumber"
-      :placeholder="inputplaceholder"
+      :id="inputId"
+      :value="modelValue"
+      :placeholder="inputPlaceholder"
+      @input="e => emit('update:modelValue', e.target.value)"
       fluid
     />
     <InputIcon>
@@ -24,15 +25,17 @@ import InputIcon from "primevue/inputicon";
 import InputNumber from "primevue/inputnumber";
 
 defineProps({
-  labelname: String,
-  isicon: Boolean,
-  iconclass: String,
-  iconcolor: String,
-  inputid: String,
-  inputnumber: Number,
-  inputplaceholder: String,
+  labelName: String,
+  isIcon: Boolean,
+  iconClass: String,
+  iconColor: String,
+  modelValue: Number,
+  inputId: String,
+  inputPlaceholder: String,
   unit: String
 });
+
+const emit = defineEmits(["update:modelValue"]);
 </script>
 
 <style scopped></style>

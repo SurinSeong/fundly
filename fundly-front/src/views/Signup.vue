@@ -35,47 +35,56 @@
         :message="message"
       />
       <br />
-      <CustomButton label-name="가입하기" :justify="'end'" @click="handleSignup" />
+      <CustomButton
+        label-name="가입하기"
+        :justify="'end'"
+        @click="handleSignup"
+      />
     </Form>
   </div>
 </template>
 
 <script setup>
-import { Form } from '@primevue/forms'
-import CustomInputText from '@/components/input/CustomInputText.vue'
-import CustomButton from '@/components/button/CustomButton.vue'
-import axiosInstance from '@/api/axiosInstance'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
+import { Form } from "@primevue/forms";
+import CustomInputText from "@/components/input/CustomInputText.vue";
+import CustomButton from "@/components/button/CustomButton.vue";
+import axiosInstance from "@/api/axiosInstance";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
-const username = ref('')
-const password = ref('')
-const passwordConfirm = ref('')
-const email = ref('')
-const error = ref(false)
-const message = ref('')
+const username = ref("");
+const password = ref("");
+const passwordConfirm = ref("");
+const email = ref("");
+const error = ref(false);
+const message = ref("");
 
 const handleSignup = async () => {
   if (password.value != passwordConfirm.value) {
-    error.value = true
-    message.value = '비밀번호가 일치하지 않습니다. 다시 한 번 확인해주세요.'
+    error.value = true;
+    message.value = "비밀번호가 일치하지 않습니다. 다시 한 번 확인해주세요.";
   } else {
-    error.value = false
+    error.value = false;
     try {
-      const res = await axiosInstance.post('http://127.0.0.1:8000/api/auth/signup/', {
-        username: username.value,
-        email: email.value,
-        password: passwordConfirm.value,
-      })
-      router.push('/login')
+      const res = await axiosInstance.post(
+        "http://127.0.0.1:8000/api/auth/signup/",
+        {
+          username: username.value,
+          email: email.value,
+          password1: password.value,
+          password2: passwordConfirm.value
+        }
+      );
+      alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
+      router.push("/login");
     } catch (err) {
-      console.error('⛔ 회원가입:', err.response?.data || err)
-      alert('회원가입 실패')
-      router.push('/login')
+      console.error("⛔ 회원가입:", err.response?.data || err);
+      alert("회원가입 실패");
+      router.push("/login");
     }
   }
-}
+};
 </script>
 
 <style scoped>
