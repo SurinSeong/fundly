@@ -5,7 +5,7 @@ from rest_framework import serializers
 from .models import Goal, WishList, ConnectedToGoal
 from accounts.serializers import UserSimpleInfoSerializer
 from finance.models import FinancialProduct, AdditionalProduct
-from finance.serializers import OptionProductSerializer
+from finance.serializers import OptionSerializer, AdditionalOptionSerializer
 
 
 # 목표 시리얼라이저
@@ -79,10 +79,11 @@ class CustomCreateSerializer(serializers.ModelSerializer):
 class CustomDetailSerializer(serializers.ModelSerializer):
     
     goal = GoalTitleSerializer()
-    option_product = OptionProductSerializer()
+    option_product = OptionSerializer()
+    additionaloption_product = AdditionalOptionSerializer()
     
     class Meta:
         model = ConnectedToGoal
-        fields = ('id', 'goal', 'option_product', 'amount', 'duration_months', 'is_active', )
+        fields = ('id', 'goal', 'option_product', 'additionaloption_product', 'amount', 'duration_months', 'is_active', )
         
 

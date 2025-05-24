@@ -8,8 +8,8 @@ class FinancialCompany(models.Model):
     ]
     company_type = models.CharField(max_length=6,          # 권역 코드
                                     choices=TYPE_CHOICES)
-    code = models.CharField(max_length=20, unique=True)    # 회사 코드
-    name = models.CharField(max_length=20, unique=True)    # 회사명
+    company_code = models.CharField(max_length=20, unique=True)    # 회사 코드
+    company_name = models.CharField(max_length=20, unique=True)    # 회사명
     homepage_url = models.CharField(max_length=200)        # 홈페이지 주소
     phone_number = models.CharField(max_length=20)         # 콜센터 전화번호
 
@@ -26,7 +26,7 @@ class FinancialProduct(models.Model):
         (3, '일부제한'),
     ]
     financial_company = models.ForeignKey(FinancialCompany, on_delete=models.CASCADE)    # 금융회사
-    code = models.CharField(max_length=50)                                               # 상품 코드
+    product_code = models.CharField(max_length=50)                                               # 상품 코드
     published_date = models.CharField(max_length=6)                                      # 공시 제출년월
     product_name = models.CharField(max_length=100)                                      # 상품명
     product_type = models.CharField(max_length=5, choices=TYPE_CHOICES)    # 종류 (D: 예금, S: 적금)

@@ -52,7 +52,7 @@ def login(request):
 
 
 # 소셜 로그인
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def social_login(request, provider):
     redirect_uri = f'http://127.0.0.1:8000/api/auth/{provider}/callback/'
 
@@ -116,6 +116,7 @@ def callback(request, provider):
     try:
         # 소셜 로그인 토큰 요청
         access_token = get_access_token(code, provider)
+        print(f'토큰 확인 : {access_token}')
         # 사용자 정보 요청
         email, social_id = get_user_info(access_token, provider)
         # 생성하거나 존재하는 정보 가져오거나

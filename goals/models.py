@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-from finance.models import FinancialProduct, AdditionalProduct, OptionProduct
+from finance.models import FinancialProduct, AdditionalProduct, Option, AdditionalOption
 
 # 금융 목표
 class Goal(models.Model):
@@ -36,16 +36,17 @@ class WishList(models.Model):
     
 # 사용자가 커스텀한 상품 정보
 class ConnectedToGoal(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)                                 # 사용자
-    goal = models.ForeignKey(Goal, on_delete=models.CASCADE)                                                     # 목표
-    finance_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, null=True, blank=True)       # 선택한 상품
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='connected_to_goal', on_delete=models.CASCADE)  # 사용자
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE)                                                        # 목표
+    finance_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, null=True, blank=True)          # 선택한 상품
     additional_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE, null=True, blank=True)
-    option_product = models.ForeignKey(OptionProduct, on_delete=models.CASCADE, null=True, blank=True)           # 옵션
-    current_amount = models.PositiveIntegerField()                                                               # 납입 금액
-    target_amount = models.PositiveIntegerField()                                                                # 목표 금액
-    start_date = models.DateField()                                                                              # 시작 날짜
-    duration_months = models.IntegerField(null=True, blank=True)                                                 # 지속 기간
-    is_active = models.BooleanField(default=False)                                                               # 중도 해지 여부
-    created_at = models.DateTimeField(auto_now_add=True)                                                         # 생성 날짜
-    updated_at = models.DateTimeField(auto_now=True)                                                             # 수정 날짜
+    option_product = models.ForeignKey(Option, on_delete=models.CASCADE, null=True, blank=True)              # 옵션
+    additionoption_product = models.ForeignKey(AdditionalOption, on_delete=models.CASCADE, null=True, blank=True)
+    current_amount = models.PositiveIntegerField()                                                                  # 납입 금액
+    target_amount = models.PositiveIntegerField()                                                                   # 목표 금액
+    start_date = models.DateField()                                                                                 # 시작 날짜
+    duration_months = models.IntegerField(null=True, blank=True)                                                    # 지속 기간
+    is_active = models.BooleanField(default=False)                                                                  # 중도 해지 여부
+    created_at = models.DateTimeField(auto_now_add=True)                                                            # 생성 날짜
+    updated_at = models.DateTimeField(auto_now=True)                                                                # 수정 날짜
     

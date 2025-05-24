@@ -9,7 +9,7 @@ def simulate_savings(target_amount, current_amount, total_month, interest_rate, 
     
     # 복리
     if save_type == 'M':
-        savings = (target_amount - current_amount) * ()
+        pass
 
 # 추가 납입 시 당겨지는 개월 수
-def 
+# def 

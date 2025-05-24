@@ -41,6 +41,7 @@ def get_access_token(code, provider):
 
     response = requests.post(token_url, data=data)
     token_data = response.json()
+    print(f'발급 토큰 : {token_data}')
     access_token = token_data.get('access_token')
     return access_token
 
@@ -61,6 +62,7 @@ def get_user_info(access_token, provider):
     )
 
     userinfo = userinfo_response.json()
+    print(f'사용자 정보 : {userinfo}')
 
     if provider == 'google':
         social_id = userinfo.get('sub')

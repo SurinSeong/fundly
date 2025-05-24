@@ -25,28 +25,47 @@ def save_financial_data(request):
 
     # 금융 회사 저장
     for company in companys:
-        serializer = FinancialCompanySerializer(data=company)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
+        if not FinancialCompany.objects.filter(company_code=company['company_code'], company_name=company['company_name']).exists():
+            serializer = FinancialCompanySerializer(data=company)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
 
     # 금융 상품 저장
     for product in products:
-        financial_company = FinancialCompany.objects.get(code=product['financial_company_id'])
+        # 금융 회사 있는지 확인하기
+        try:
+            financial_company = FinancialCompany.objects.get(company_code=product['financial_company_id'])
+        except FinancialCompany.DoesNotExist:
+            continue
+        
+        # 중복 검사하기
+        if FinancialProduct.objects.filter(product_code=product['product_code'], financial_company=financial_company).exists():
+            continue
+        
         product['financial_company'] = financial_company.id
         serializer = FinancialProductSerializer(data=product)
         if serializer.is_valid(raise_exception=True):
             serializer.save(financial_company=financial_company)
         else:
-            print(product)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     
     # 금융 옵션 저장
     for option in options:
-        financial_company = FinancialCompany.objects.get(code=option['financial_company_id'])
-        financial_products = FinancialProduct.objects.filter(code=option['financial_product_id'], financial_company=financial_company)
+        try:
+            financial_company = FinancialCompany.objects.get(company_code=option['financial_company_id'])
+        except FinancialCompany.DoesNotExist:
+            continue
+        
+        financial_products = FinancialProduct.objects.filter(product_code=option['financial_product_id'], financial_company=financial_company)
 
         for financial_product in financial_products:
+            # 중복 검사
+            if Option.objects.filter(financial_product=financial_product,
+                                     financial_company=financial_company,
+                                     save_month=option['save_month'],
+                                     save_type=option['save_type']).exists():
+                continue
 
             option['financial_company'] = financial_company.id
             option['financial_product'] = financial_product.id
@@ -56,7 +75,6 @@ def save_financial_data(request):
                 serializer.save(financial_company=financial_company,
                                 financial_product=financial_product)
             else:
-                print(option)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'save': 'completed'}, status=status.HTTP_202_ACCEPTED)

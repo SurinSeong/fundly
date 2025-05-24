@@ -12,21 +12,26 @@ BASE_URL = 'http://finlife.fss.or.kr/finlifeapi/'
 # 적금 : savingProductsSearch >> (030300) max_page_no=3
 # => 020000, 030300 밖에 상품이 없음.
 
+# max_page_no = 1
+
 # 데이터 불러오기 >> 정기 예금, 적금 관련
 def get_fin_data(topFinGrpNo, target):
+    # global max_page_no
 
     products, options = [], []
-
+    
     for n in range(1, 5):
         # 요청 URL
         API_URL = BASE_URL + target + '.json'
         params = {
-            'auth': '7ac2fed38f15fcc85ba028f86ca2010f',    #settings.FINANCE_API_KEY, 
+            'auth': settings.FINANCE_API_KEY,    #, 
             'topFinGrpNo': topFinGrpNo,
             'pageNo': n
         }
     
         response = requests.get(API_URL, params=params).json()
+        
+        # max_page_no = max(response['result']['max_page_no'], max_page_no)
 
         if not response['result']['baseList']:
             break
@@ -105,7 +110,7 @@ def create_fixture():
                 
                 elif key == 'fin_prdt_cd':
                     if extracted_data == all_extracted_products:
-                        fixture_fields['code'] = data[key]
+                        fixture_fields['product_code'] = data[key]
                     elif extracted_data == all_extracted_options:
                         fixture_fields['financial_product_id'] = data[key]
 

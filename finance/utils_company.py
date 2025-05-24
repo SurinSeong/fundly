@@ -53,10 +53,10 @@ def create_company_data():
 
         for key in company.keys():
             if key == 'fin_co_no':
-                fixture_fields['code'] = company[key]
+                fixture_fields['company_code'] = company[key]
             
             elif key == 'kor_co_nm':
-                fixture_fields['name'] = company[key]
+                fixture_fields['company_name'] = company[key]
 
             elif key == 'homp_url':
                 fixture_fields['homepage_url'] = company[key]
