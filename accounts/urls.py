@@ -5,6 +5,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from . import views
 
 urlpatterns = [
+    # 로그인 된 유저 정보 제공
+    path('auth/current-user/', views.current_user),
+    
     # 회원가입 / 로그인 / 로그아웃 
     path('auth/signup/', views.signup),                         # 회원가입
     path('auth/login/', views.login),                           # 로그인

@@ -6,6 +6,12 @@ from .utils import generate_jwt_for_user
 
 User = get_user_model()
 
+# 현재 로그인 된 유저를 확인하기 위한 시리얼라이저
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username']  # 필요한 필드만 작성
+
 # 회원 가입을 위한 시리얼라이저
 class UserSignupSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True, style={'input_type': 'password'})
@@ -84,4 +90,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSimpleInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', )
+        fields = ['username']

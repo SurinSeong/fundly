@@ -7,12 +7,23 @@ from accounts.serializers import UserSimpleInfoSerializer
 
 # 게시글 일부 직렬화
 class PostListSerializer(serializers.ModelSerializer):
-
-    user = UserSimpleInfoSerializer(many=True, read_only=True)
-
+    user = serializers.SerializerMethodField()
+    num_of_likes = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
+    
+    def get_num_of_likes(self, obj):
+        return obj.like_users.count()
+    
+    def get_created_at(self, obj):
+        return obj.created_at.date().isoformat()
+    
+    def get_user(self, obj):
+        return obj.user.username
+    
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'category', )
+        fields = ('id','category', 'title', 'user', 'created_at', 'num_of_likes')
+
 
 # 게시글 시리얼라이저
 class PostSerializer(serializers.ModelSerializer):
@@ -24,7 +35,7 @@ class PostSerializer(serializers.ModelSerializer):
             fields = '__all__'
 
     # 작성자
-    user = UserSimpleInfoSerializer(many=True, read_only=True)
+    user = serializers.SerializerMethodField()
     # 좋아요
     like_users = UserSimpleInfoSerializer(many=True, read_only=True)
     # 댓글
@@ -38,11 +49,14 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = '__all__'
 
+    def get_user(self, obj):
+        return obj.user.username  # 문자열로 반환
+
     def get_num_of_comments(self, obj):    
-        return obj.num_of_comments    
+        return obj.comments.count()
     
     def get_num_of_likes(self, obj):
-        return obj.num_of_likes
+        return obj.like_users.count()
 
 
 

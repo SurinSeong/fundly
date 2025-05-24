@@ -25,7 +25,7 @@ class GoalTitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Goal
-        fields = ('id', 'goal_name', 'product_type', 'achievement_rate', )
+        fields = ('id', 'goal_name', 'product_type', 'achievement_rate', 'user')
 
 
 # 찜한 상품 확인 시리얼라이저
