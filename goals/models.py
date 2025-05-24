@@ -17,6 +17,7 @@ class Goal(models.Model):
                                     default='D',
                                     help_text='목표 실현을 위한 상품 타입을 선택해주세요.',
                                     verbose_name='상품 타입',)                         # 목표 실현 방식 (상품 타입)
+    total_target_amount = models.PositiveBigIntegerField()
     saving_target_amount = models.PositiveIntegerField(null=True, blank=True)         # 적금 목표 금액
     deposit_target_amount = models.PositiveIntegerField(null=True, blank=True)        # 예금 목표 금액
     start_date = models.DateField()                                                   # 시작 날짜
