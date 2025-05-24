@@ -114,17 +114,18 @@ def callback(request, provider):
     if not code:
         return Response({'error': 'No code provided'}, status=status.HTTP_400_BAD_REQUEST)
     try:
-        # 소셜 로그인 토큰 요청
-        access_token = get_access_token(code, provider)
+        access_token = get_access_token(code, provider)        # 소셜 로그인 토큰 요청
         print(f'토큰 확인 : {access_token}')
-        # 사용자 정보 요청
-        email, social_id = get_user_info(access_token, provider)
-        # 생성하거나 존재하는 정보 가져오거나
-        user = get_or_create_social_user(provider, social_id, email)
-        # JWT 토큰 생성
-        tokens = generate_jwt_for_user(user)
-
-        return Response(tokens, status=status.HTTP_200_OK)
+        email, social_id = get_user_info(access_token, provider)        # 사용자 정보 요청
+        user = get_or_create_social_user(provider, social_id, email)        # 생성하거나 존재하는 정보 가져오거나
+        tokens = generate_jwt_for_user(user)        # JWT 토큰 생성
+        
+        # 프론트로 리디렉션 >> 이 부분 나중에는 env에 올릴 예정
+        frontend_url = f"http://localhost:5173/api/auth/login/success?access={tokens['access']}&refresh={tokens['refresh']}"
+        
+        print("프론트엔드로 리디렉션 합니다.")
+        
+        return redirect(frontend_url)
 
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
