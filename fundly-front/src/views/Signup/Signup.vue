@@ -81,7 +81,7 @@ const handleSignup = async () => {
     } catch (err) {
       console.error("⛔ 회원가입:", err.response?.data || err);
       alert("회원가입 실패");
-      router.push("/login");
+      router.push("/signup");
     }
   }
 };

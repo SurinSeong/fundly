@@ -5,7 +5,7 @@
         <div class="goal-name">
           <CustomInputText
             :label-name="'어떤 목표를 달성하고 싶으신가요?'"
-            :model-value="goalName"
+            v-model="goalName"
             :is-icon="true"
             :icon-class="'pi pi-star'"
             :input-id="'target-amount'"
@@ -15,10 +15,10 @@
         <div class="target-amount">
           <CustomInputNumber
             :label-name="'목표 금액을 알려주세요.'"
+            v-model="targetAmount"
             :is-icon="true"
             :icon-class="'pi pi-star'"
             :input-id="'target-amount'"
-            :model-value="targetAmount"
             :input-placeholder="'0'"
             :unit="'원'"
           />
@@ -28,15 +28,13 @@
           <div class="date-picker">
             <DatePicker
               placeholder="시작 날짜"
-              view="month"
-              date-format="yy/mm"
+              date-format="yy/mm/dd"
               v-model="startDate"
               showButtonBar
             />
             <DatePicker
               placeholder="끝 날짜"
-              view="month"
-              date-format="yy/mm"
+              date-format="yy/mm/dd"
               v-model="endDate"
               showButtonBar
             />
@@ -73,6 +71,8 @@ import CustomInputText from "@/components/input/CustomInputText.vue";
 import SelectButton from "primevue/selectbutton";
 import CustomButton from "@/components/button/CustomButton.vue";
 import DatePicker from "primevue/datepicker";
+import axiosInstance from "@/api/axiosInstance";
+
 import { Form } from "@primevue/forms";
 import { ref } from "vue";
 
@@ -86,16 +86,33 @@ const productType = ref([
   { name: "예금", value: "예금" }
 ]);
 
+// 상품 타입에 따라 DB에 저장하는 방식 달라짐
+const getProductTypeCode = selection => {
+  if (selection.includes("적금") && selection.includes("예금")) return "A";
+  if (selection.includes("적금")) return "S";
+  if (selection.includes("예금")) return "D";
+  return "D"; // 기본값
+};
+
 const setGoal = async () => {
+  const productTypeCode = getProductTypeCode(selectedProductType.value);
+
   try {
-    const reponse = await axiosInstance.post(
+    const response = await axiosInstance.post(
       "http://127.0.0.1:8000/api/goals/",
-      {}
+      {
+        goal_name: goalName.value,
+        total_target_amount: Number(targetAmount.value),
+        product_type: productTypeCode,
+        start_date: startDate.value.toISOString().slice(0, 10),
+        end_date: endDate.value.toISOString().slice(0, 10)
+      }
     );
-    data.value = reponse.data;
-    console.log(data);
+    console.log(response.data);
+
+    console.log("목표 설정 완료:", response.data);
   } catch (err) {
-    console.log(err);
+    console.error("에러 발생:", err);
   }
 };
 </script>

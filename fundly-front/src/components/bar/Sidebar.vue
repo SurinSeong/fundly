@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { RouterLink, RouterView } from "vue-router";
+import { RouterLink } from "vue-router";
 import { useRoute } from "vue-router";
 import { ref } from "vue";
 import CustomTextButton from "@/components/button/CustomTextButton.vue";
@@ -63,7 +63,7 @@ const basicMenu = ref([
     path: "/searchbank"
   },
   {
-    name: ["community", "detail"],
+    name: ["community", "detail", "writepost"],
     labelname: "커뮤니티",
     path: "/community"
   },
