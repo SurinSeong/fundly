@@ -23,8 +23,9 @@ from .models import Goal, WishList, ConnectedToGoal
 @permission_classes([IsAuthenticatedOrReadOnly])
 def goals(request):
     user = request.user
+    print(request.user)
     if request.method == 'GET':
-        goals = Goal.objects.all()
+        goals = Goal.objects.filter(user=user)
         serializer = GoalTitleSerializer(goals, many=True)
         return Response(serializer.data)
     
