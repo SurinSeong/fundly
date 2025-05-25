@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'finance',
     'goals',
     'recommendations',
+    'banks',
 
     # library
     'rest_framework',
