@@ -8,8 +8,7 @@ import GoalDetail from "@/views/Goal/GoalDetail.vue";
 import GoalProductDetail from "@/views/Goal/GoalProductDetail.vue";
 import LikeProducts from "@/views/MyPage/LikeProducts.vue";
 import Login from "@/views/Login/Login.vue";
-import GoogleCallback from "@/views/oauth/GoogleCallback.vue";
-import KakaoCallback from "@/views/oauth/KakaoCallback.vue";
+import LoginSuccess from "@/views/Login/LoginSuccess.vue";
 import ProductDetail from "@/views/Product/ProductDetail.vue";
 import QnA from "@/views/MyPage/QnA.vue";
 import RecommendProducts from "@/views/Product/RecommendProducts.vue";
@@ -71,13 +70,9 @@ const router = createRouter({
       name: "login",
       component: Login
     }, {
-      path: "/google/callback",
-      name: "GoogleCallback",
-      component: GoogleCallback
-    }, {
-      path: "/api/auth/kakao/callback",
-      name: "KakaoCallback",
-      component: KakaoCallback
+      path: '/login/success',
+      name: 'loginsuccess',
+      component: LoginSuccess,
     }, {
       path: "/qna",
       name: "qna",
@@ -98,14 +93,14 @@ const router = createRouter({
       path: "/signup",
       name: "signup",
       component: Signup
-    }
+    },
   ]
 });
 
 // 로그인 안되었으면 로그인 화면만 들어갈 수 있도록
 router.beforeEach((to, from, next) => {
   const isLoggedIn = !!localStorage.getItem("access_token");
-  const publicPages = ["/login", "/signup"];
+  const publicPages = ["/login", "/signup", "/login/success"];
 
   if (!isLoggedIn && !publicPages.includes(to.path)) {
     next("/login");

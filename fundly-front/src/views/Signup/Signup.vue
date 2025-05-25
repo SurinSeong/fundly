@@ -77,7 +77,16 @@ const handleSignup = async () => {
         }
       );
       alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
-      router.push("/login");
+
+      const { access, refresh, user } = res.data
+
+      // 토큰을 localStorage에 저장
+      localStorage.setItem("access_token", access);
+      localStorage.setItem("refresh_token", refresh);
+      
+      // 로그인 완료
+      console.log(access)
+      router.push("/");
     } catch (err) {
       console.error("⛔ 회원가입:", err.response?.data || err);
       alert("회원가입 실패");
