@@ -57,13 +57,20 @@
 </template>
 
 <script setup>
+import { useUserStore } from "@/stores/user";
+import { Form } from "@primevue/forms";
+import { onMounted, ref } from "vue";
+
 import CustomInputNumber from "@/components/input/CustomInputNumber.vue";
 import Select from "primevue/select";
 import CustomButton from "@/components/button/CustomButton.vue";
-import { Form } from "@primevue/forms";
-import { ref } from "vue";
 
-const username = ref("000");
+const userStore = useUserStore();
+onMounted(async() => {
+  await userStore.fetchUser();
+});
+
+const username = userStore.user.username;
 
 const age = ref("");
 const moneyRange = ref(["0이상 100미만", "100이상 200미만"]);
@@ -77,6 +84,9 @@ const selectedSalary = ref("");
 </script>
 
 <style scoped>
+h2, h4 {
+  margin-bottom: 0.5rem;
+}
 .goal-container {
   width: 60%;
 }

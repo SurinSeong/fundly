@@ -3,8 +3,9 @@
     <Form>
       <div class="goal">
         <div class="goal-name">
+          <h3>어떤 목표를 달성하고 싶으신가요?</h3>
+
           <CustomInputText
-            :label-name="'어떤 목표를 달성하고 싶으신가요?'"
             v-model="goalName"
             :is-icon="true"
             :icon-class="'pi pi-star'"
@@ -13,14 +14,14 @@
           />
         </div>
         <div class="target-amount">
+          <h3>목표 금액을 설정해주세요.</h3>
           <CustomInputNumber
-            :label-name="'목표 금액을 알려주세요.'"
             v-model="targetAmount"
             :is-icon="true"
             :icon-class="'pi pi-star'"
             :input-id="'target-amount'"
             :input-placeholder="'0'"
-            :unit="'원'"
+            :unit="'만 원'"
           />
         </div>
         <div class="target-period">
@@ -121,6 +122,9 @@ const setGoal = async () => {
 </script>
 
 <style scoped>
+h3 {
+  margin-bottom: 1rem;
+}
 .goal-container {
   width: 60%;
 }
@@ -128,7 +132,9 @@ const setGoal = async () => {
 .goal {
   margin-bottom: 2rem;
 }
-
+.goal-name, .target-amount, .target-period{
+  margin-bottom: 1rem;
+}
 .date-picker {
   display: flex;
   gap: 1rem;

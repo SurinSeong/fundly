@@ -2,48 +2,50 @@
 <template>
   <Card :class="backgroundcolor" class="hover card center">
     <template #title>
-      {{ cardtitle }}
+      {{ cardTitle }}
     </template>
     <template #content>
       <div
-        v-for="product in productlist"
+        v-for="product in productList"
         :key="product.finance_product ?? product.additional_product"
       >
-        <RouterLink :to="{ name: pagename, params: { productid: product.id } }" class="decorate"
-          ><CustomTextButton :labelname="product.title"></CustomTextButton
+        <RouterLink
+          :to="{ name: pageName, params: params }"
+          class="decorate"
+          ><CustomTextButton :label-name="product.title"></CustomTextButton
         ></RouterLink>
       </div>
-      <p class="text-end">{{ startdate }}</p>
-      <ProgressBar v-if="isprogressbar" :value="value"></ProgressBar>
-      <div v-if="isicon" class="icon-container">
+      <p class="text-end">{{ startDate }}</p>
+      <ProgressBar v-if="isProgressbar" :value="value"></ProgressBar>
+      <div v-if="isIcon" class="icon-container">
         <div class="icon">
-          <i :class="iconclass"></i>
+          <i :class="iconClass"></i>
         </div>
       </div>
-      <p v-if="isdurationmonths" class="text-end">{{ durationmonths }} 개월</p>
+      <p v-if="isDurationMonths" class="text-end">{{ durationMonths }} 개월</p>
     </template>
   </Card>
 </template>
 
 <script setup>
-import Card from 'primevue/card'
-import ProgressBar from 'primevue/progressbar'
-import CustomTextButton from '../button/CustomTextButton.vue'
-import { RouterLink } from 'vue-router'
+import Card from "primevue/card";
+import ProgressBar from "primevue/progressbar";
+import CustomTextButton from "../button/CustomTextButton.vue";
+import { RouterLink } from "vue-router";
 defineProps({
-  pagename: String,
+  pageName: String,
   params: Object,
-  cardtitle: String,
-  startdate: String,
-  isicon: Boolean,
-  iconclass: String,
-  productlist: Array,
-  isprogressbar: Boolean,
-  isdurationmonths: Boolean,
+  cardTitle: String,
+  startDate: String,
+  isIcon: Boolean,
+  iconClass: String,
+  productList: Array,
+  isProgressbar: Boolean,
+  isDurationMonths: Boolean,
   value: Number,
-  durationmonths: Number,
-  backgroundcolor: String,
-})
+  durationMonths: Number,
+  backgroundcolor: String
+});
 </script>
 
 <style scoped>

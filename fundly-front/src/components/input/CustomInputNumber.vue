@@ -10,7 +10,7 @@
       :id="inputId"
       :value="modelValue"
       :placeholder="inputPlaceholder"
-      @input="e => emit('update:modelValue', e.target.value)"
+      @update:modelValue="value => emit('update:modelValue', value)"
       fluid
     />
     <InputIcon>

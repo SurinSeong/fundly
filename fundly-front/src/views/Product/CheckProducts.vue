@@ -2,7 +2,7 @@
 
 <template>
   <div class="checkproducts-container">
-    <h2>시중에 공개된 예금, 적금 상품을 확인해보세요.</h2>
+    <h2 class="product-title">시중에 공개된 예금, 적금 상품을 확인해보세요.</h2>
     <CustomDataTable
       :type="'products'"
       :searchplaceholder="'은행 이름 / 적금 이름'"
@@ -151,6 +151,9 @@ for (const i in columnNames) {
 </script>
 
 <style scoped>
+.product-title {
+  margin-bottom: 1rem;
+}
 .checkproducts-container {
 }
 </style>
