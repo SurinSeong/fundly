@@ -24,7 +24,6 @@
             :label-name="menu.labelName"
             :class-name="{ active: menu.name.includes(route.name) }"
         /></RouterLink>
-        <ConfirmDialog></ConfirmDialog>
         <CustomTextButton @click="confirmLogout" :label-name="'로그아웃'">
         </CustomTextButton>
       </div>
@@ -38,7 +37,6 @@ import { useRoute, useRouter } from "vue-router";
 import { ref } from "vue";
 import { useConfirm } from "primevue/useconfirm";
 
-import ConfirmDialog from "primevue/confirmdialog";
 import CustomTextButton from "@/components/button/CustomTextButton.vue";
 
 const route = useRoute();
@@ -101,6 +99,16 @@ const myPage = [
   }
 ];
 
+// 로그아웃
+const logout = () => {
+  // 예: localStorage에 저장된 토큰 삭제
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  localStorage.removeItem("user");
+
+  // 로그인 페이지로 이동 (vue-router 사용 시)
+  router.push({ name: "login" });
+};
 const confirmLogout = () => {
   confirm.require({
     message: "로그아웃 하시겠습니까?",
@@ -120,15 +128,7 @@ const confirmLogout = () => {
   });
 };
 
-const logout = () => {
-  // 예: localStorage에 저장된 토큰 삭제
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
-  localStorage.removeItem("user");
 
-  // 로그인 페이지로 이동 (vue-router 사용 시)
-  router.push({ name: "login" });
-};
 </script>
 
 <style scopped>

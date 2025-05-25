@@ -8,11 +8,7 @@
     <Form>
       <div class="personal-info">
         <div class="age mb-2">
-          <CustomInputNumber
-            :inputid="'age'"
-            :inputnumber="age"
-            :inputplaceholder="'나이'"
-          />
+          <DatePicker fluid="" placeholder="생년월일을 선택해주세요."/>
         </div>
         <div class="job mb-2">
           <Select
@@ -59,20 +55,21 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
 import { Form } from "@primevue/forms";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 
+import { DatePicker } from "primevue";
 import CustomInputNumber from "@/components/input/CustomInputNumber.vue";
 import Select from "primevue/select";
 import CustomButton from "@/components/button/CustomButton.vue";
 
 const userStore = useUserStore();
-onMounted(async() => {
+onMounted(async () => {
   await userStore.fetchUser();
 });
 
-const username = userStore.user.username;
+const username = computed(() => userStore.user?.username ?? "");
 
-const age = ref("");
+const age = ref(null);
 const moneyRange = ref(["0이상 100미만", "100이상 200미만"]);
 const job = ref(["직업 1", "직업 2"]);
 const goal = ref(["목표 1", "목표2"]);
@@ -84,7 +81,8 @@ const selectedSalary = ref("");
 </script>
 
 <style scoped>
-h2, h4 {
+h2,
+h4 {
   margin-bottom: 0.5rem;
 }
 .goal-container {

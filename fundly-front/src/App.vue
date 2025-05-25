@@ -5,6 +5,8 @@
       'total-container': route.name != 'login'
     }"
   >
+    <ConfirmDialog></ConfirmDialog>
+
     <Sidebar v-if="route.name != 'signup' && route.name != 'login'" />
     <IntroductionBar v-else-if="route.name != 'signup'" />
     <main><RouterView /></main>
@@ -14,6 +16,7 @@
 <script setup>
 import Sidebar from "@/components/bar/Sidebar.vue";
 import IntroductionBar from "@/components/bar/IntroductionBar.vue";
+import { ConfirmDialog } from "primevue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();

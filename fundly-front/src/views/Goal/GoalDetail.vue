@@ -1,8 +1,22 @@
 <!-- GoalDetail.vue -->
 <template>
+
   <div class="goaldetail-container">
     <div class="top">
-      <h1>{{ goalData.goal_name }}</h1>
+      <div class="goal-title">
+        <h1>{{ goalData.goal_name }}</h1>
+        <div class="edit-delete">
+          <Button
+            type="button"
+            icon="pi pi-ellipsis-v"
+            @click="toggle"
+            aria-haspopup="true"
+            aria-controls="overlay_menu"
+            text
+          />
+          <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
+        </div>
+      </div>
       <h3>시작이 반, 조금 더 힘내봐요!</h3>
       <div class="chart-container">
         <Chart
@@ -26,8 +40,7 @@
                 goalid: slotProps.data.goal,
                 userid: slotProps.data.user,
                 product:
-                  slotProps.data.finance_product ??
-                  slotProps.data.additional_product
+                  slotProps.data.finance_product ?? slotProps.data.additional_product
               }"
               :is-progressbar="true"
               :is-duration-months="true"
@@ -47,7 +60,7 @@
         <RouterLink
           v-for="product in productList"
           :key="product.id"
-          :to="{ name: 'productdetail', params: { productid: product.id } }"
+          :to="{ name: 'productdetail', params: { id: product.id } }"
         >
           <CustomTextButton :label-name="product.title">
             {{ product.title }}
@@ -60,16 +73,18 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import { RouterLink } from "vue-router";
+import { useRoute, useRouter, RouterLink } from "vue-router";
 import Chart from "primevue/chart";
 import RouterCard from "@/components/card/RouterCard.vue";
 import CustomTextButton from "@/components/button/CustomTextButton.vue";
 import Carousel from "primevue/carousel";
+import { useConfirm } from "primevue/useconfirm";
+import Button from "primevue/button";
+import Menu from "primevue/menu";
 import axiosInstance from "@/api/axiosInstance";
 
 const route = useRoute();
-
+const router = useRouter();
 const goalId = route.params.goalid;
 
 const goalData = ref({});
@@ -81,7 +96,6 @@ onMounted(async () => {
     );
     goalData.value = response.data;
     totalTargetAmount.value = goalData.value.total_target_amount;
-    console.log(totalTargetAmount.value);
 
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
@@ -103,70 +117,136 @@ const setChartData = () => {
         type: "bar",
         label: "적금",
         backgroundColor: documentStyle.getPropertyValue("--p-indigo-700"),
-        data: [50, 25, 12, 48, 90, 76, 42]
+        data: [50, 25, 12, 48, 90, 76, 42],
       },
       {
         type: "bar",
         label: "예금",
         backgroundColor: documentStyle.getPropertyValue("--p-indigo-500"),
-        data: [21, 84, 24, 75, 37, 65, 34]
+        data: [21, 84, 24, 75, 37, 65, 34],
       },
       {
         type: "bar",
         label: "그 외",
         backgroundColor: documentStyle.getPropertyValue("--p-indigo-300"),
-        data: [41, 52, 24, 74, 23, 21, 32]
-      }
-    ]
+        data: [41, 52, 24, 74, 23, 21, 32],
+      },
+    ],
   };
 };
 const setChartOptions = () => {
   const documentStyle = getComputedStyle(document.documentElement);
   const textColor = documentStyle.getPropertyValue("--p-text-color");
-  const textColorSecondary = documentStyle.getPropertyValue(
-    "--p-text-muted-color"
-  );
-  const surfaceBorder = documentStyle.getPropertyValue(
-    "--p-content-border-color"
-  );
+  const textColorSecondary = documentStyle.getPropertyValue("--p-text-muted-color");
+  const surfaceBorder = documentStyle.getPropertyValue("--p-content-border-color");
 
   return {
     indexAxis: "y",
     maintainAspectRatio: false,
     aspectRatio: 0.8,
     plugins: {
-      tooltips: {
+      tooltip: {
         mode: "index",
-        intersect: false
+        intersect: false,
       },
       legend: {
         labels: {
-          color: textColor
-        }
-      }
+          color: textColor,
+        },
+      },
     },
     scales: {
       x: {
         stacked: true,
         ticks: {
-          color: textColorSecondary
+          color: textColorSecondary,
         },
         grid: {
-          color: surfaceBorder
+          color: surfaceBorder,
         },
-        max: totalTargetAmount.value
+        max: totalTargetAmount.value,
       },
       y: {
         stacked: true,
         ticks: {
-          color: textColorSecondary
+          color: textColorSecondary,
         },
         grid: {
-          color: surfaceBorder
-        }
-      }
-    }
+          color: surfaceBorder,
+        },
+      },
+    },
   };
+};
+
+// 목표 수정
+const editGoal = async () => {
+  try {
+    router.push(`/checkgoal/edit/${goalId}`);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const addData = async () => {
+  try {
+    // 데이터 추가 로직 작성
+  } catch (error) {}
+};
+
+const menu = ref();
+const confirm = useConfirm();
+const lastClickEvent = ref(null);
+
+const deletePost = async () => {
+  try {
+    await axiosInstance.delete(`http://127.0.0.1:8000/api/goals/${goalId}/`);
+    router.push("/");
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const showConfirmDelete = () => {
+  confirm.require({
+    message: "정말 삭제하시겠습니까?",
+    header: "삭제 확인",
+    icon: "pi pi-exclamation-triangle",
+    rejectProps: {
+      label: "취소",
+      severity: "secondary",
+      outlined: true
+    },
+    acceptProps: {
+      label: "삭제 하기"
+    },
+    accept() {
+      deletePost();
+    },
+    reject() {
+      // 취소 시 처리
+    },
+    target: lastClickEvent.value?.currentTarget,
+  });
+};
+
+const items = ref([
+  {
+    items: [
+      { label: "목표 수정", icon: "pi pi-pen-to-square", command: editGoal },
+      {
+        label: "목표 삭제",
+        icon: "pi pi-times",
+        command: showConfirmDelete,
+      },
+      { label: "데이터 추가", icon: "pi pi-plus", command: addData },
+    ],
+  },
+]);
+
+const toggle = (event) => {
+  lastClickEvent.value = event;
+  menu.value.toggle(event);
 };
 
 const deposit = ref([
@@ -181,7 +261,7 @@ const deposit = ref([
     target_amount: 500,
     current_amount: 200,
     duration_months: 12,
-    start_date: "2025-05-24"
+    start_date: "2025-05-24",
   },
   {
     id: 2,
@@ -194,7 +274,7 @@ const deposit = ref([
     target_amount: 500,
     current_amount: 200,
     duration_months: 12,
-    start_date: "2025-05-24"
+    start_date: "2025-05-24",
   },
   {
     id: 3,
@@ -207,9 +287,10 @@ const deposit = ref([
     target_amount: 500,
     current_amount: 200,
     duration_months: 12,
-    start_date: "2025-05-24"
-  }
+    start_date: "2025-05-24",
+  },
 ]);
+
 const saving = ref([
   {
     id: 4,
@@ -222,17 +303,16 @@ const saving = ref([
     target_amount: 600,
     current_amount: 300,
     duration_months: 12,
-    start_date: "2025-05-24"
-  }
+    start_date: "2025-05-24",
+  },
 ]);
+
 const goal = ref({
   title: "유학 자금 마련하기",
   target_amount: 2000,
   current_amount: 500,
-  saving: 200,
-  deposit: 300,
-  saving: saving,
-  deposit: deposit
+  saving: saving.value,
+  deposit: deposit.value,
 });
 
 const goalProducts = goal.value.deposit.concat(goal.value.saving);
@@ -249,7 +329,7 @@ const productList = ref([
     target_amount: 500,
     current_amount: 200,
     duration_months: 12,
-    start_date: "2025-05-24"
+    start_date: "2025-05-24",
   },
   {
     id: 2,
@@ -262,7 +342,7 @@ const productList = ref([
     target_amount: 500,
     current_amount: 200,
     duration_months: 12,
-    start_date: "2025-05-24"
+    start_date: "2025-05-24",
   },
   {
     id: 3,
@@ -275,12 +355,12 @@ const productList = ref([
     target_amount: 500,
     current_amount: 200,
     duration_months: 12,
-    start_date: "2025-05-24"
-  }
+    start_date: "2025-05-24",
+  },
 ]);
 </script>
 
-<style scopped>
+<style scoped>
 .goaldetail-container {
   width: 60%;
   display: flex;
@@ -292,6 +372,12 @@ const productList = ref([
 .top {
   width: 100%;
 }
+
+.goal-title {
+  display: flex;
+  justify-content: space-between;
+}
+
 .chart-container {
   width: 100%;
   margin: 1rem 0 1rem 0;

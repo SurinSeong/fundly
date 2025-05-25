@@ -12,7 +12,7 @@
       :placeholder="inputPlaceholder"
       :type="inputType"
       :autocomplete="inputType === 'password' ? 'current-password' : 'username'"
-      @input="e => emit('update:modelValue', e.target.value)"
+      @update:modelValue="value => emit('update:modelValue', value)"
       fluid
     />
     <Message

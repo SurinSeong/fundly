@@ -17,6 +17,7 @@ import SetGoal from "@/views/Goal/SetGoal.vue";
 import Signup from "@/views/Signup/Signup.vue";
 import {createRouter, createWebHistory} from "vue-router";
 import WritePost from "@/views/Community/WritePost.vue";
+import AddData from "@/views/Goal/AddData.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,9 +31,17 @@ const router = createRouter({
       name: "goaldetail",
       component: GoalDetail
     }, {
+      path: "/checkgoal/edit/:goalid",
+      name: "editgoal",
+      component: SetGoal
+    }, {
       path: "/checkgoal/:goalid/:userid/:product",
       name: "goalproductdetail",
       component: GoalProductDetail
+    }, {
+      path: "/checkgoal/:goalid/adddata",
+      name: "goaladddata",
+      component: AddData
     }, {
       path: "/checkproducts",
       name: "checkproducts",
