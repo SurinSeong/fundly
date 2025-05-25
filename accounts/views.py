@@ -75,7 +75,8 @@ def social_login(request, provider):
                 'redirect_uri': redirect_uri,
                 'response_type': response_type,
                 'scope': scope,
-                'prompt': 'select_account',
+                'prompt': 'select_account consent',
+                'access_type': 'offline',
             })
         )
 
@@ -125,11 +126,10 @@ def callback(request, provider):
         print(f'토큰 확인 : {access_token}')
         email, social_id = get_user_info(access_token, provider)        # 사용자 정보 요청
         user = get_or_create_social_user(provider, social_id, email)        # 생성하거나 존재하는 정보 가져오거나
-        user_data = UserLoginSerializer(user=user).data
         tokens = generate_jwt_for_user(user)        # JWT 토큰 생성
         
         # 프론트로 리디렉션
-        frontend_url = f"http://localhost:5173/login/success?access={tokens['access']}&refresh={tokens['refresh']}&user={user_data}"
+        frontend_url = f"http://localhost:5173/login/success?access={tokens['access']}&refresh={tokens['refresh']}&user={email}"
         
         print("토큰 전송")
         

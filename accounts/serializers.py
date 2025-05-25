@@ -83,7 +83,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = '__all__'
+        fields = ('username', 'age', 'is_work', 'assets', 'salary', )
 
 
 # 유저 시리얼라이저 >> 커뮤니티 전용
