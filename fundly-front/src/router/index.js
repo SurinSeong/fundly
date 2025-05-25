@@ -50,6 +50,10 @@ const router = createRouter({
       name: "writepost",
       component: WritePost
     }, {
+      path: "/community/edit/:id",
+      name: "editpost",
+      component: WritePost
+    }, {
       path: "/community/detail/:id",
       name: "detail",
       component: CommunityDetail
@@ -70,9 +74,9 @@ const router = createRouter({
       name: "login",
       component: Login
     }, {
-      path: '/login/success',
-      name: 'loginsuccess',
-      component: LoginSuccess,
+      path: "/login/success",
+      name: "loginsuccess",
+      component: LoginSuccess
     }, {
       path: "/qna",
       name: "qna",
@@ -93,7 +97,7 @@ const router = createRouter({
       path: "/signup",
       name: "signup",
       component: Signup
-    },
+    }
   ]
 });
 

@@ -12,7 +12,7 @@
     </CustomDataTable>
     <br />
     <RouterLink :to="{ name: 'writepost' }" class="text-decoration"
-      ><CustomButton :label-name="'목표 설정 하기'" :justify="'end'"
+      ><CustomButton :label-name="'게시글 작성하기'" :justify="'end'"
     /></RouterLink>
   </div>
 </template>

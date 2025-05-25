@@ -19,9 +19,7 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 </script>
 
-<style scoped>
-
-
+<style>
 .login {
   width: 100%;
   height: 100%;
@@ -44,6 +42,16 @@ main {
   justify-content: center;
   align-items: center;
   padding: 0 3rem 0 3rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
 }
 
 @media (max-width: 768px) {
