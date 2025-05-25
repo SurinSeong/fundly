@@ -37,7 +37,7 @@ def post_detail(request, post_pk):
     user = request.user
     
     if request.method == 'GET':
-        serializer = PostSerializer(post)
+        serializer = PostSerializer(post, context={'request': request})
         return Response(serializer.data)
     
     if post.user.id == user.pk:
@@ -104,10 +104,13 @@ def likes(request, post_pk):
     if request.method == 'POST':
         if user in post.like_users.all():
             post.like_users.remove(user)
+            liked = False
         else:
             post.like_users.add(user)
+            liked = True
 
         return Response({
             'num_of_likes': post.like_users.count(),
+            'liked': liked
         })
         

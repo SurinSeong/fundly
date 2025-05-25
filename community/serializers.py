@@ -22,7 +22,7 @@ class PostListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ('id','category', 'title', 'user', 'created_at', 'num_of_likes')
+        fields = ('id', 'category', 'title', 'user', 'created_at', 'num_of_likes')
 
 
 # 게시글 시리얼라이저
@@ -44,6 +44,8 @@ class PostSerializer(serializers.ModelSerializer):
     num_of_likes = serializers.SerializerMethodField()
     # 댓글 개수 필드
     num_of_comments = serializers.SerializerMethodField()
+    # 로그인한 사용자가 좋아요 했는지 여부
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -58,7 +60,11 @@ class PostSerializer(serializers.ModelSerializer):
     def get_num_of_likes(self, obj):
         return obj.like_users.count()
 
-
+    def get_is_liked(self, obj):  # 로그인한 사용자가 좋아요 했는지 여부
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.like_users.filter(id=request.user.id).exists()
+        return False
 
 # 전체 댓글 시리얼라이저
 class CommentSerializer(serializers.ModelSerializer):
@@ -69,9 +75,9 @@ class CommentSerializer(serializers.ModelSerializer):
             fields = ('id', 'title', )
 
     # 게시글
-    post = PostTitleSerializer(many=True, read_only=True)
+    post = PostTitleSerializer(read_only=True)
     # 작성자
-    user = UserSimpleInfoSerializer(many=True, read_only=True)
+    user = UserSimpleInfoSerializer(read_only=True)
 
     class Meta:
         model = Comment
