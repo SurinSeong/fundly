@@ -91,7 +91,7 @@ def finance_product(request):
 
     if request.method == 'GET':
         # 검색 키워드 받기
-        keyword = request.data['keyword']
+        keyword = request.GET.get('keyword')
         # 키워드가 있으면
         if keyword:
             official_product = FinancialProduct.objects.filter(product_name__icontains=keyword)

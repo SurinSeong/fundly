@@ -7,6 +7,7 @@ from accounts.serializers import UserSimpleInfoSerializer
 from finance.models import FinancialProduct, AdditionalProduct
 from finance.serializers import OptionSerializer, AdditionalOptionSerializer
 
+from dateutil import relativedelta
 
 # 목표 시리얼라이저
 class GoalSerializer(serializers.ModelSerializer):
@@ -18,15 +19,41 @@ class GoalSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# 목표 타이틀 시리얼라이저
+# checkgoal에 목표들 보여주는 시리얼라이저 
 class GoalTitleSerializer(serializers.ModelSerializer):
-
+    class AchievementSerializer(serializers.ModelSerializer):
+        
+        class Meta:
+            model = ConnectedToGoal
+            fields = ('id', 'user', 'goal', 'current_amount', 'target_amount', )
+            read_only_fields = ('current_amount', 'target_amount', )
+            
+        
+    connected_to_goal = AchievementSerializer(read_only=True, many=True)
     user = UserSimpleInfoSerializer(read_only=True)
+    duration_months = serializers.SerializerMethodField()
+    achievement_rate = serializers.SerializerMethodField()
 
     class Meta:
         model = Goal
-        fields = ('id', 'goal_name', 'product_type', 'achievement_rate', 'user')
+        fields = ('id', 'user', 'goal_name', 'product_type', 'start_date', 'end_date', 'total_target_amount', 'duration_months', 'connected_to_goal', 'achievement_rate', )
 
+    def get_duration_months(self, obj):
+        if obj.start_date and obj.end_date:
+            delta = relativedelta.relativedelta(obj.end_date, obj.start_date)
+            return delta.years * 12 + delta.months
+        return None
+    
+    def get_achievement_rate(self, obj):
+        total_current_amount = 0
+        for product in obj.connected_to_goal.all():
+            total_current_amount += product.current_amount
+        
+        if total_current_amount:
+            return round(total_current_amount / obj.total_target_amount * 100, 2)
+        else:
+            return 0
+            
 
 # 찜한 상품 확인 시리얼라이저
 class WishListReadSerializer(serializers.ModelSerializer):
@@ -84,6 +111,5 @@ class CustomDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ConnectedToGoal
-        fields = ('id', 'goal', 'option_product', 'additionaloption_product', 'amount', 'duration_months', 'is_active', )
-        
+        exclude = ('created_at', 'updated_at', )
 

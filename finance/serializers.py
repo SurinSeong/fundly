@@ -56,7 +56,7 @@ class AdditionalOptionSerializer(serializers.ModelSerializer):
 
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-# 특정 금융 상품의 옵션 조회, 생성 시리얼라이저 (저축 금리 유형, 금리, 기간)
+# 특정 금융 상품의 옵션 조회 시리얼라이저 (저축 금리 유형, 금리, 기간)
 class OptionSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -76,7 +76,7 @@ class AdditionalOptionSimpleSerializer(serializers.ModelSerializer):
 class ProductReadSerializer(serializers.ModelSerializer):
 
     financial_company = FinancialCompanySerializer(read_only=True)
-    options = OptionSimpleSerializer(many=True, source='option_set')    # 역참조
+    option = OptionSimpleSerializer(many=True, read_only=True)    # 역참조
 
     class Meta:
         model = FinancialProduct
@@ -86,7 +86,7 @@ class ProductReadSerializer(serializers.ModelSerializer):
 class AdditionalProductReadSerializer(serializers.ModelSerializer):
 
     financial_company = FinancialCompanySerializer(read_only=True)
-    options = AdditionalOptionSimpleSerializer(many=True, source='additionaloption_set')    # 역참조
+    additional_option = AdditionalOptionSimpleSerializer(many=True, read_only=True)    # 역참조
 
     class Meta:
         model = AdditionalProduct
@@ -97,11 +97,11 @@ class AdditionalProductReadSerializer(serializers.ModelSerializer):
 class AdditionalProductCreateSerializer(serializers.ModelSerializer):
 
     financial_company_name = serializers.CharField(write_only=True)
-    options = OptionSimpleSerializer(many=True, source='option_set')    # 역참조
+    additional_option = AdditionalOptionSimpleSerializer(many=True)    # 역참조
 
     class Meta:
         model = AdditionalProduct
-        fields = ('id', 'product_name', 'product_type', 'join_way', 'end_interest_rate', 'max_limit', 'financial_company_name', 'options', )
+        fields = ('id', 'product_name', 'product_type', 'join_way', 'end_interest_rate', 'max_limit', 'financial_company_name', 'additional_option', )
 
     def create(self, validated_data):
         # 1. 회사명으로 금융회사 인스턴스 조회

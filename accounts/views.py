@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import UserSerializer,UserLoginSerializer, UserProfileSerializer, UserSignupSerializer
+from .serializers import UserSerializer,UserLoginSerializer, UserProfileSerializer, UserSignupSerializer, UserSimpleInfoSerializer
 from .utils import get_access_token, get_user_info, generate_jwt_for_user, get_or_create_social_user
 
 GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
@@ -125,12 +125,13 @@ def callback(request, provider):
         print(f'토큰 확인 : {access_token}')
         email, social_id = get_user_info(access_token, provider)        # 사용자 정보 요청
         user = get_or_create_social_user(provider, social_id, email)        # 생성하거나 존재하는 정보 가져오거나
+        user_data = UserLoginSerializer(user=user).data
         tokens = generate_jwt_for_user(user)        # JWT 토큰 생성
         
-        # 프론트로 리디렉션 >> 이 부분 나중에는 env에 올릴 예정
-        frontend_url = f"http://localhost:5173/api/auth/login/success?access={tokens['access']}&refresh={tokens['refresh']}"
+        # 프론트로 리디렉션
+        frontend_url = f"http://localhost:5173/login/success?access={tokens['access']}&refresh={tokens['refresh']}&user={user_data}"
         
-        print("프론트엔드로 리디렉션 합니다.")
+        print("토큰 전송")
         
         return redirect(frontend_url)
 
@@ -143,14 +144,15 @@ def callback(request, provider):
 @permission_classes([IsAuthenticated])
 def set_nickname(request):
     user = request.user
+    serializer = UserSimpleInfoSerializer(user=user)
 
     if request.method == 'PATCH':
         username = request.data.get('username')
         user.username = username
         user.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
         
 # 프로필 조회 + 수정

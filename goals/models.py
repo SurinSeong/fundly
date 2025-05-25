@@ -38,7 +38,7 @@ class WishList(models.Model):
 # 사용자가 커스텀한 상품 정보
 class ConnectedToGoal(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='connected_to_goal', on_delete=models.CASCADE)  # 사용자
-    goal = models.ForeignKey(Goal, on_delete=models.CASCADE)                                                        # 목표
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='connected_to_goal')                                                        # 목표
     finance_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, null=True, blank=True)          # 선택한 상품
     additional_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE, null=True, blank=True)
     option_product = models.ForeignKey(Option, on_delete=models.CASCADE, null=True, blank=True)              # 옵션
