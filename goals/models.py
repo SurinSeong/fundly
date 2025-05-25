@@ -28,9 +28,9 @@ class Goal(models.Model):
 
 # 찜한 상품
 class WishList(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)                                  # 사용자
-    finance_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, null=True, blank=True)        # 금융 상품
-    additional_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE, null=True, blank=True)    # 사용자가 추가한 상품
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlist')                                  # 사용자
+    financial_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, null=True, blank=True, related_name='wishlist')        # 금융 상품
+    additional_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE, null=True, blank=True, related_name='wishlist')    # 사용자가 추가한 상품
     created_at = models.DateTimeField(auto_now_add=True)                                                          # 생성 일자
     updated_at = models.DateTimeField(auto_now=True)                                                              # 수정 일자
     
@@ -39,7 +39,7 @@ class WishList(models.Model):
 class ConnectedToGoal(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='connected_to_goal', on_delete=models.CASCADE)  # 사용자
     goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='connected_to_goal')                                                        # 목표
-    finance_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, null=True, blank=True)          # 선택한 상품
+    financial_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, null=True, blank=True)          # 선택한 상품
     additional_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE, null=True, blank=True)
     option_product = models.ForeignKey(Option, on_delete=models.CASCADE, null=True, blank=True)              # 옵션
     additionoption_product = models.ForeignKey(AdditionalOption, on_delete=models.CASCADE, null=True, blank=True)

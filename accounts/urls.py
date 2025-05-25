@@ -19,6 +19,8 @@ urlpatterns = [
     path('user/profile/', views.profile),                       # 회원 정보
     path('user/nickname/', views.set_nickname),                 # 닉네임
     path('user/change-password/', views.change_password),       # 비밀번호 수정
+    path('user/verify-password/', views.verify_user),
+    path('user/first-login/', views.check_first_login),
     
     # 토큰 관련
     path('token/', TokenObtainPairView.as_view()),

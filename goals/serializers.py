@@ -57,9 +57,24 @@ class GoalTitleSerializer(serializers.ModelSerializer):
 
 # 찜한 상품 확인 시리얼라이저
 class WishListReadSerializer(serializers.ModelSerializer):
+    class FinancialProductDetailSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = FinancialProduct
+            fields = ('id', 'financial_company', 'product_name', 'product_type', 'special_condition', 'join_way', 'etc_note', )
+    
+    class AdditionalProductDetailSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = AdditionalProduct
+            fields = ('id', 'financial_company', 'product_name', 'product_type', 'special_condition', 'join_way', 'etc_note', )
+            
+            
+    user = UserSimpleInfoSerializer(read_only=True)
+    financial_product = FinancialProductDetailSerializer(read_only=True, many=True)
+    additional_product = AdditionalProductDetailSerializer(read_only=True, many=True)
+    
     class Meta:
         model = WishList
-        fields = '__all__'
+        fields = ('user', 'financial_product', 'additional_product', )
 
 
 # 찜한 상품 등록 및 삭제

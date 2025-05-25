@@ -10,7 +10,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import UserSerializer,UserLoginSerializer, UserProfileSerializer, UserSignupSerializer, UserSimpleInfoSerializer
+from .serializers import (UserSerializer,
+                          UserLoginSerializer, 
+                          UserProfileSerializer, 
+                          UserSignupSerializer, 
+                          UserSimpleInfoSerializer,
+                          )
 from .utils import get_access_token, get_user_info, generate_jwt_for_user, get_or_create_social_user
 
 GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
@@ -24,6 +29,7 @@ User = get_user_model()
 def current_user(request):
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
+
 
 # 회원가입하기 - 일반 이메일 가입
 @api_view(['POST'])
@@ -50,7 +56,9 @@ def login(request):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.validated_data['user']
-            user_data = UserProfileSerializer(user).data
+            print(user)
+            user_data = UserLoginSerializer(user).data
+            print(user_data)
             refresh = serializer.validated_data['refresh']
             access = serializer.validated_data['access']
             return Response({'user': user_data, 'access': access, 'refresh': refresh}, status=status.HTTP_202_ACCEPTED)
@@ -183,3 +191,37 @@ def change_password(request):
         return Response(status=status.HTTP_200_OK)
     
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+# 비밀번호 확인하기
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def verify_user(request):
+    
+    user = request.user
+    user = User.objects.get(email=user)
+    if user.provider == 'google' or user.provider == 'kakao':
+        return Response({'message': False})
+    
+    if user.provider == 'fundly':
+        input_password = request.data.get('password')
+        
+        if not input_password:
+            return Response({'error': '비밀번호를 입력해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+        if user.check_password(input_password):
+            return Response({'message': '본인 인증되었습니다.'}, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response({'error': '다시 시도해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 처음 가입한 소셜 로그인 사용자인지 확인하기
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_first_login(request):
+    user = request.user
+    user = User.objects.get(email=user)
+    if user.created_at != user.updated_at:
+        return Response({'message': False})
+    else:
+        return Response({'message': True})

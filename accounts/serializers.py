@@ -81,9 +81,11 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 # 프로필 시리얼라이저
 class UserProfileSerializer(serializers.ModelSerializer):
+    birth_date = serializers.DateField()
+    
     class Meta:
         model = get_user_model()
-        fields = ('username', 'age', 'is_work', 'assets', 'salary', )
+        fields = ('username', 'birth_date', 'is_work', 'assets', 'salary', 'email',)
 
 
 # 유저 시리얼라이저 >> 커뮤니티 전용
