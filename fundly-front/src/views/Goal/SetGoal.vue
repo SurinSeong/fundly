@@ -75,7 +75,9 @@ import axiosInstance from "@/api/axiosInstance";
 
 import { Form } from "@primevue/forms";
 import { ref } from "vue";
+import { useRouter } from "vue-router"
 
+const router = useRouter();
 const goalName = ref("");
 const targetAmount = ref("");
 const selectedProductType = ref([]);
@@ -109,6 +111,7 @@ const setGoal = async () => {
       }
     );
     console.log(response.data);
+    router.replace('/')
 
     console.log("목표 설정 완료:", response.data);
   } catch (err) {

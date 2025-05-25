@@ -8,6 +8,12 @@
     <article class="content">
       {{ content }}
     </article>
+    <CustomButton
+      :label-name="'수정하기'"
+    />
+    <CustomButton
+      :label-name="'삭제하기'"
+    />
   </div>
 </template>
 
@@ -15,6 +21,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axiosInstance from "@/api/axiosInstance";
+import CustomButton from "@/components/button/CustomButton.vue"; // 혹시 도움이 될까해서.. 추가해봤는데.. 안될 것 같기도하고..
 
 const route = useRoute();
 const id = route.params.id;
