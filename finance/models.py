@@ -107,3 +107,13 @@ class AdditionalOption(models.Model):
     interest_rate = models.FloatField(null=True, blank=True)    # 저축 금리
     max_interest_rate = models.FloatField(null=True, blank=True)    # 최고 우대 금리
     come_from = models.CharField(max_length=4, default='USER')    # 데이터 출처
+    
+    
+class Spot(models.Model):
+    spot_type = models.CharField(max_length=10)
+    date = models.DateField(unique=True)  # 날짜별로 유일해야 함
+    open_price = models.FloatField()
+    high_price = models.FloatField()
+    low_price = models.FloatField()
+    close_price = models.FloatField()
+    volume = models.FloatField()

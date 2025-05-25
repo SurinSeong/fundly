@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
+from .utils_spot import preprocessing
 from .utils_company import create_company_data
 from .utils_product import create_finance_data
 from .serializers import (
@@ -13,8 +14,9 @@ from .serializers import (
                             ProductReadSerializer,
                             AdditionalProductCreateSerializer,
                             AdditionalProductReadSerializer,
+                            SpotReadSerializer,
                         )
-from .models import FinancialCompany, FinancialProduct, AdditionalProduct, Option, AdditionalOption
+from .models import FinancialCompany, FinancialProduct, AdditionalProduct, Option, AdditionalOption, Spot
 
 
 # 금감원 API 활용 데이터 저장하기 >> 이미 저장된 것은 저장되지 않도록 해주기
@@ -138,4 +140,37 @@ def product_detail(request, product_pk):
         'options': options_serializer.data
     })
 
+@api_view(['GET'])
+def save_spot(request):
+    for spot_type in ['Gold', 'Silver']:
+        df = preprocessing(spot_type)
+        # DB에 저장
+        for _, row in df.iterrows():
+            Spot.objects.update_or_create(
+                date=row['date'].date(),
+                defaults={
+                    'open_price': float(row['open_price']),
+                    'high_price': float(row['high_price']),
+                    'low_price': float(row['low_price']),
+                    'close_price': float(row['close_price']),
+                    'volume': float(row['volume']),
+                    'spot_type': spot_type
+                }
+            )
+    return Response(status=status.HTTP_201_CREATED)
 
+
+@api_view(['GET'])
+def show_spot_type(resquest):
+    golds = Spot.objects.filter(spot_type='Gold')
+    slivers = Spot.objects.filter(spot_type='Sliver')
+    gold_serializer = SpotReadSerializer(data=golds, many=True)
+    sliver_serializer = SpotReadSerializer(data=slivers, many=True)
+    if gold_serializer.is_valid(raise_exception=True):
+        gold_data = gold_serializer.data
+        
+    if sliver_serializer.is_valid(raise_exception=True):
+        sliver_data = sliver_serializer.data
+        
+    return Response({'gold_data': gold_data,
+                     'sliver_data': sliver_data}, status=status.HTTP_200_OK)
