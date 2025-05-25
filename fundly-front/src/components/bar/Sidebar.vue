@@ -8,8 +8,8 @@
           :key="menu.name"
           :to="{ name: menu.name[0] }"
           ><CustomTextButton
-            :labelname="menu.labelname"
-            :classname="{ active: menu.name.includes(route.name) }"
+            :label-name="menu.labelName"
+            :class-name="{ active: menu.name.includes(route.name) }"
         /></RouterLink>
       </div>
     </div>
@@ -21,9 +21,12 @@
           :key="menu.name"
           :to="{ name: menu.name[0] }"
           ><CustomTextButton
-            :labelname="menu.labelname"
-            :classname="{ active: menu.name.includes(route.name) }"
+            :label-name="menu.labelName"
+            :class-name="{ active: menu.name.includes(route.name) }"
         /></RouterLink>
+        <ConfirmDialog></ConfirmDialog>
+        <CustomTextButton @click="confirmLogout" :label-name="'로그아웃'">
+        </CustomTextButton>
       </div>
     </div>
   </div>
@@ -31,45 +34,51 @@
 
 <script setup>
 import { RouterLink } from "vue-router";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ref } from "vue";
+import { useConfirm } from "primevue/useconfirm";
+
+import ConfirmDialog from "primevue/confirmdialog";
 import CustomTextButton from "@/components/button/CustomTextButton.vue";
+
 const route = useRoute();
+const router = useRouter();
+const confirm = useConfirm();
 
 const basicMenu = ref([
   {
     name: ["checkgoal", "goaldetail"],
-    labelname: "목표 확인 하기",
+    labelName: "목표 확인 하기",
     path: "/"
   },
   {
     name: ["setgoal"],
-    labelname: "목표 추가 하기",
+    labelName: "목표 추가 하기",
     path: "/setgoal"
   },
   {
     name: ["checkproducts"],
-    labelname: "금융 상품 목록",
+    labelName: "금융 상품 목록",
     path: "/checkproducts"
   },
   {
     name: ["recommendproducts"],
-    labelname: "금융 상품 추천",
+    labelName: "금융 상품 추천",
     path: "/recommendproducts"
   },
   {
     name: ["searchbank"],
-    labelname: "주변 은행 / ATM 찾기",
+    labelName: "주변 은행 / ATM 찾기",
     path: "/searchbank"
   },
   {
     name: ["community", "detail", "writepost"],
-    labelname: "커뮤니티",
+    labelName: "커뮤니티",
     path: "/community"
   },
   {
     name: ["exchangerate"],
-    labelname: "환율 계산기",
+    labelName: "환율 계산기",
     path: "/exchangerate"
   }
 ]);
@@ -77,20 +86,49 @@ const basicMenu = ref([
 const myPage = [
   {
     name: ["editpersonalInfo"],
-    labelname: "개인 정보 변경",
+    labelName: "개인 정보 변경",
     path: "/editpersonalInfo"
   },
   {
     name: ["likeproducts"],
-    labelname: "찜한 상품 보기",
+    labelName: "찜한 상품 보기",
     path: "/likeproducts"
   },
   {
     name: ["qna"],
-    labelname: "자주 묻는 질문",
+    labelName: "자주 묻는 질문",
     path: "/qna"
   }
 ];
+
+const confirmLogout = () => {
+  confirm.require({
+    message: "로그아웃 하시겠습니까?",
+    header: "확인",
+    icon: "pi pi-exclamation-triangle",
+    rejectProps: {
+      label: "로그인 유지 하기",
+      severity: "secondary",
+      outlined: true
+    },
+    acceptProps: {
+      label: "로그아웃 하기"
+    },
+    accept: () => {
+      logout();
+    }
+  });
+};
+
+const logout = () => {
+  // 예: localStorage에 저장된 토큰 삭제
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  localStorage.removeItem("user");
+
+  // 로그인 페이지로 이동 (vue-router 사용 시)
+  router.push({ name: "login" });
+};
 </script>
 
 <style scopped>

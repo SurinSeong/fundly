@@ -1,13 +1,13 @@
 <template>
-  <Button class="btn" :class="classname" :label="labelname" text fluid />
+  <Button class="btn" :class="className" :label="labelName" text fluid />
 </template>
 
 <script setup>
-import Button from 'primevue/button'
+import Button from "primevue/button";
 defineProps({
-  classname: Object,
-  labelname: String,
-})
+  className: Object,
+  labelName: String
+});
 </script>
 
 <style scopped>
