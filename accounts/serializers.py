@@ -85,7 +85,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = get_user_model()
-        fields = ('username', 'birth_date', 'is_work', 'assets', 'salary', 'email',)
+        fields = ('username', 'birth_date', 'work_type', 'assets', 'salary', 'email',)
 
 
 # 유저 시리얼라이저 >> 커뮤니티 전용

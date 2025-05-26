@@ -69,8 +69,8 @@ class WishListReadSerializer(serializers.ModelSerializer):
             
             
     user = UserSimpleInfoSerializer(read_only=True)
-    financial_product = FinancialProductDetailSerializer(read_only=True, many=True)
-    additional_product = AdditionalProductDetailSerializer(read_only=True, many=True)
+    financial_product = FinancialProductDetailSerializer(read_only=True)
+    additional_product = AdditionalProductDetailSerializer(read_only=True)
     
     class Meta:
         model = WishList

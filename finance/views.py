@@ -117,6 +117,7 @@ def finance_product(request):
 # 상품 + 옵션 상세 조회
 @api_view(['GET'])
 def product_detail(request, come_from, product_pk):
+
     if come_from == 'USER':
         additional_product = AdditionalProduct.objects.get(pk=product_pk)
         if additional_product:

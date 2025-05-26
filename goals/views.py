@@ -67,8 +67,8 @@ def wish_list(request):
     
     if request.method == 'GET':
         wish_list = WishList.objects.filter(user=user)
-        serialzier = WishListReadSerializer(wish_list)
-        return Response(serialzier.data)
+        serializer = WishListReadSerializer(wish_list, many=True)
+        return Response(serializer.data)
     
     if request.method == 'POST':
         serializer = WishListCreateSerializer(data=request.data)
@@ -87,7 +87,7 @@ def wish_list(request):
             # 이미 찜한 상품이라면
             if not created:
                 wish_list.delete()    # 삭제
-                return Response({'message': '찜 해재'}, status=status.HTTP_200_OK)
+                return Response({'message': '찜 해제'}, status=status.HTTP_200_OK)
             else:
                 return Response({'message': '찜 등록'}, status=status.HTTP_201_CREATED)
 
