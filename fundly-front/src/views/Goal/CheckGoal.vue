@@ -59,17 +59,18 @@ onMounted(async () => {
 <style scoped>
 .checkgoal-container {
   text-align: center;
-  width: 100%;
+  width: 60%;
   height: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+  justify-content: center;
   align-items: center;
 }
 
 .checkgoal-container-none {
   text-align: center;
-  width: 100%;
+  width: 60%;
   gap: 1rem;
   align-items: center;
 }
