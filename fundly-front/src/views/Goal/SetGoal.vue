@@ -175,7 +175,7 @@ h3 {
   margin-bottom: 1rem;
 }
 .goal-container {
-  width: 60%;
+  width: 100%;
 }
 .goal {
   margin-bottom: 2rem;

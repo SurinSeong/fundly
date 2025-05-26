@@ -355,7 +355,7 @@ const productList = ref([
 
 <style scoped>
 .goaldetail-container {
-  width: 60%;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;

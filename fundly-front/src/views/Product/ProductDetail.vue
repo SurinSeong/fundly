@@ -41,4 +41,8 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.product-detail-container {
+  width: 60%;
+}
+</style>
