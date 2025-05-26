@@ -80,7 +80,7 @@ class ProductReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FinancialProduct
-        fields = ('id', 'product_name', 'financial_company', 'options', )
+        fields = ('id','financial_company', 'product_name', 'product_type', 'come_from', 'options', )
 
 
 class AdditionalProductReadSerializer(serializers.ModelSerializer):

@@ -101,7 +101,10 @@ def custom_product(request):
         return Response(serializer.data)
     
     if request.method == 'POST':
-        serializer = CustomCreateSerializer(data=request.data)
+        data = request.data.copy()
+        data['user'] = request.user.id
+        serializer = CustomCreateSerializer(data=data)
+
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
