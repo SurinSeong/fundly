@@ -41,7 +41,10 @@
               v-model="endDate"
               showButtonBar
             />
+            <Button label="- 6개월" outlined @click="decrementEndDate"></Button>
+            <Button label="+ 6개월" outlined @click="incrementEndDate"></Button>
           </div>
+          <Message v-if="isDateError" severity="error">시작 시기는 끝보다 앞서야 합니다.</Message>
         </div>
 
         <div class="goal-method">
@@ -53,7 +56,7 @@
             v-model="selectedProductType"
             :key="selectedProductTypeKey"
             :options="productType"
-            optionValue="value" 
+            optionValue="value"
             optionLabel="name"
             multiple
             aria-labelledby="multiple"
@@ -73,101 +76,173 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import axiosInstance from "@/api/axiosInstance";
+import { ref, onMounted, watch, h } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import axiosInstance from '@/api/axiosInstance'
+import Button from 'primevue/button'
+import CustomInputNumber from '@/components/input/CustomInputNumber.vue'
+import CustomInputText from '@/components/input/CustomInputText.vue'
+import SelectButton from 'primevue/selectbutton'
+import CustomButton from '@/components/button/CustomButton.vue'
+import DatePicker from 'primevue/datepicker'
+import { Form } from '@primevue/forms'
+import { useConfirm } from 'primevue/useconfirm'
+import Message from 'primevue/message'
 
-import CustomInputNumber from "@/components/input/CustomInputNumber.vue";
-import CustomInputText from "@/components/input/CustomInputText.vue";
-import SelectButton from "primevue/selectbutton";
-import CustomButton from "@/components/button/CustomButton.vue";
-import DatePicker from "primevue/datepicker";
-import { Form } from "@primevue/forms";
+const confirm = useConfirm()
+const route = useRoute()
+const router = useRouter()
 
-const route = useRoute();
-const router = useRouter();
-const goalId = route.params.goalid;
-const isEditMode = !!goalId;
+const goalId = route.params.goalid
+const isEditMode = !!goalId
 
-const goalName = ref("");
-const targetAmount = ref(null);
-const selectedProductType = ref(null);
-const startDate = ref("");
-const endDate = ref("");
+const goalName = ref('')
+const targetAmount = ref(null)
+const selectedProductType = ref(null)
+const startDate = ref('')
+const endDate = ref('')
 
-const targetAmountKey = ref(0);
-const selectedProductTypeKey = ref(0);
+const targetAmountKey = ref(0)
+const selectedProductTypeKey = ref(0)
 
 const productType = ref([
-  { name: "적금", value: "적금" },
-  { name: "예금", value: "예금" }
-]);
+  { name: '적금', value: '적금' },
+  { name: '예금', value: '예금' },
+])
 
-const getProductTypeCode = selection => {
-  if (selection.includes("적금") && selection.includes("예금")) return "A";
-  if (selection.includes("적금")) return "S";
-  if (selection.includes("예금")) return "D";
-  return "D";
-};
+const getProductTypeCode = (selection) => {
+  if (selection.includes('적금') && selection.includes('예금')) return 'A'
+  if (selection.includes('적금')) return 'S'
+  if (selection.includes('예금')) return 'D'
+  return 'D'
+}
+
+// 6개월씩 감소시키는 버튼
+const decrementEndDate = () => {
+  // 기준 날짜: endDate가 있으면 그걸 기준으로
+  const baseDate = endDate.value ? new Date(endDate.value) : new Date(startDate.value)
+
+  if (!baseDate || isNaN(baseDate)) {
+    console.error('유효한 날짜가 없습니다.')
+    return
+  }
+
+  const newDate = new Date(baseDate)
+  newDate.setMonth(newDate.getMonth() - 6)
+
+  // YYYY-MM-DD 형식으로 저장
+  endDate.value = newDate.toISOString().slice(0, 10)
+}
+
+// 6개월씩 증가시키는 버튼
+const incrementEndDate = () => {
+  // 기준 날짜를 endDate가 있으면 그걸 기준으로, 없으면 startDate로
+  const baseDate = endDate.value ? new Date(endDate.value) : new Date(startDate.value)
+
+  if (!baseDate || isNaN(baseDate)) {
+    console.error('유효한 날짜가 없습니다.')
+    return
+  }
+
+  const newDate = new Date(baseDate)
+  newDate.setMonth(newDate.getMonth() + 6)
+
+  // YYYY-MM-DD 형식으로 저장
+  endDate.value = newDate.toISOString().slice(0, 10)
+}
+
+// 시작 - 끝 시기 검사
+const isDateError = ref(false)
+
+watch([startDate, endDate], ([newStart, newEnd]) => {
+  if (newStart && newEnd) {
+    const start = new Date(newStart)
+    const end = new Date(newEnd)
+    isDateError.value = start > end
+  } else {
+    isDateError.value = false
+  }
+})
+
+const confirmGoal = () => {
+  confirm.require({
+    message: `예금과 적금 상품을 등록하면,\n목표 달성까지의 여정을 한눈에 볼 수 있어요.`,
+    header: '목표가 성공적으로 설정되었어요!',
+    icon: 'pi pi-check',
+    rejectProps: {
+      label: '금융 상품 추천 받기',
+      outlined: true,
+    },
+    acceptProps: {
+      label: '금융 상품 목록 보기',
+    },
+    accept: () => {
+      router.replace('/checkproducts')
+    },
+    reject: () => {
+      router.replace('/recommendproducts')
+    },
+  })
+}
 
 const saveGoal = async () => {
-  console.log(selectedProductType.value);
-  
-  const productTypeCode = getProductTypeCode(selectedProductType.value);
-  console.log(productTypeCode)
+  const productTypeCode = getProductTypeCode(selectedProductType.value)
+
+  const start = new Date(startDate.value)
+  const end = new Date(endDate.value)
+
+  if (isNaN(start) || isNaN(end)) {
+    console.error('유효하지 않은 날짜입니다.')
+    return
+  }
+
   const payload = {
     goal_name: goalName.value,
     total_target_amount: Number(targetAmount.value) * 10000,
     product_type: productTypeCode,
-    start_date: startDate.value.toISOString().slice(0, 10),
-    end_date: endDate.value.toISOString().slice(0, 10)
-  };
+    start_date: start.toISOString().slice(0, 10),
+    end_date: end.toISOString().slice(0, 10),
+  }
 
   try {
     if (isEditMode) {
-      await axiosInstance.put(
-        `http://127.0.0.1:8000/api/goals/${goalId}/`,
-        payload
-      );
-      console.log("목표 수정 완료");
+      await axiosInstance.put(`http://127.0.0.1:8000/api/goals/${goalId}/`, payload)
+      router.replace(`/checkgoal/${goalId}`)
     } else {
-      await axiosInstance.post("http://127.0.0.1:8000/api/goals/", payload);
-      console.log("목표 설정 완료");
+      await axiosInstance.post('http://127.0.0.1:8000/api/goals/', payload)
+      confirmGoal()
     }
-    router.replace("/");
   } catch (err) {
-    console.error("에러 발생:", err);
+    console.error('에러 발생:', err)
   }
-};
+}
 
 onMounted(async () => {
   if (isEditMode) {
     try {
-      const response = await axiosInstance.get(
-        `http://127.0.0.1:8000/api/goals/${goalId}/`
-      );
-      const data = response.data;
+      const response = await axiosInstance.get(`http://127.0.0.1:8000/api/goals/${goalId}/`)
+      const data = response.data
 
-      goalName.value = data.goal_name;
-      targetAmount.value = Number(data.total_target_amount) / 10000;
-      targetAmountKey.value++;
+      goalName.value = data.goal_name
+      targetAmount.value = Number(data.total_target_amount) / 10000
+      targetAmountKey.value++
 
-      if (data.product_type === "A") {
-        selectedProductType.value = ["적금", "예금"];
-      } else if (data.product_type === "S") {
-        selectedProductType.value = ["적금"];
-      } else if (data.product_type === "D") {
-        selectedProductType.value = ["예금"];
+      if (data.product_type === 'A') {
+        selectedProductType.value = ['적금', '예금']
+      } else if (data.product_type === 'S') {
+        selectedProductType.value = ['적금']
+      } else if (data.product_type === 'D') {
+        selectedProductType.value = ['예금']
       }
-      selectedProductType.value = [...selectedProductType.value];
-      selectedProductTypeKey.value++;
-      startDate.value = new Date(data.start_date);
-      endDate.value = new Date(data.end_date);
+      selectedProductType.value = [...selectedProductType.value]
+      selectedProductTypeKey.value++
+      startDate.value = new Date(data.start_date)
+      endDate.value = new Date(data.end_date)
     } catch (err) {
-      console.error("목표 정보 불러오기 실패:", err);
+      console.error('목표 정보 불러오기 실패:', err)
     }
   }
-});
+})
 </script>
 
 <style scoped>
@@ -187,6 +262,6 @@ h3 {
 }
 .date-picker {
   display: flex;
-  gap: 1rem;
+  justify-content: space-between;
 }
 </style>

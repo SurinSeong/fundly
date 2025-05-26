@@ -38,6 +38,12 @@
           showButtonBar
         />
       </div>
+      <Message v-if="isDateError" severity="error">시작 시기는 끝보다 앞서야 합니다.</Message>
+
+      <div class="handle-end-date">
+        <Button label="- 6개월" outlined @click="decrementEndDate"></Button>
+        <Button label="+ 6개월" outlined @click="incrementEndDate"></Button>
+      </div>
     </div>
     <CustomButton
       @click="connectToGoal"
@@ -50,12 +56,14 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import Select from 'primevue/select'
 import DatePicker from 'primevue/datepicker'
 import CustomButton from '@/components/button/CustomButton.vue'
+import Button from 'primevue/button'
 import CustomInputNumber from '@/components/input/CustomInputNumber.vue'
 import axiosInstance from '@/api/axiosInstance.js'
+import Message from 'primevue/message'
 
 const route = useRoute()
 const productId = Number(route.params.id)
@@ -85,6 +93,50 @@ const getMonthDifference = (startDate, endDate) => {
   return yearDiff * 12 + monthDiff + 1 // +1은 시작월 포함
 }
 
+// 6개월씩 감소시키는 버튼
+const decrementEndDate = () => {
+  // 기준 날짜: endDate가 있으면 그걸 기준으로
+  const baseDate = endDate.value ? new Date(endDate.value) : new Date(startDate.value)
+
+  if (!baseDate || isNaN(baseDate)) {
+    console.error('유효한 날짜가 없습니다.')
+    return
+  }
+
+  const newDate = new Date(baseDate)
+  newDate.setMonth(newDate.getMonth() - 6)
+
+  // YYYY-MM-DD 형식으로 저장
+  endDate.value = newDate.toISOString().slice(0, 10)
+}
+
+// 6개월씩 증가시키는 버튼
+const incrementEndDate = () => {
+  // 기준 날짜를 endDate가 있으면 그걸 기준으로, 없으면 startDate로
+  const baseDate = endDate.value ? new Date(endDate.value) : new Date(startDate.value)
+
+  if (!baseDate || isNaN(baseDate)) {
+    console.error('유효한 날짜가 없습니다.')
+    return
+  }
+
+  const newDate = new Date(baseDate)
+  newDate.setMonth(newDate.getMonth() + 6)
+
+  // YYYY-MM-DD 형식으로 저장
+  endDate.value = newDate.toISOString().slice(0, 10)
+}
+const isDateError = ref(false)
+
+watch([startDate, endDate], ([newStart, newEnd]) => {
+  if (newStart && newEnd) {
+    const start = new Date(newStart)
+    const end = new Date(newEnd)
+    isDateError.value = start > end
+  } else {
+    isDateError.value = false
+  }
+})
 onMounted(async () => {
   try {
     const response = await axiosInstance.get(
@@ -113,6 +165,7 @@ onMounted(async () => {
     console.log(error)
   }
 })
+
 const connectToGoal = async () => {
   try {
     const goalObj = goals.value.find((goal) => goal.id === selectedGoal.value)
@@ -126,8 +179,8 @@ const connectToGoal = async () => {
     const durationMonths = getMonthDifference(startDate.value, endDate.value)
 
     const payload = {
-      goal: goalId, 
-      financial_product: productId, 
+      goal: goalId,
+      financial_product: productId,
       start_date: startDate.value.toISOString().slice(0, 10),
       target_amount: targetAmount.value * 10000,
       duration_months: durationMonths,
@@ -139,6 +192,23 @@ const connectToGoal = async () => {
     console.log(error)
   }
 }
+
+watch(selectedGoal, (newGoalId) => {
+  const selected = goals.value.find((goal) => goal.id === newGoalId)
+  if (!selected) return
+
+  // 선택된 목표의 정보로 값 채우기
+  if (selected.start_date) startDate.value = selected.start_date
+  if (selected.duration_months) {
+    const start = new Date(selected.start_date)
+    const newEnd = new Date(start)
+    newEnd.setMonth(newEnd.getMonth() + selected.duration_months - 1) // 시작월 포함
+    endDate.value = newEnd.toISOString().slice(0, 10)
+  }
+  if (selected.total_target_amount) {
+    targetAmount.value = selected.total_target_amount / 10000 // 원 → 만 원 단위로 변환
+  }
+})
 </script>
 
 <style scoped>
@@ -166,6 +236,7 @@ const connectToGoal = async () => {
 .date-picker {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .target-amount {
@@ -174,5 +245,12 @@ const connectToGoal = async () => {
 
 .connect-to-data {
   width: 75%;
+  margin-bottom: 1rem;
+}
+
+.handle-end-date {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
 }
 </style>

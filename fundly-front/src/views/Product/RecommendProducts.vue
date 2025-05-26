@@ -44,7 +44,7 @@
         </div>
       </div>
       <CustomButton
-        labelname="상품 확인 하기"
+        label-name="상품 확인 하기"
         type="submit"
         justify="end"
       ></CustomButton>
