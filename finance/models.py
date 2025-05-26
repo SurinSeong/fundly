@@ -74,8 +74,8 @@ class Option(models.Model):
         ('S', '정액적립식'),
         ('F', '자유적립식'),
     ]
-    financial_company = models.ForeignKey(FinancialCompany, on_delete=models.CASCADE, related_name='option')    # 금융 회사
-    financial_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, related_name='option')    # 금융 상품
+    financial_company = models.ForeignKey(FinancialCompany, on_delete=models.CASCADE, related_name='options')    # 금융 회사
+    financial_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, related_name='options')    # 금융 상품
     save_type = models.CharField(max_length=1, choices=SAVE_TYPE_CHOICES)    # 저축 금리 유형
     reward_type = models.CharField(max_length=1,    # 적립 유형
                                    choices=REWARD_TYPE_CHOICES,
