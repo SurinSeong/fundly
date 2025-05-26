@@ -55,7 +55,7 @@
         <RouterLink
           v-for="product in productList"
           :key="product.id"
-          :to="{ name: 'productdetail', params: { id: product.id } }"
+          :to="{ name: 'productdetail', params: { comeFrom: `${goal.come_from}`, id: product.id } }"
         >
           <CustomTextButton :label-name="product.title">
             {{ product.title }}
@@ -89,7 +89,7 @@ onMounted(async () => {
     const response = await axiosInstance.get(`http://127.0.0.1:8000/api/goals/${goalId}`)
     goalData.value = response.data
     totalTargetAmount.value = goalData.value.total_target_amount
-
+    console.log(goalData.value)
     chartData.value = setChartData()
     chartOptions.value = setChartOptions()
   } catch (error) {
@@ -355,7 +355,7 @@ const productList = ref([
 
 <style scoped>
 .goaldetail-container {
-  width: 60%;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;

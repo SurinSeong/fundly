@@ -86,7 +86,7 @@ h4 {
   margin-bottom: 0.5rem;
 }
 .goal-container {
-  width: 60%;
+  width: 100%;
 }
 
 .mb-2 {

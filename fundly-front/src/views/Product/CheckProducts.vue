@@ -80,7 +80,7 @@ const filteredProducts = computed(() => {
   margin-bottom: 1rem;
 }
 .checkproducts-container {
-  width: 60%;
+  width: 100%;
 }
 
 .select-container {

@@ -84,7 +84,7 @@ function updateSi() {
   flex-direction: column;
   justify-content: center;
   height: 100%;
-  width: 60%;
+  width: 100%;
 }
 
 .title {

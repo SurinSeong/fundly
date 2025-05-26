@@ -40,15 +40,15 @@ const route = useRoute()
 main {
   height: 100%;
   width: 100%;
-  flex: 3;
+  flex: 4;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 0 3rem 0 3rem;
+  padding: 0 3rem 0 5rem;
 }
 .side-bar {
-  flex: 1;
+  flex: 2;
 }
+
 h1,
 h2,
 h3,

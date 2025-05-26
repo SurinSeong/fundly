@@ -57,7 +57,7 @@ onMounted(async () => {
 
 <style scoped>
 .community-container {
-  width: 60%;
+  width: 100%;
 }
 
 .text-decoration {
