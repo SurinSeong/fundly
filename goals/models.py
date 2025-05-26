@@ -43,7 +43,7 @@ class ConnectedToGoal(models.Model):
     additional_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE, null=True, blank=True)
     option_product = models.ForeignKey(Option, on_delete=models.CASCADE, null=True, blank=True)              # 옵션
     additionoption_product = models.ForeignKey(AdditionalOption, on_delete=models.CASCADE, null=True, blank=True)
-    current_amount = models.PositiveIntegerField()                                                                  # 납입 금액
+    current_amount = models.PositiveIntegerField(default=0)                                                                  # 납입 금액
     target_amount = models.PositiveIntegerField()                                                                   # 목표 금액
     start_date = models.DateField()                                                                                 # 시작 날짜
     duration_months = models.IntegerField(null=True, blank=True)                                                    # 지속 기간

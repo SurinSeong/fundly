@@ -113,32 +113,36 @@ def finance_product(request):
 
 # 상품 + 옵션 상세 조회
 @api_view(['GET'])
-def product_detail(request, product_pk):
-    # 조회하려는 상품명
-    product_name = request.data.get('product_name')
+def product_detail(request, come_from, product_pk):
+    if come_from == 'USER':
+        additional_product = AdditionalProduct.objects.get(pk=product_pk)
+        if additional_product:
+            options = AdditionalOption.objects.filter(financial_product=additional_product)
+            product = additional_product
+            product_serializer = AdditionalProductSerializer(product)
+            options_serializer = AdditionalOptionSerializer(options, many=True)
 
-    official_product = FinancialProduct.objects.get(pk=product_pk)
-    additional_product = AdditionalProduct.objects.get(pk=product_pk)
+            return Response({
+                'product': product_serializer.data,
+                'options': options_serializer.data
+            })
+    elif come_from == 'API':
+        official_product = FinancialProduct.objects.get(pk=product_pk)
     
-    if official_product and official_product.product_name == product_name:
-        options = Option.objects.filter(finance_product=official_product)
-        product = official_product
-        product_serializer = FinancialProductSerializer(product)
-        options_serializer = OptionSerializer(options, many=True)
+        if official_product:
+            options = Option.objects.filter(financial_product=official_product)
+            product = official_product
+            product_serializer = FinancialProductSerializer(product)
+            options_serializer = OptionSerializer(options, many=True)
+            
+            return Response({
+                'product': product_serializer.data,
+                'options': options_serializer.data
+            })
+        
+    return Response({'error':'상품이 존재하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    elif additional_product and additional_product.product_name == product_name:
-        options = AdditionalOption.objects.filter(finance_product=additional_product)
-        product = additional_product
-        product_serializer = AdditionalProductSerializer(product)
-        options_serializer = AdditionalOptionSerializer(options, many=True)
 
-    else:
-        return Response({'error':'상품이 존재하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    return Response({
-        'product': product_serializer.data,
-        'options': options_serializer.data
-    })
 
 @api_view(['GET'])
 def save_spot(request):

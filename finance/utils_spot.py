@@ -1,5 +1,4 @@
 import os
-import pandas as pd
 from django.conf import settings
 
 # 쉼표 제거 + 숫자인지 확인 후 float 변환
