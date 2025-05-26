@@ -35,65 +35,57 @@
         :message="message"
       />
       <br />
-      <CustomButton
-        label-name="가입하기"
-        :justify="'end'"
-        @click="handleSignup"
-      />
+      <CustomButton label-name="가입하기" :justify="'end'" @click="handleSignup" />
     </Form>
   </div>
 </template>
 
 <script setup>
-import { Form } from "@primevue/forms";
-import CustomInputText from "@/components/input/CustomInputText.vue";
-import CustomButton from "@/components/button/CustomButton.vue";
-import axiosInstance from "@/api/axiosInstance";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-const router = useRouter();
+import { Form } from '@primevue/forms'
+import CustomInputText from '@/components/input/CustomInputText.vue'
+import CustomButton from '@/components/button/CustomButton.vue'
+import axiosInstance from '@/api/axiosInstance'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
-const username = ref("");
-const password = ref("");
-const passwordConfirm = ref("");
-const email = ref("");
-const error = ref(false);
-const message = ref("");
+const username = ref('')
+const password = ref('')
+const passwordConfirm = ref('')
+const email = ref('')
+const error = ref(false)
+const message = ref('')
 
 const handleSignup = async () => {
   if (password.value != passwordConfirm.value) {
-    error.value = true;
-    message.value = "비밀번호가 일치하지 않습니다. 다시 한 번 확인해주세요.";
+    error.value = true
+    message.value = '비밀번호가 일치하지 않습니다. 다시 한 번 확인해주세요.'
   } else {
-    error.value = false;
+    error.value = false
     try {
-      const res = await axiosInstance.post(
-        "http://127.0.0.1:8000/api/auth/signup/",
-        {
-          username: username.value,
-          email: email.value,
-          password1: password.value,
-          password2: passwordConfirm.value
-        }
-      );
-      alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
+      const res = await axiosInstance.post('http://127.0.0.1:8000/api/auth/signup/', {
+        username: username.value,
+        email: email.value,
+        password1: password.value,
+        password2: passwordConfirm.value,
+      })
 
       const { access, refresh, user } = res.data
 
       // 토큰을 localStorage에 저장
-      localStorage.setItem("access_token", access);
-      localStorage.setItem("refresh_token", refresh);
-      
+      localStorage.setItem('access_token', access)
+      localStorage.setItem('refresh_token', refresh)
+
       // 로그인 완료
       console.log(access)
-      router.push("/");
+      router.push('/')
     } catch (err) {
-      console.error("⛔ 회원가입:", err.response?.data || err);
-      alert("회원가입 실패");
-      router.push("/signup");
+      console.error('⛔ 회원가입:', err.response?.data || err)
+      alert('회원가입 실패')
+      router.push('/signup')
     }
   }
-};
+}
 </script>
 
 <style scoped>
