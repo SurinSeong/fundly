@@ -38,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     social_id = models.CharField(max_length=50, null=True, blank=True)
     provider = models.CharField(max_length=10, default='fundly')
     birth_date = models.DateField(null=True)
-    is_work = models.BooleanField(default=False)
+    is_work = models.CharField(max_length=20, null=True, blank=True)
     assets = models.PositiveIntegerField(null=True, blank=True)
     salary = models.PositiveIntegerField(null=True, blank=True)
     is_superuser = models.BooleanField(default=False)
