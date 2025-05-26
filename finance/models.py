@@ -40,7 +40,7 @@ class FinancialProduct(models.Model):
     product_start_date = models.DateField()    # 공시 시작일
     product_end_date = models.DateField(null=True, blank=True)    # 공시 종료일
     submit_date = models.DateTimeField()    # 금융회사 제출일
-    come_from = models.CharField(max_length=3, default='API')    # 데이터 출처
+    come_from = models.CharField(max_length=10, default='original')    # 데이터 출처
 
 
 # 추가 금융 상품
@@ -60,7 +60,7 @@ class AdditionalProduct(models.Model):
     etc_note = models.TextField(null=True, blank=True)    # 기타 유의사항
     max_limit = models.IntegerField(null=True, blank=True)    # 최고한도
     created_at = models.DateTimeField(auto_now_add=True)    # 생성날짜
-    come_from = models.CharField(max_length=4, default='USER')    # 데이터 출처
+    come_from = models.CharField(max_length=10, default='additional')    # 데이터 출처
 
     
 # 금융 상품 옵션
@@ -83,7 +83,7 @@ class Option(models.Model):
     save_month = models.IntegerField(null=True, blank=True)    # 저축 기간
     interest_rate = models.FloatField(null=True, blank=True)    # 저축 금리
     max_interest_rate = models.FloatField(null=True, blank=True)    # 최고 우대 금리
-    come_from = models.CharField(max_length=3, default='API')    # 데이터 출처
+    come_from = models.CharField(max_length=10, default='original')    # 데이터 출처
 
 
 # 사용자로부터 추가된 금융 상품 옵션
@@ -106,14 +106,4 @@ class AdditionalOption(models.Model):
     save_month = models.IntegerField(null=True, blank=True)    # 저축 기간
     interest_rate = models.FloatField(null=True, blank=True)    # 저축 금리
     max_interest_rate = models.FloatField(null=True, blank=True)    # 최고 우대 금리
-    come_from = models.CharField(max_length=4, default='USER')    # 데이터 출처
-    
-    
-class Spot(models.Model):
-    spot_type = models.CharField(max_length=10)
-    date = models.DateField(unique=True)  # 날짜별로 유일해야 함
-    open_price = models.FloatField()
-    high_price = models.FloatField()
-    low_price = models.FloatField()
-    close_price = models.FloatField()
-    volume = models.FloatField()
+    come_from = models.CharField(max_length=10, default='additional')    # 데이터 출처

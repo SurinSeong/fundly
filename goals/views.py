@@ -75,11 +75,11 @@ def wish_list(request):
         if serializer.is_valid(raise_exception=True):
             product = serializer.validated_data['product']
             come_from = serializer.validated_data['come_from']
-            if come_from == 'API':
+            if come_from == 'original':
                 wish_list, created = WishList.objects.get_or_create(
                     user=user, financial_product=product
                 )
-            elif come_from == 'USER':
+            elif come_from == 'additional':
                 wish_list, created = WishList.objects.get_or_create(
                     user=user, additional_product=product
                 )
@@ -87,9 +87,9 @@ def wish_list(request):
             # 이미 찜한 상품이라면
             if not created:
                 wish_list.delete()    # 삭제
-                return Response({'message': '찜 해제'}, status=status.HTTP_200_OK)
+                return Response({'message': '찜 해제', 'is_liked': False}, status=status.HTTP_200_OK)
             else:
-                return Response({'message': '찜 등록'}, status=status.HTTP_201_CREATED)
+                return Response({'message': '찜 등록', 'is_liked': True}, status=status.HTTP_201_CREATED)
 
        
 # 사용자가 설정한 상품 전체 조회 및 생성

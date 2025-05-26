@@ -2,7 +2,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .utils_spot import preprocessing
 from .utils_company import create_company_data
 from .utils_product import create_finance_data
 from .serializers import (
@@ -14,9 +13,8 @@ from .serializers import (
                             ProductReadSerializer,
                             AdditionalProductCreateSerializer,
                             AdditionalProductReadSerializer,
-                            SpotReadSerializer,
                         )
-from .models import FinancialCompany, FinancialProduct, AdditionalProduct, Option, AdditionalOption, Spot
+from .models import FinancialCompany, FinancialProduct, AdditionalProduct, Option, AdditionalOption
 
 from django.conf import settings
 import os
@@ -118,7 +116,7 @@ def finance_product(request):
 @api_view(['GET'])
 def product_detail(request, come_from, product_pk):
 
-    if come_from == 'USER':
+    if come_from == 'additional':
         additional_product = AdditionalProduct.objects.get(pk=product_pk)
         if additional_product:
             options = AdditionalOption.objects.filter(financial_product=additional_product)
@@ -130,7 +128,7 @@ def product_detail(request, come_from, product_pk):
                 'product': product_serializer.data,
                 'options': options_serializer.data
             })
-    elif come_from == 'API':
+    elif come_from == 'original':
         official_product = FinancialProduct.objects.get(pk=product_pk)
     
         if official_product:
@@ -145,27 +143,6 @@ def product_detail(request, come_from, product_pk):
             })
         
     return Response({'error':'상품이 존재하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-    
-
-
-@api_view(['GET'])
-def save_spot(request):
-    for spot_type in ['Gold', 'Silver']:
-        df = preprocessing(spot_type)
-        # DB에 저장
-        for _, row in df.iterrows():
-            Spot.objects.update_or_create(
-                date=row['date'].date(),
-                defaults={
-                    'open_price': float(row['open_price']),
-                    'high_price': float(row['high_price']),
-                    'low_price': float(row['low_price']),
-                    'close_price': float(row['close_price']),
-                    'volume': float(row['volume']),
-                    'spot_type': spot_type
-                }
-            )
-    return Response(status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET'])
