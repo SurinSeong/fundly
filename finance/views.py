@@ -18,6 +18,9 @@ from .serializers import (
                         )
 from .models import FinancialCompany, FinancialProduct, AdditionalProduct, Option, AdditionalOption, Spot
 
+from django.conf import settings
+import os
+import json
 
 # 금감원 API 활용 데이터 저장하기 >> 이미 저장된 것은 저장되지 않도록 해주기
 @api_view(['GET'])
@@ -166,15 +169,15 @@ def save_spot(request):
 
 @api_view(['GET'])
 def show_spot_type(resquest):
-    golds = Spot.objects.filter(spot_type='Gold')
-    slivers = Spot.objects.filter(spot_type='Sliver')
-    gold_serializer = SpotReadSerializer(data=golds, many=True)
-    sliver_serializer = SpotReadSerializer(data=slivers, many=True)
-    if gold_serializer.is_valid(raise_exception=True):
-        gold_data = gold_serializer.data
-        
-    if sliver_serializer.is_valid(raise_exception=True):
-        sliver_data = sliver_serializer.data
+
+    gold_json_file = os.path.join(settings.BASE_DIR, 'finance', 'data', 'Gold_prices.json')
+    silver_json_file = os.path.join(settings.BASE_DIR, 'finance', 'data', 'Silver_prices.json')
+    
+    with open(gold_json_file, 'r', encoding='utf-8') as f:
+        gold_data = json.load(f)
+
+    with open(silver_json_file, 'r', encoding='utf-8') as f:
+        silver_data = json.load(f)
         
     return Response({'gold_data': gold_data,
-                     'sliver_data': sliver_data}, status=status.HTTP_200_OK)
+                     'silver_data': silver_data}, status=status.HTTP_200_OK)
