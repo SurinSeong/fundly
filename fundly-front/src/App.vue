@@ -5,6 +5,7 @@
       'total-container': route.name != 'login',
     }"
   >
+
     <ConfirmDialog></ConfirmDialog>
 
     <Sidebar class="side-bar" v-if="route.name != 'signup' && route.name != 'login'" />
