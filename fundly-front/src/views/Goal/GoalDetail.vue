@@ -50,7 +50,10 @@
         </Carousel>
       </div>
       <div class="recommendation">
-        <h3 class="title">금융 상품 추천</h3>
+        <h3 class="title">
+          <i class="pi pi-check-circle" style="font-size: 1rem"></i>
+          금융 상품 추천
+        </h3>
         <!-- <RouterLink
           v-for="product in productList"
           :key="product.id"

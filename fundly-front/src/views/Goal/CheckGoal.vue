@@ -13,16 +13,18 @@
         :duration-months="goal.duration_months"
       ></RouterCard>
     </div>
-    <RouterCard
-      class="card-item"
-      :page-name="'setgoal'"
-      :card-title="'목표 추가하기'"
-      :is-icon="true"
-      :is-progressbar="false"
-      :icon-class="'pi pi-plus'"
-      :is-duration-months="false"
-      :backgroundcolor="'backgroundcolor'"
-    ></RouterCard>
+    <div>
+      <RouterCard
+        class="card-item"
+        :page-name="'setgoal'"
+        :card-title="'목표 추가하기'"
+        :is-icon="true"
+        :is-progressbar="false"
+        :icon-class="'pi pi-plus'"
+        :is-duration-months="false"
+        :backgroundcolor="'backgroundcolor'"
+      ></RouterCard>
+    </div>
   </div>
   <div v-else class="checkgoal-container-none">
     <h2 class="title">

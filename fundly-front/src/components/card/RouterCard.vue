@@ -6,6 +6,7 @@
         {{ cardTitle }}
       </template>
       <template #content>
+        {{ cardContent }}
         <ul
           v-for="product in productList"
           :key="product.finance_product ?? product.additional_product"
@@ -16,7 +17,7 @@
         <ProgressBar v-if="isProgressbar" :value="value"></ProgressBar>
         <div v-if="isIcon" class="icon-container">
           <div class="icon">
-            <i :class="iconClass"></i>
+            <i :class="[iconClass, {'no-border': !isCircle}]"></i>
           </div>
         </div>
         <p v-if="isDurationMonths" class="text-end">{{ durationMonths }} 개월</p>
@@ -34,8 +35,10 @@ defineProps({
   pageName: String,
   params: Object,
   cardTitle: String,
+  cardContent: String,
   startDate: String,
   isIcon: Boolean,
+  isCircle: Boolean,
   iconClass: String,
   productList: Array,
   isProgressbar: Boolean,
@@ -68,10 +71,15 @@ defineProps({
 .text-end {
   text-align: end;
 }
+
 .pi {
   padding: 0.4rem;
   border: 0.1px solid;
   border-radius: 1rem;
+}
+
+.no-border {
+  border: none !important;
 }
 
 .backgroundcolor {

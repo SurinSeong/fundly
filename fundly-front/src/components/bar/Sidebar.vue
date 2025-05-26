@@ -68,17 +68,17 @@ const basicMenu = ref([
     path: '/community',
   },
   {
-    name: ['exchangerate'],
-    labelName: '환율 계산기',
-    path: '/exchangerate',
+    name: ['checkspot'],
+    labelName: '현물 시세 확인하기',
+    path: '/checkspot',
   },
 ])
 
 const myPage = [
   {
-    name: ['editpersonalInfo'],
+    name: ['checkuser'],
     labelName: '개인 정보 변경',
-    path: '/editpersonalInfo',
+    path: '/checkuser',
   },
   {
     name: ['likeproducts'],

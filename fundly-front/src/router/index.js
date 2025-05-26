@@ -1,9 +1,11 @@
 import CheckGoal from "@/views/Goal/CheckGoal.vue";
 import CheckProducts from "@/views/Product/CheckProducts.vue";
+import CheckSpot from "@/views/CheckSpot.vue";
+import CheckUser from "@/views/MyPage/CheckUser.vue";
 import Community from "@/views/Community/Community.vue";
 import CommunityDetail from "@/views/Community/CommunityDetail.vue";
+import EditPassword from "@/views/MyPage/EditPassword.vue";
 import EditPersonalInfo from "@/views/MyPage/EditPersonalInfo.vue";
-import ExchangeRate from "@/views/ExchangeRate.vue";
 import GoalDetail from "@/views/Goal/GoalDetail.vue";
 import GoalProductDetail from "@/views/Goal/GoalProductDetail.vue";
 import LikeProducts from "@/views/MyPage/LikeProducts.vue";
@@ -71,10 +73,6 @@ const router = createRouter({
       name: "editpersonalInfo",
       component: EditPersonalInfo
     }, {
-      path: "/exchangerate",
-      name: "exchangerate",
-      component: ExchangeRate
-    }, {
       path: "/likeproducts",
       name: "likeproducts",
       component: LikeProducts
@@ -106,7 +104,19 @@ const router = createRouter({
       path: "/signup",
       name: "signup",
       component: Signup
-    }
+    }, {
+      path: "/edit/password",
+      name: 'editpassword',
+      component: EditPassword
+    }, {
+      path: "/checkuser",
+      name: "checkuser",
+      component: CheckUser
+    }, {
+      path: "/checkspot",
+      name: "checkspot",
+      component: CheckSpot
+    },
   ]
 });
 
