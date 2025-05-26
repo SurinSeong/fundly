@@ -1,12 +1,22 @@
 <!-- CheckProducts.vue -->
-
 <template>
   <div class="checkproducts-container">
     <h2 class="product-title">시중에 공개된 예금, 적금 상품을 확인해보세요.</h2>
+    <div class="select-container">
+      <Select
+        v-model="productType"
+        :options="['전체', '예금', '적금']"
+        placeholder="상품 유형 필터"
+        class="mb-3"
+        style="min-width: 10rem"
+        size="small"
+      />
+    </div>
     <CustomDataTable
+      v-if="filteredProducts.length > 0 && columnInfos.length > 0"
       :type="'products'"
-      :searchplaceholder="'은행 이름 / 적금 이름'"
-      :data="savings"
+      :search-placeholder="'은행 이름 / 상품 이름'"
+      :data="filteredProducts"
       :column-infos="columnInfos"
       :page-name="'productdetail'"
     >
@@ -15,139 +25,54 @@
 </template>
 
 <script setup>
+import { ref, onMounted, computed, watchEffect } from 'vue'
 import CustomDataTable from '@/components/table/CustomDataTable.vue'
-import { ref, onMounted, computed } from 'vue'
-import axiosInstance from "@/api/axiosInstance.js"
+import Select from 'primevue/select'
+import axiosInstance from '@/api/axiosInstance.js'
+
+const totalProducts = ref([])
+const officialProducts = ref([])
+const additionalProducts = ref([])
+const productType = ref('전체')
 
 onMounted(async () => {
-  const response = await axiosInstance.get("http://127.0.0.1:8000/api/finance/products/")
-  official_products.value = response.data.official_products
-  additional_products.value = response.data.additional_products
+  const response = await axiosInstance.get('http://127.0.0.1:8000/api/finance/products/')
+  officialProducts.value = response.data.official_products || []
+  additionalProducts.value = response.data.additional_products || []
+  totalProducts.value = officialProducts.value.concat(additionalProducts.value)
 })
 
-const savings = ref([
-  {
-    id: 1,
-    financial_company: '싸피은행',
-    product_name: '1',
-    interest_rate_6: '5%',
-    interest_rate_12: '4%',
-    interest_rate_24: '3%',
-    interest_rate_36: '2%',
-    over_36: '1%',
-    join_way: '인터넷',
-  },
-  {
-    id: 2,
-    financial_company: '싸피은행',
-    product_name: '2',
-    interest_rate_6: '5%',
-    interest_rate_12: '4%',
-    interest_rate_24: '3%',
-    interest_rate_36: '2%',
-    over_36: '1%',
-    join_way: '인터넷',
-  },
-  {
-    id: 3,
-    financial_company: '싸피은행',
-    product_name: '3',
-    interest_rate_6: '5%',
-    interest_rate_12: '4%',
-    interest_rate_24: '3%',
-    interest_rate_36: '2%',
-    over_36: '1%',
-    join_way: '인터넷',
-  },
-  {
-    id: 4,
-    financial_company: '싸피은행',
-    product_name: '4',
-    interest_rate_6: '5%',
-    interest_rate_12: '4%',
-    interest_rate_24: '3%',
-    interest_rate_36: '2%',
-    over_36: '1%',
-    join_way: '인터넷',
-  },
-  {
-    id: 5,
-    financial_company: '싸피은행',
-    product_name: '5',
-    interest_rate_6: '5%',
-    interest_rate_12: '4%',
-    interest_rate_24: '3%',
-    interest_rate_36: '2%',
-    over_36: '1%',
-    join_way: '인터넷',
-  },
-  {
-    id: 6,
-    financial_company: '싸피은행',
-    product_name: '6',
-    interest_rate_6: '5%',
-    interest_rate_12: '4%',
-    interest_rate_24: '3%',
-    interest_rate_36: '2%',
-    over_36: '1%',
-    join_way: '인터넷',
-  },
-  {
-    id: 7,
-    financial_company: '싸피은행',
-    product_name: '7',
-    interest_rate_6: '5%',
-    interest_rate_12: '4%',
-    interest_rate_24: '3%',
-    interest_rate_36: '2%',
-    over_36: '1%',
-    join_way: '인터넷',
-  },
-  {
-    id: 8,
-    financial_company: '싸피은행',
-    product_name: '8',
-    interest_rate_6: '5%',
-    interest_rate_12: '4%',
-    interest_rate_24: '3%',
-    interest_rate_36: '2%',
-    over_36: '1%',
-    join_way: '인터넷',
-  },
-  {
-    id: 9,
-    product_name: '9',
-    financial_company: '싸피은행',
-    interest_rate_6: '5%',
-    interest_rate_12: '4%',
-    interest_rate_24: '3%',
-    interest_rate_36: '2%',
-    over_36: '1%',
-    join_way: '인터넷',
-  },
-])
-
-const columnNames = Object.keys(savings.value[0]).slice(1)
-const headers = [
-  '은행 이름',
-  '상품 이름',
-  '6개월',
-  '12개월',
-  '24개월',
-  '36개월',
-  '36개월 이상',
-  '가입 방법',
-]
+const columnNames = computed(() => {
+  if (totalProducts.value.length === 0) return []
+  return ['financial_company', 'product_name', 'product_type']
+})
+const headers = ['은행 이름', '상품 이름', '상품 유형']
 
 const columnInfos = ref([])
 
-for (const i in columnNames) {
-  const columnInfo = {
-    field: columnNames[i],
-    header: headers[i],
+watchEffect(() => {
+  if (columnNames.value.length > 0 && columnInfos.value.length === 0) {
+    columnInfos.value = columnNames.value.map((name, idx) => ({
+      field: name,
+      header: headers[idx] || name,
+    }))
   }
-  columnInfos.value.push(columnInfo)
-}
+})
+
+// 필터링된 상품 데이터
+const filteredProducts = computed(() => {
+  if (productType.value === '전체') {
+    return totalProducts.value
+  }
+
+  const typeMapping = {
+    예금: 'D',
+    적금: 'S',
+  }
+
+  const filterType = typeMapping[productType.value]
+  return totalProducts.value.filter((product) => product.product_type === filterType)
+})
 </script>
 
 <style scoped>
@@ -155,5 +80,12 @@ for (const i in columnNames) {
   margin-bottom: 1rem;
 }
 .checkproducts-container {
+  width: 60%;
+}
+
+.select-container {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

@@ -14,7 +14,10 @@
           <InputIcon>
             <i class="pi pi-search" />
           </InputIcon>
-          <InputText v-model="filters['global'].value" :placeholder="props.searchplaceholder" />
+          <InputText
+            v-model="filters['global'].value"
+            :placeholder="props.searchPlaceholder"
+          />
         </IconField>
       </div>
     </template>
@@ -23,7 +26,11 @@
       :key="column.field"
       :field="column.field"
       :header="column.header"
+      :filterField="column.field"
     >
+      <template v-if="column.field === 'financial_company'" #body="slotProps">
+        {{ slotProps.data.financial_company.company_name }}
+      </template>
       <template
         v-if="column.field === 'title' || column.field === 'product_name'"
         #body="slotProps"
@@ -31,11 +38,14 @@
         <RouterLink
           :to="{
             name: props.pageName,
-            params: { id: slotProps.data.id },
+            params: { id: slotProps.data.id, comeFrom: slotProps.data.come_from },
           }"
         >
           <Button :label="slotProps.data[column.field]" text />
         </RouterLink>
+      </template>
+      <template v-if="column.field === 'product_type'" #body="slotProps">
+        {{ slotProps.data.product_type === 'D' ? '예금' : '적금' }}
       </template>
     </Column>
   </DataTable>
@@ -56,13 +66,13 @@ import Button from 'primevue/button'
 const props = defineProps({
   type: String,
   data: Array, // Object에서 Array로 변경
-  searchplaceholder: String,
+  searchPlaceholder: String,
   columnInfos: Array,
   pageName: String,
 })
 
 const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 })
 const globalFilterFields = ref([])
 
@@ -83,6 +93,13 @@ onMounted(() => {
     globalFilterFields.value = ['product_name', 'financial_company']
   }
 })
+
+console.log(props.data)
 </script>
 
-<style scoped></style>
+<style scoped>
+.flex {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>

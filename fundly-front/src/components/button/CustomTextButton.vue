@@ -3,17 +3,21 @@
 </template>
 
 <script setup>
-import Button from "primevue/button";
+import Button from 'primevue/button'
 defineProps({
   className: Object,
-  labelName: String
-});
+  labelName: String,
+})
 </script>
 
-<style scopped>
-.btn {
-  text-align: left;
+<style scoped>
+.p-button {
+  display: inline-flex;
+  padding: 0.7rem 2rem 0.7rem 2rem;
+  justify-content: flex-end !important;
+  border-radius: 0 !important;
 }
+
 .btn:hover {
   background-color: var(--p-indigo-50) !important;
   color: var(--p-indigo-700) !important;
