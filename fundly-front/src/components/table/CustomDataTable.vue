@@ -5,7 +5,6 @@
     :value="props.data"
     paginator
     :rows="5"
-    :rowsPerPageOptions="[5, 10, 20, 50]"
     tableStyle="width: 100%;"
     :globalFilterFields="globalFilterFields"
   >
