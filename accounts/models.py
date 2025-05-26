@@ -18,7 +18,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, username=None, nickname=None, email=None, provider=None, password=None, **extra_fields):
+    def create_superuser(self, username=None, nickname=None, email=None, provider='Fundly', password=None, **extra_fields):
         superuser = self.create_user(
             username=username,
             email=email,
@@ -38,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     social_id = models.CharField(max_length=50, null=True, blank=True)
     provider = models.CharField(max_length=10, default='fundly')
     birth_date = models.DateField(null=True)
-    is_work = models.CharField(max_length=20, null=True, blank=True)
+    work_type = models.CharField(max_length=20, null=True, blank=True)
     assets = models.PositiveIntegerField(null=True, blank=True)
     salary = models.PositiveIntegerField(null=True, blank=True)
     is_superuser = models.BooleanField(default=False)

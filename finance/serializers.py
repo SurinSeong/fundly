@@ -12,7 +12,7 @@ class FinancialCompanySerializer(serializers.ModelSerializer):
 class FinancialProductSerializer(serializers.ModelSerializer):
 
     # 외래 키인 금융회사에 대해 시리얼라이저 적용
-    financial_company = FinancialCompanySerializer(many=True, read_only=True)
+    financial_company = FinancialCompanySerializer(read_only=True)
 
     class Meta:
         model = FinancialProduct
@@ -25,7 +25,7 @@ class OptionSerializer(serializers.ModelSerializer):
     # 외래 키인 금융 회사에 대해
     financial_company = FinancialCompanySerializer(read_only=True)
     # 외래 키인 금융 상품에 대해 시리얼 라이저 적용
-    financial_product = FinancialProductSerializer(many=True, read_only=True)
+    financial_product = FinancialProductSerializer(read_only=True)
 
     class Meta:
         model = Option
@@ -36,7 +36,7 @@ class OptionSerializer(serializers.ModelSerializer):
 class AdditionalProductSerializer(serializers.ModelSerializer):
 
     # 외래 키인 금융 회사에 대해 시리얼라이저 적용
-    financial_company = FinancialCompanySerializer(many=True, read_only=True)
+    financial_company = FinancialCompanySerializer(read_only=True)
 
     class Meta:
         model = AdditionalProduct
@@ -48,7 +48,7 @@ class AdditionalOptionSerializer(serializers.ModelSerializer):
 
     financial_company = FinancialCompanySerializer(read_only=True)
     # 외래 키인 금융 상품에 대해 시리얼 라이저 적용
-    financial_product = AdditionalProductSerializer(many=True, read_only=True)
+    financial_product = AdditionalProductSerializer(read_only=True)
 
     class Meta:
         model = AdditionalOption
@@ -76,7 +76,7 @@ class AdditionalOptionSimpleSerializer(serializers.ModelSerializer):
 class ProductReadSerializer(serializers.ModelSerializer):
 
     financial_company = FinancialCompanySerializer(read_only=True)
-    option = OptionSimpleSerializer(many=True, read_only=True)    # 역참조
+    options = OptionSimpleSerializer(many=True, read_only=True)    # 역참조
 
     class Meta:
         model = FinancialProduct
