@@ -117,7 +117,7 @@ const saveGoal = async () => {
   console.log(productTypeCode)
   const payload = {
     goal_name: goalName.value,
-    total_target_amount: Number(targetAmount.value),
+    total_target_amount: Number(targetAmount.value) * 10000,
     product_type: productTypeCode,
     start_date: startDate.value.toISOString().slice(0, 10),
     end_date: endDate.value.toISOString().slice(0, 10)
@@ -149,7 +149,7 @@ onMounted(async () => {
       const data = response.data;
 
       goalName.value = data.goal_name;
-      targetAmount.value = Number(data.total_target_amount);
+      targetAmount.value = Number(data.total_target_amount) / 10000;
       targetAmountKey.value++;
 
       if (data.product_type === "A") {

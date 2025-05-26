@@ -42,7 +42,7 @@
         </div>
         <div class="button-container">
           <CustomButton
-            label="찾기"
+            label-name="찾기"
             severity="secondary"
             type="submit"
             @click="mapStore.search"
@@ -64,6 +64,7 @@ const mapStore = useMapStore();
 
 onMounted(async () => {
   await mapStore.initMap("map");
+  await mapStore.getCurrentLocation()
   await mapStore.loadData();
 });
 
