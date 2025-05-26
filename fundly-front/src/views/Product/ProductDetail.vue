@@ -55,7 +55,8 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useConfirm } from 'primevue/useconfirm'
 import { onMounted, ref, watch } from 'vue'
 import Select from 'primevue/select'
 import DatePicker from 'primevue/datepicker'
@@ -65,6 +66,8 @@ import CustomInputNumber from '@/components/input/CustomInputNumber.vue'
 import axiosInstance from '@/api/axiosInstance.js'
 import Message from 'primevue/message'
 
+const confirm = useConfirm()
+const router = useRouter()
 const route = useRoute()
 const productId = Number(route.params.id)
 const comeFrom = route.params.comeFrom
@@ -83,6 +86,7 @@ const selectedGoal = ref('')
 const startDate = ref('')
 const endDate = ref('')
 const targetAmount = ref()
+
 const getMonthDifference = (startDate, endDate) => {
   const start = new Date(startDate)
   const end = new Date(endDate)
@@ -137,6 +141,7 @@ watch([startDate, endDate], ([newStart, newEnd]) => {
     isDateError.value = false
   }
 })
+
 onMounted(async () => {
   try {
     const response = await axiosInstance.get(
@@ -159,12 +164,31 @@ onMounted(async () => {
       value: goal.id,
     }))
 
-    console.log('goalNames:', goalNames.value)
-    console.log('goals:', goals.value)
   } catch (error) {
     console.log(error)
   }
 })
+
+const confirmCheckGoal = (goalId) => {
+  confirm.require({
+    message: `목표 페이지로 이동합니다.`,
+    header: '목표와 성공적으로 연결되었어요!',
+    icon: 'pi pi-check',
+    rejectProps: {
+      label: '상품 더 둘러보기',
+      outlined: true,
+    },
+    acceptProps: {
+      label: '목표 확인 하기',
+    },
+    accept: () => {
+      router.replace(`/checkgoal/${goalId}`)
+    },
+    reject: () => {
+      router.replace('/checkproducts')
+    },
+  })
+}
 
 const connectToGoal = async () => {
   try {
@@ -181,13 +205,14 @@ const connectToGoal = async () => {
     const payload = {
       goal: goalId,
       financial_product: productId,
-      start_date: startDate.value.toISOString().slice(0, 10),
+      start_date: new Date(startDate.value).toISOString().slice(0, 10),
       target_amount: targetAmount.value * 10000,
       duration_months: durationMonths,
     }
-    console.log(payload)
 
     await axiosInstance.post('http://127.0.0.1:8000/api/custom/', payload)
+    confirmCheckGoal(goalId)
+
   } catch (error) {
     console.log(error)
   }

@@ -44,12 +44,12 @@ import { onMounted, ref } from "vue";
 import axiosInstance from "@/api/axiosInstance";
 
 const goals = ref(null);
-
+const products = ref(null)
 onMounted(async () => {
   try {
     const reponse = await axiosInstance.get("http://127.0.0.1:8000/api/goals/");
     goals.value = reponse.data;
-    console.log(goals.value);
+
   } catch (err) {
     console.log(err);
   }
