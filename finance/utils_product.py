@@ -21,7 +21,7 @@ def get_fin_data(topFinGrpNo, target):
     params = {
         'auth': settings.FINANCE_API_KEY,    #, 
         'topFinGrpNo': topFinGrpNo,
-        'pageNo': n
+        'pageNo': 1
     }
     
     response = requests.get(API_URL, params=params).json()
@@ -30,6 +30,12 @@ def get_fin_data(topFinGrpNo, target):
     
     # 2. 최대 페이지만큼 반복해서 상품, 옵션 받기
     for n in range(1, max_page_no+1):
+        API_URL = BASE_URL + target + '.json'
+        params = {
+            'auth': settings.FINANCE_API_KEY,    #, 
+            'topFinGrpNo': topFinGrpNo,
+            'pageNo': n
+        }
     
         response = requests.get(API_URL, params=params).json()
         

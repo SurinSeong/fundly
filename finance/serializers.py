@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FinancialCompany, FinancialProduct, AdditionalProduct, Option, AdditionalOption
+from .models import FinancialCompany, FinancialProduct, AdditionalProduct, Option, AdditionalOption, Spot
 
 # 금융 회사 직렬화 시리얼라이저
 class FinancialCompanySerializer(serializers.ModelSerializer):
@@ -118,3 +118,8 @@ class AdditionalProductCreateSerializer(serializers.ModelSerializer):
         return product
     
 
+# 현물 상품 조회 시리얼라이저
+class SpotReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Spot
+        fields = '__all__'

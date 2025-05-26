@@ -26,6 +26,12 @@ def get_comp_data(topFinGrpNo):
     
     # 2. 최대 페이지 수 만큼 반복해서 회사 수 받기
     for n in range(1, max_page_no+1):
+        API_URL = BASE_URL + 'companySearch.json'
+        params = {
+            'auth': settings.FINANCE_API_KEY,
+            'topFinGrpNo': topFinGrpNo,    # 020000, 030300 두개만 해도 될 듯 >> 정기 예금, 적금 상품이 이것 밖에 없다.
+            'pageNo': n
+        }
         response = requests.get(API_URL, params=params).json()
 
         company = response['result']['baseList']
