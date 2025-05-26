@@ -11,12 +11,18 @@ from dateutil import relativedelta
 
 # 목표 시리얼라이저
 class GoalSerializer(serializers.ModelSerializer):
+    class ConnectedToGoalSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = ConnectedToGoal
+            fields = '__all__'
 
     user = UserSimpleInfoSerializer(read_only=True)
+    connected_to_goal = ConnectedToGoalSerializer(read_only=True, many=True)
 
     class Meta:
         model = Goal
-        fields = '__all__'
+        fields = ('id', 'user', 'goal_name', 'product_type', 'total_target_amount', 'savings_target_amount', 'deposit_target_amount', 
+                  'start_date', 'end_date', 'connected_to_goal', )
 
 
 # checkgoal에 목표들 보여주는 시리얼라이저 
@@ -60,12 +66,12 @@ class WishListReadSerializer(serializers.ModelSerializer):
     class FinancialProductDetailSerializer(serializers.ModelSerializer):
         class Meta:
             model = FinancialProduct
-            fields = ('id', 'financial_company', 'product_name', 'product_type', 'special_condition', 'join_way', 'etc_note', )
+            fields = ('id', 'financial_company', 'product_name', 'product_type', 'special_condition', 'join_way', 'etc_note', 'come_from', )
     
     class AdditionalProductDetailSerializer(serializers.ModelSerializer):
         class Meta:
             model = AdditionalProduct
-            fields = ('id', 'financial_company', 'product_name', 'product_type', 'special_condition', 'join_way', 'etc_note', )
+            fields = ('id', 'financial_company', 'product_name', 'product_type', 'special_condition', 'join_way', 'etc_note', 'come_from', )
             
             
     user = UserSimpleInfoSerializer(read_only=True)
@@ -83,16 +89,20 @@ class WishListCreateSerializer(serializers.ModelSerializer):
     product_pk = serializers.IntegerField()
     come_from = serializers.CharField()
 
+    class Meta:
+        model = WishList
+        fields = ('product_pk', 'come_from', )
+
     def validate(self, data):
         product_pk = data['product_pk']
         come_from = data['come_from']
         
-        if come_from == 'API':
+        if come_from == 'original':
             product = get_object_or_404(FinancialProduct, pk=product_pk)
             data['product'] = product
             return data
         
-        elif come_from == 'USER':
+        elif come_from == 'additional':
             product = get_object_or_404(AdditionalProduct, pk=product_pk)
             data['product'] = product
             return data

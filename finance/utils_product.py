@@ -53,7 +53,7 @@ def get_fin_data(topFinGrpNo, target):
     # 모든 필드 추출하기 - products
     extracted_products = []
     for product in products:
-        product_dict = {'come_from': 'API'}
+        product_dict = {'come_from': 'original'}
 
         # 예금 or 적금
         if target == 'depositProductsSearch':
@@ -70,7 +70,7 @@ def get_fin_data(topFinGrpNo, target):
     # 모든 필드 추출하기 - options
     extracted_options = []
     for option in options:
-        option_dict = {'come_from': 'API'}
+        option_dict = {'come_from': 'original'}
         for key in option.keys():
             if key not in ['dcls_month', 'intr_rate_type_nm', 'rsrv_type_nm']:
                 option_dict[key] = option.get(key, '')
