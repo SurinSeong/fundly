@@ -76,6 +76,7 @@ def simulate_precise():
     # => 사용자가 설정한 목표 기간 보다 더 빨리 도달할 수 있는지 계산하기
 def is_early_achievable(principal_amount, interest_rate, save_type, duration_months, target_amount):
     result = simulate_precise_deposit(principal_amount, interest_rate, save_type, duration_months)
+    
 
 
 # 추가 납입 시 변화 예측 함수
