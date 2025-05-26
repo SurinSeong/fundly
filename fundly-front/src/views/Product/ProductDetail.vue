@@ -43,6 +43,12 @@
           showButtonBar
         />
       </div>
+      <Message v-if="isDateError" severity="error">시작 시기는 끝보다 앞서야 합니다.</Message>
+
+      <div class="handle-end-date">
+        <Button label="- 6개월" outlined @click="decrementEndDate"></Button>
+        <Button label="+ 6개월" outlined @click="incrementEndDate"></Button>
+      </div>
     </div>
     <CustomButton
       @click="connectToGoal"
@@ -54,14 +60,20 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
-import { onMounted, ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useConfirm } from 'primevue/useconfirm'
+import { onMounted, ref, watch, computed } from 'vue'
+
 import Select from 'primevue/select'
 import DatePicker from 'primevue/datepicker'
 import CustomButton from '@/components/button/CustomButton.vue'
+import Button from 'primevue/button'
 import CustomInputNumber from '@/components/input/CustomInputNumber.vue'
 import axiosInstance from '@/api/axiosInstance.js'
+import Message from 'primevue/message'
 
+const confirm = useConfirm()
+const router = useRouter()
 const route = useRoute()
 const productId = Number(route.params.id)
 const comeFrom = route.params.comeFrom
@@ -93,6 +105,7 @@ const getMonthDifference = (startDate, endDate) => {
   return yearDiff * 12 + monthDiff + 1 // +1은 시작월 포함
 }
 
+
 const handleIsLiked = async () => {
   try{
     const response = await axiosInstance.post(
@@ -114,6 +127,52 @@ const handleIsLiked = async () => {
   }
     
 }
+
+// 6개월씩 감소시키는 버튼
+const decrementEndDate = () => {
+  // 기준 날짜: endDate가 있으면 그걸 기준으로
+  const baseDate = endDate.value ? new Date(endDate.value) : new Date(startDate.value)
+
+  if (!baseDate || isNaN(baseDate)) {
+    console.error('유효한 날짜가 없습니다.')
+    return
+  }
+
+  const newDate = new Date(baseDate)
+  newDate.setMonth(newDate.getMonth() - 6)
+
+  // YYYY-MM-DD 형식으로 저장
+  endDate.value = newDate.toISOString().slice(0, 10)
+}
+
+// 6개월씩 증가시키는 버튼
+const incrementEndDate = () => {
+  // 기준 날짜를 endDate가 있으면 그걸 기준으로, 없으면 startDate로
+  const baseDate = endDate.value ? new Date(endDate.value) : new Date(startDate.value)
+
+  if (!baseDate || isNaN(baseDate)) {
+    console.error('유효한 날짜가 없습니다.')
+    return
+  }
+
+  const newDate = new Date(baseDate)
+  newDate.setMonth(newDate.getMonth() + 6)
+
+  // YYYY-MM-DD 형식으로 저장
+  endDate.value = newDate.toISOString().slice(0, 10)
+}
+const isDateError = ref(false)
+
+watch([startDate, endDate], ([newStart, newEnd]) => {
+  if (newStart && newEnd) {
+    const start = new Date(newStart)
+    const end = new Date(newEnd)
+    isDateError.value = start > end
+  } else {
+    isDateError.value = false
+  }
+})
+
 
 onMounted(async () => {
   try {
@@ -137,12 +196,32 @@ onMounted(async () => {
       value: goal.id,
     }))
 
-    console.log('goalNames:', goalNames.value)
-    console.log('goals:', goals.value)
   } catch (error) {
     console.log(error)
   }
 })
+
+const confirmCheckGoal = (goalId) => {
+  confirm.require({
+    message: `목표 페이지로 이동합니다.`,
+    header: '목표와 성공적으로 연결되었어요!',
+    icon: 'pi pi-check',
+    rejectProps: {
+      label: '상품 더 둘러보기',
+      outlined: true,
+    },
+    acceptProps: {
+      label: '목표 확인 하기',
+    },
+    accept: () => {
+      router.replace(`/checkgoal/${goalId}`)
+    },
+    reject: () => {
+      router.replace('/checkproducts')
+    },
+  })
+}
+
 const connectToGoal = async () => {
   try {
     const goalObj = goals.value.find((goal) => goal.id === selectedGoal.value)
@@ -156,19 +235,37 @@ const connectToGoal = async () => {
     const durationMonths = getMonthDifference(startDate.value, endDate.value)
 
     const payload = {
-      goal: goalId, 
-      financial_product: productId, 
-      start_date: startDate.value.toISOString().slice(0, 10),
+      goal: goalId,
+      financial_product: productId,
+      start_date: new Date(startDate.value).toISOString().slice(0, 10),
       target_amount: targetAmount.value * 10000,
       duration_months: durationMonths,
     }
-    console.log(payload)
 
     await axiosInstance.post('http://127.0.0.1:8000/api/custom/', payload)
+    confirmCheckGoal(goalId)
+
   } catch (error) {
     console.log(error)
   }
 }
+
+watch(selectedGoal, (newGoalId) => {
+  const selected = goals.value.find((goal) => goal.id === newGoalId)
+  if (!selected) return
+
+  // 선택된 목표의 정보로 값 채우기
+  if (selected.start_date) startDate.value = selected.start_date
+  if (selected.duration_months) {
+    const start = new Date(selected.start_date)
+    const newEnd = new Date(start)
+    newEnd.setMonth(newEnd.getMonth() + selected.duration_months - 1) // 시작월 포함
+    endDate.value = newEnd.toISOString().slice(0, 10)
+  }
+  if (selected.total_target_amount) {
+    targetAmount.value = selected.total_target_amount / 10000 // 원 → 만 원 단위로 변환
+  }
+})
 </script>
 
 <style scoped>
@@ -196,6 +293,7 @@ const connectToGoal = async () => {
 .date-picker {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .target-amount {
@@ -204,5 +302,12 @@ const connectToGoal = async () => {
 
 .connect-to-data {
   width: 75%;
+  margin-bottom: 1rem;
+}
+
+.handle-end-date {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
 }
 </style>

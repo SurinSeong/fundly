@@ -30,20 +30,19 @@
     </div>
     <div class="bottom">
       <div class="goal-products">
-        <Carousel :value="goalProducts" circular="">
+        <Carousel :value="products" circular="">
           <template #item="slotProps">
             <RouterCard
               class="card-item"
-              :page-name="'goalproductdetail'"
+              :page-name="'productdetail'"
               :params="{
-                goalid: slotProps.data.goal,
-                userid: slotProps.data.user,
-                product: slotProps.data.finance_product ?? slotProps.data.additional_product,
+                comeFrom: slotProps.data.financial_product ? 'original' : 'additional',
+                id: slotProps.data.financial_product ?? slotProps.data.additional_product,
               }"
               :is-progressbar="true"
               :is-duration-months="true"
               :start-date="slotProps.data.start_date"
-              :card-title="slotProps.data.title"
+              :card-title="slotProps.data.product_name"
               :value="(slotProps.data.current_amount / slotProps.data.target_amount) * 100"
               :duration-months="slotProps.data.duration_months"
             ></RouterCard>
@@ -52,7 +51,7 @@
       </div>
       <div class="recommendation">
         <h3 class="title">금융 상품 추천</h3>
-        <RouterLink
+        <!-- <RouterLink
           v-for="product in productList"
           :key="product.id"
           :to="{ name: 'productdetail', params: { comeFrom: `${goal.come_from}`, id: product.id } }"
@@ -60,7 +59,7 @@
           <CustomTextButton :label-name="product.title">
             {{ product.title }}
           </CustomTextButton>
-        </RouterLink>
+        </RouterLink> -->
       </div>
     </div>
   </div>
@@ -83,13 +82,31 @@ const router = useRouter()
 const goalId = route.params.goalid
 
 const goalData = ref({})
+const products = ref(null)
 const totalTargetAmount = ref(0)
+
 onMounted(async () => {
   try {
     const response = await axiosInstance.get(`http://127.0.0.1:8000/api/goals/${goalId}`)
     goalData.value = response.data
     totalTargetAmount.value = goalData.value.total_target_amount
-    console.log(goalData.value)
+    products.value = response.data.connected_to_goal
+
+    const enrichedProducts = []
+    for (const product of products.value) {
+      const productComeFrom = product.financial_product ? 'original' : 'additional'
+      
+      const productDetail = await axiosInstance.get(
+        `http://127.0.0.1:8000/api/finance/products/${productComeFrom}/${product.financial_product}`,
+      )
+      enrichedProducts.push({
+        ...product,
+        product_name: productDetail.data.product.product_name,
+      })
+    }
+    products.value = enrichedProducts
+    console.log(products.value)
+
     chartData.value = setChartData()
     chartOptions.value = setChartOptions()
   } catch (error) {
@@ -203,7 +220,7 @@ const deletePost = async () => {
 const showConfirmDelete = () => {
   confirm.require({
     message: '정말 삭제하시겠습니까?',
-    header: '삭제 확인',
+    header: '삭제 하기',
     icon: 'pi pi-exclamation-triangle',
     rejectProps: {
       label: '취소',

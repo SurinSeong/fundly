@@ -14,10 +14,7 @@
           <InputIcon>
             <i class="pi pi-search" />
           </InputIcon>
-          <InputText
-            v-model="filters['global'].value"
-            :placeholder="props.searchPlaceholder"
-          />
+          <InputText v-model="filters['global'].value" :placeholder="props.searchPlaceholder" />
         </IconField>
       </div>
     </template>
@@ -93,8 +90,6 @@ onMounted(() => {
     globalFilterFields.value = ['product_name', 'financial_company']
   }
 })
-
-console.log(props.data)
 </script>
 
 <style scoped>

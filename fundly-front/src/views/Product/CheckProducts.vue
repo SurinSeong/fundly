@@ -33,6 +33,7 @@ import axiosInstance from '@/api/axiosInstance.js'
 const totalProducts = ref([])
 const officialProducts = ref([])
 const additionalProducts = ref([])
+const options = ref([])
 const productType = ref('전체')
 
 onMounted(async () => {
