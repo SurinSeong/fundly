@@ -21,7 +21,7 @@ class GoalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Goal
-        fields = ('id', 'user', 'goal_name', 'product_type', 'total_target_amount', 'savings_target_amount', 'deposit_target_amount', 
+        fields = ('id', 'user', 'goal_name', 'product_type', 'total_target_amount', 'saving_target_amount', 'deposit_target_amount', 
                   'start_date', 'end_date', 'connected_to_goal', )
 
 
