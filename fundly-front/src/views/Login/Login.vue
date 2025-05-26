@@ -66,9 +66,10 @@ const handelLogin = async () => {
     // 토큰을 localStorage에 저장
     localStorage.setItem("access_token", access);
     localStorage.setItem("refresh_token", refresh);
-    localStorage.setItem("user", user)
+    localStorage.setItem("user", user.email)
 
     console.log(access)
+    console.log(user)
 
     // 로그인 성공 후 리다이렉트 (예: 홈으로)
     router.replace("/");

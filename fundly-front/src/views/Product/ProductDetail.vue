@@ -1,7 +1,12 @@
 <template>
   <div class="product-detail-container">
     <div class="product-container">
-      <h2>{{ productName }}</h2>
+      <h2>{{ productName }}
+        <span
+          :class="likeClass"
+          @click="handleIsLiked"
+        ></span>
+      </h2>
       <h3>{{ companyName }}</h3>
     </div>
     <p class="join-way">{{ joinWay }}</p>
@@ -57,7 +62,8 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { useConfirm } from 'primevue/useconfirm'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
+
 import Select from 'primevue/select'
 import DatePicker from 'primevue/datepicker'
 import CustomButton from '@/components/button/CustomButton.vue'
@@ -78,6 +84,8 @@ const productName = ref('')
 const joinWay = ref('')
 const endInterestRate = ref('')
 const etcNote = ref('')
+const isLiked = ref(false)
+const likeClass = computed(() => (isLiked.value ? 'pi pi-heart-fill' : 'pi pi-heart'))
 
 // 목표에 연결
 const goals = ref([])
@@ -95,6 +103,29 @@ const getMonthDifference = (startDate, endDate) => {
   const monthDiff = end.getMonth() - start.getMonth()
 
   return yearDiff * 12 + monthDiff + 1 // +1은 시작월 포함
+}
+
+
+const handleIsLiked = async () => {
+  try{
+    const response = await axiosInstance.post(
+      'http://127.0.0.1:8000/api/wishlist/',
+      {
+        product_pk: productId,
+        come_from: comeFrom,
+      }
+    )
+    if (response.data.is_liked) {
+      isLiked.value = true
+    }
+    else {
+      isLiked.value = false
+    }
+  }
+  catch (err) {
+    console.error(err)
+  }
+    
 }
 
 // 6개월씩 감소시키는 버튼
@@ -142,13 +173,14 @@ watch([startDate, endDate], ([newStart, newEnd]) => {
   }
 })
 
+
 onMounted(async () => {
   try {
     const response = await axiosInstance.get(
-      `http://127.0.0.1:8000/api/finance/products/${comeFrom}/${productId}`,
+      `http://127.0.0.1:8000/api/finance/products/${comeFrom}/${productId}/`,
     )
     const goalsResponse = await axiosInstance.get('http://127.0.0.1:8000/api/goals/')
-
+    
     const companyInfo = response.data.product
 
     companyName.value = companyInfo.financial_company.company_name
