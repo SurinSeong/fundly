@@ -45,11 +45,30 @@ import CustomButton from "@/components/button/CustomButton.vue";
 import SocialLoginButton from "@/components/button/SocialLoginButton.vue";
 import googleLogo from "@/assets/googlelogo.png";
 import kakaoLogo from "@/assets/kakaologo.png";
+import { useConfirm } from "primevue/useconfirm";
 
+const confirm = useConfirm();
 const id = ref("");
 const password = ref("");
 const router = useRouter();
-const route = useRoute()
+const route = useRoute();
+
+const failBasicLogin = () => {
+  confirm.require({
+    message: "로그인을 다시 시도해주세요.",
+    header: "오류가 생겼어요.",
+    icon: "pi pi-check",
+    acceptProps: {
+      label: "로그인 화면으로 이동"
+    },
+    rejectProps: {
+      label: "다음에 하기"
+    },
+    accept: () => {
+      router.push("/login");
+    }
+  });
+};
 
 const handelLogin = async () => {
   try {
@@ -66,30 +85,30 @@ const handelLogin = async () => {
     // 토큰을 localStorage에 저장
     localStorage.setItem("access_token", access);
     localStorage.setItem("refresh_token", refresh);
-    localStorage.setItem("user", user.email)
+    localStorage.setItem("user", user.email);
 
-    console.log(access)
-    console.log(user)
+    console.log(access);
+    console.log(user);
 
     // 로그인 성공 후 리다이렉트 (예: 홈으로)
+    await axiosInstance.get("http://127.0.0.1:8000/api/finance/save/");
     router.replace("/");
   } catch (error) {
-    console.error("❌ 로그인 실패:", error.response?.data || error.message);
-    alert("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.");
+    failBasicLogin();
   }
 };
 
 const handleGoogleLogin = () => {
-  const redirectUri = 'http://127.0.0.1:8000/api/auth/google/login/'
+  const redirectUri = "http://127.0.0.1:8000/api/auth/google/login/";
 
-  window.location.href = redirectUri
+  window.location.href = redirectUri;
 };
 
 const handleKakaoLogin = () => {
-    const redirectUri = 'http://127.0.0.1:8000/api/auth/kakao/login/'
+  const redirectUri = "http://127.0.0.1:8000/api/auth/kakao/login/";
 
-    window.location.href = redirectUri
-  } 
+  window.location.href = redirectUri;
+};
 
 const socialLoginButtons = ref([
   {
@@ -103,7 +122,6 @@ const socialLoginButtons = ref([
     srcPath: kakaoLogo
   }
 ]);
-
 </script>
 
 <style scoped>

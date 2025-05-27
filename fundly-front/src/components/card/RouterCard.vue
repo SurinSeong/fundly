@@ -100,4 +100,8 @@ defineProps({
   color: var(--p-primary-50);
   background-color: var(--p-indigo-300);
 }
+
+.success {
+  background-color: var(--p-lime-300);
+}
 </style>

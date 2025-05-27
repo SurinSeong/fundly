@@ -22,7 +22,6 @@ import { ConfirmDialog } from 'primevue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-console.log(route.name)
 </script>
 
 <style scoped>
@@ -37,7 +36,7 @@ console.log(route.name)
   display: grid;
   width: 100%;
   height: 100%;
-  grid-template-columns: 1500px 1fr;
+  grid-template-columns: 1fr 1fr;
 }
 
 .total-container {
@@ -46,7 +45,7 @@ console.log(route.name)
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  height: 100%;
+  height: auto 0;
 }
 
 main {

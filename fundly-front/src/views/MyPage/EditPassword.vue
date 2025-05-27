@@ -72,5 +72,7 @@
 </script>
 
 <style scoped>
-
+.changepassword-container {
+  width: 100%;
+}
 </style>

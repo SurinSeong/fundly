@@ -6,10 +6,13 @@
       :page-name="'goaldetail'"
       :params="{ goalid: `${goal.id}` }"
       :card-title="goal.goal_name"
+      :is-icon="goal.is_success"
+      :icon-class="'pi pi-thumbs-up-fill'"
       :is-progressbar="true"
       :is-duration-months="true"
-      :value="goal.achievement_rate"
+      :value="goal.current_achievement"
       :duration-months="goal.duration_months"
+      :backgroundcolor="goal.is_success ? 'success' : ''"
     ></RouterCard>
     <RouterCard
       class="card-item"
@@ -37,21 +40,42 @@
 </template>
 
 <script setup>
-import CustomButton from '@/components/button/CustomButton.vue'
-import RouterCard from '@/components/card/RouterCard.vue'
-import { RouterLink } from 'vue-router'
-import { onMounted, ref } from 'vue'
-import axiosInstance from '@/api/axiosInstance'
+import CustomButton from "@/components/button/CustomButton.vue";
+import RouterCard from "@/components/card/RouterCard.vue";
+import { RouterLink } from "vue-router";
+import { onMounted, ref } from "vue";
+import axiosInstance from "@/api/axiosInstance";
 
-const goals = ref(null)
+const goals = ref(null);
 onMounted(async () => {
   try {
-    const reponse = await axiosInstance.get('http://127.0.0.1:8000/api/goals/')
-    goals.value = reponse.data
+    const response = await axiosInstance.get(
+      "http://127.0.0.1:8000/api/goals/"
+    );
+    goals.value = response.data;
+
+    for (const goal of goals.value) {
+      const products = goal.connected_to_goal || [];
+      let currentAmount = 0;
+
+      for (const product of products) {
+        currentAmount += product.current_amount || 0;
+      }
+
+      goal.current_achievement = Math.floor(
+        (currentAmount / goal.total_target_amount) * 100
+      );
+      if (goal.current_achievement >= 100) {
+        goal.is_success = true
+      } else {
+        goal.is_success = false
+      }
+    }
+      
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-})
+});
 </script>
 
 <style scoped>
