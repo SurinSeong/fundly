@@ -1,5 +1,6 @@
 <template>
   <div v-if="goals && goals.length > 0" class="checkgoal-container">
+
     <div v-for="goal in goals">
       <RouterCard
         v-if="goal.id"
@@ -25,6 +26,29 @@
         :backgroundcolor="'backgroundcolor'"
       ></RouterCard>
     </div>
+    <RouterCard
+      v-for="goal in goals"
+      class="card-item"
+      :page-name="'goaldetail'"
+      :params="{ goalid: `${goal.id}` }"
+      :card-title="goal.goal_name"
+      :is-progressbar="true"
+      :is-duration-months="true"
+      :value="goal.achievement_rate"
+      :duration-months="goal.duration_months"
+    ></RouterCard>
+    <RouterCard
+      class="card-item"
+      :page-name="'setgoal'"
+      :card-title="'목표 추가하기'"
+      :is-icon="true"
+      :is-progressbar="false"
+      :icon-class="'pi pi-plus'"
+      :is-round="true"
+      :is-flex="true"
+      :is-duration-months="false"
+      :backgroundcolor="'backgroundcolor'"
+    ></RouterCard>
   </div>
   <div v-else class="checkgoal-container-none">
     <h2 class="title">
@@ -39,35 +63,32 @@
 </template>
 
 <script setup>
-import CustomButton from "@/components/button/CustomButton.vue";
-import RouterCard from "@/components/card/RouterCard.vue";
-import { RouterLink } from "vue-router";
-import { onMounted, ref } from "vue";
-import axiosInstance from "@/api/axiosInstance";
+import CustomButton from '@/components/button/CustomButton.vue'
+import RouterCard from '@/components/card/RouterCard.vue'
+import { RouterLink } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import axiosInstance from '@/api/axiosInstance'
 
-const goals = ref(null);
+const goals = ref(null)
 const products = ref(null)
 onMounted(async () => {
   try {
-    const reponse = await axiosInstance.get("http://127.0.0.1:8000/api/goals/");
-    goals.value = reponse.data;
-
+    const reponse = await axiosInstance.get('http://127.0.0.1:8000/api/goals/')
+    goals.value = reponse.data
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
-});
+})
 </script>
 
 <style scoped>
 .checkgoal-container {
-  text-align: center;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4개씩 한 줄에 */
+  grid-template-rows: repeat(4, auto); /* 최대 4줄 */
   gap: 1rem;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
+  justify-items: center;
 }
 
 .checkgoal-container-none {
@@ -82,8 +103,7 @@ onMounted(async () => {
 }
 
 .card-item {
-  flex: 0 0 calc(20% - 1rem);
-  aspect-ratio: 3/2;
-  box-sizing: border-box;
+  aspect-ratio: 1/1;
+  width: 100%;
 }
 </style>

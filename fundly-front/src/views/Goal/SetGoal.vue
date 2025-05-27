@@ -63,6 +63,7 @@
             fluid
           />
         </div>
+        <Message v-if="isError" severity="error">{{ message }}</Message>
       </div>
 
       <CustomButton
@@ -101,9 +102,10 @@ const targetAmount = ref(null)
 const selectedProductType = ref(null)
 const startDate = ref('')
 const endDate = ref('')
-
+const isError = ref(false)
 const targetAmountKey = ref(0)
 const selectedProductTypeKey = ref(0)
+const message = ref('')
 
 const productType = ref([
   { name: '적금', value: '적금' },
@@ -186,16 +188,26 @@ const confirmGoal = () => {
 }
 
 const saveGoal = async () => {
+  if (
+    !goalName.value ||
+    targetAmount.value === null ||
+    targetAmount.value === '' ||
+    !selectedProductType.value ||
+    selectedProductType.value.length === 0 ||
+    !startDate.value ||
+    !endDate.value ||
+    isDateError.value
+  ) {
+    isError.value = true
+    message.value = '모든 값을 입력해주세요.'
+    return
+  } else {
+    isError.value = false
+  }
   const productTypeCode = getProductTypeCode(selectedProductType.value)
 
   const start = new Date(startDate.value)
   const end = new Date(endDate.value)
-
-  if (isNaN(start) || isNaN(end)) {
-    console.error('유효하지 않은 날짜입니다.')
-    return
-  }
-
   const payload = {
     goal_name: goalName.value,
     total_target_amount: Number(targetAmount.value) * 10000,
@@ -263,5 +275,8 @@ h3 {
 .date-picker {
   display: flex;
   justify-content: space-between;
+}
+.goal-method {
+  margin-bottom: 1rem;
 }
 </style>

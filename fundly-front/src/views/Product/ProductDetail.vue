@@ -10,6 +10,8 @@
           rounded aria-label="Favorite"
           @click="handleIsLiked"
         />
+
+        <span :class="likeClass" @click="handleIsLiked"></span>
       </h2>
       <h3>{{ companyName }}</h3>
     </div>
@@ -20,7 +22,7 @@
     <div class="connect-to-data">
       <Select
         v-model="selectedGoal"
-        placeholder="연결할 목표를 선택해주세요."
+        :placeholder="placeholder"
         optionLabel="label"
         optionValue="value"
         :options="goalNames"
@@ -29,31 +31,37 @@
         <CustomInputNumber
           v-model="targetAmount"
           :input-id="'target-amount'"
-          :input-placeholder="'해당 상품의 목표 금액을 알려주세요.'"
+          :input-placeholder="targetAmountPlaceholder"
           :unit="'만 원'"
         />
       </div>
       <div class="date-picker">
         <DatePicker
-          placeholder="납입 시작 날짜"
+          :placeholder="startDatePlaceholder"
           date-format="yy/mm/dd"
           v-model="startDate"
           showButtonBar
         />
         <DatePicker
-          placeholder="납입 마지막 날짜"
+          :placeholder="endDatePlaceholder"
           date-format="yy/mm/dd"
           v-model="endDate"
           showButtonBar
         />
       </div>
       <Message v-if="isDateError" severity="error">시작 시기는 끝보다 앞서야 합니다.</Message>
-
       <div class="handle-end-date">
         <Button label="- 6개월" outlined @click="decrementEndDate"></Button>
         <Button label="+ 6개월" outlined @click="incrementEndDate"></Button>
       </div>
+      <div class="connected" v-if="route.path.includes('connected')">
+        <div class="current-amount">
+          <p cla>현재 저축된 금액을 수정할 수 있습니다.</p>
+          <CustomInputNumber input-id="current-amount" v-model="currentAmount" unit="만 원" />
+        </div>
+      </div>
     </div>
+
     <CustomButton
       @click="connectToGoal"
       :label-name="'목표와 연결하기'"
@@ -67,6 +75,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { useConfirm } from 'primevue/useconfirm'
 import { onMounted, ref, watch, computed } from 'vue'
+
 import Select from 'primevue/select'
 import DatePicker from 'primevue/datepicker'
 import CustomButton from '@/components/button/CustomButton.vue'
@@ -78,7 +87,10 @@ import Message from 'primevue/message'
 const confirm = useConfirm()
 const router = useRouter()
 const route = useRoute()
+
+// 파라미터에서 필요한 값 가져오기
 const productId = Number(route.params.id)
+const goalId = Number(route.params.goalid)
 const comeFrom = route.params.comeFrom
 
 // 상품 정보
@@ -90,6 +102,14 @@ const etcNote = ref('')
 const isLiked = ref(false)
 const likeClass = computed(() => (isLiked.value ? 'pi pi-heart-fill' : 'pi pi-heart'))
 
+const placeholder = ref('')
+const targetAmountPlaceholder = ref('')
+const startDatePlaceholder = ref('')
+const endDatePlaceholder = ref('')
+const companyInfo = ref('')
+const productInfo = ref('')
+
+
 // 목표에 연결
 const goals = ref([])
 const goalNames = ref([])
@@ -97,6 +117,7 @@ const selectedGoal = ref('')
 const startDate = ref('')
 const endDate = ref('')
 const targetAmount = ref()
+const currentAmount = ref()
 
 const getMonthDifference = (startDate, endDate) => {
   const start = new Date(startDate)
@@ -175,11 +196,11 @@ watch([startDate, endDate], ([newStart, newEnd]) => {
 })
 
 onMounted(async () => {
-  try {
-    const response = await axiosInstance.get(
-      `http://127.0.0.1:8000/api/finance/products/${comeFrom}/${productId}`,
-    )
-    const goalsResponse = await axiosInstance.get('http://127.0.0.1:8000/api/goals/')
+  const response = await axiosInstance.get(
+    `http://127.0.0.1:8000/api/finance/products/${comeFrom}/${productId}/`,
+  )
+  productInfo.value = response.data.product
+  console.log(productInfo.value)
 
     // 찜 확인용
     const wishlistResponse = await axiosInstance.get('http://127.0.0.1:8000/api/wishlist/')
@@ -194,23 +215,40 @@ onMounted(async () => {
 
     const companyInfo = response.data.product
 
-    companyName.value = companyInfo.financial_company.company_name
-    productName.value = companyInfo.product_name
-    joinWay.value = companyInfo.join_way
-    endInterestRate.value = companyInfo.end_interest_rate
-    etcNote.value = companyInfo.etc_note
 
-    goals.value = goalsResponse.data
+  const goalsResponse = await axiosInstance.get('http://127.0.0.1:8000/api/goals/')
 
-    goalNames.value = goals.value.map((goal) => ({
-      label: goal.goal_name,
-      value: goal.id,
-    }))
+  companyInfo.value = response.data.product
 
-  } catch (error) {
-    console.log(error)
+  companyName.value = companyInfo.value.financial_company.company_name
+  productName.value = companyInfo.value.product_name
+  joinWay.value = companyInfo.value.join_way
+  endInterestRate.value = companyInfo.value.end_interest_rate
+  etcNote.value = companyInfo.value.etc_note
+
+  goals.value = goalsResponse.data
+
+  goalNames.value = goals.value.map((goal) => ({
+    label: goal.goal_name,
+    value: goal.id,
+  }))
+  if (route.path.includes('connected')) {
+    const connectedToGoalData = await axiosInstance.get(`http://127.0.0.1:8000/api/goals/${goalId}`)
+    const matchedGoal = goalNames.value.find(
+      (goal) => goal.label === connectedToGoalData.data.goal_name,
+    )
+    if (matchedGoal) {
+      selectedGoal.value = matchedGoal.value // ✔️ Select 박스에 기본 선택값 표시됨
+    }
+  } else {
+    placeholder.value = '연결할 목표를 설정해주세요.'
+    targetAmountPlaceholder.value = '목표 금액을 설정해주세요.'
+    startDatePlaceholder.value = '납입 시작 날짜'
+    endDatePlaceholder.value = '납입 끝 날짜'
   }
 })
+
+const likeClass = computed(() => (isLiked.value ? 'pi pi-heart-fill' : 'pi pi-heart'))
 
 const confirmCheckGoal = (goalId) => {
   confirm.require({
@@ -255,7 +293,6 @@ const connectToGoal = async () => {
 
     await axiosInstance.post('http://127.0.0.1:8000/api/custom/', payload)
     confirmCheckGoal(goalId)
-
   } catch (error) {
     console.log(error)
   }
@@ -263,18 +300,22 @@ const connectToGoal = async () => {
 
 watch(selectedGoal, (newGoalId) => {
   const selected = goals.value.find((goal) => goal.id === newGoalId)
+  console.log(selected)
   if (!selected) return
 
   // 선택된 목표의 정보로 값 채우기
   if (selected.start_date) startDate.value = selected.start_date
-  if (selected.duration_months) {
-    const start = new Date(selected.start_date)
-    const newEnd = new Date(start)
-    newEnd.setMonth(newEnd.getMonth() + selected.duration_months - 1) // 시작월 포함
-    endDate.value = newEnd.toISOString().slice(0, 10)
-  }
+  if (selected.end_date) endDate.value = selected.end_date
+
   if (selected.total_target_amount) {
     targetAmount.value = selected.total_target_amount / 10000 // 원 → 만 원 단위로 변환
+  }
+  if (route.path.includes('connected')) {
+    const currentGoal = ref('')
+    currentGoal.value = selected.connected_to_goal.find(
+      (product) => product.financial_product === productId,
+    )
+    currentAmount.value = currentGoal.value.current_amount / 10000
   }
 })
 </script>
