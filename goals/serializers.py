@@ -5,7 +5,7 @@ from rest_framework import serializers
 from .models import Goal, WishList, ConnectedToGoal
 from accounts.serializers import UserSimpleInfoSerializer
 from finance.models import FinancialProduct, AdditionalProduct
-from finance.serializers import OptionSerializer, AdditionalOptionSerializer
+from finance.serializers import OptionSerializer, AdditionalOptionSerializer, FinancialCompanySerializer, FinancialProductSerializer
 
 from dateutil import relativedelta
 
@@ -64,6 +64,9 @@ class GoalTitleSerializer(serializers.ModelSerializer):
 # 찜한 상품 확인 시리얼라이저
 class WishListReadSerializer(serializers.ModelSerializer):
     class FinancialProductDetailSerializer(serializers.ModelSerializer):
+        
+        financial_company = FinancialCompanySerializer(read_only=True)
+        
         class Meta:
             model = FinancialProduct
             fields = ('id', 'financial_company', 'product_name', 'product_type', 'special_condition', 'join_way', 'etc_note', 'come_from', )

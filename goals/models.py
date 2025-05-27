@@ -39,10 +39,10 @@ class WishList(models.Model):
 class ConnectedToGoal(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='connected_to_goal', on_delete=models.CASCADE)  # 사용자
     goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='connected_to_goal')                              # 목표
-    financial_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, null=True, blank=True)          # 선택한 상품
-    additional_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE, null=True, blank=True)
-    option_product = models.ForeignKey(Option, on_delete=models.CASCADE, null=True, blank=True)              # 옵션
-    additionoption_product = models.ForeignKey(AdditionalOption, on_delete=models.CASCADE, null=True, blank=True)
+    financial_product = models.ForeignKey(FinancialProduct, on_delete=models.CASCADE, null=True, blank=True, related_name='connected_to_goal')          # 선택한 상품
+    additional_product = models.ForeignKey(AdditionalProduct, on_delete=models.CASCADE, null=True, blank=True, related_name='connected_to_goal')
+    options = models.ForeignKey(Option, on_delete=models.CASCADE, null=True, blank=True, related_name='connected_to_goal')              # 옵션
+    additionoptions = models.ForeignKey(AdditionalOption, on_delete=models.CASCADE, null=True, blank=True, related_name='connected_to_goal')
     current_amount = models.PositiveIntegerField(default=0)                                                                  # 납입 금액
     target_amount = models.PositiveIntegerField()                                                                   # 목표 금액
     start_date = models.DateField()                                                                                 # 시작 날짜

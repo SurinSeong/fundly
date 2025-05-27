@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -16,6 +17,9 @@ from .serializers import (
                         )
 
 from .models import Goal, WishList, ConnectedToGoal
+from finance.models import FinancialProduct
+
+User = get_user_model()
 
 # Create your views here.
 # 목표 조회, 생성
@@ -103,11 +107,28 @@ def custom_product(request):
     if request.method == 'POST':
         data = request.data.copy()
         data['user'] = request.user.id
-        serializer = CustomCreateSerializer(data=data)
+        
+        custom_serializer = CustomCreateSerializer(data=data)
+        if custom_serializer.is_valid(raise_exception=True):
+            custom_serializer.save()
+        
+            product_pk = data['financial_product']
+            financial_product = FinancialProduct.objects.get(pk=product_pk)
+            product_type = financial_product.product_type
+            target_amount = data['target_amount']
+            
+            goal_pk = data['goal']
+            goal = Goal.objects.get(pk=goal_pk)
 
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            if product_type == 'D':
+                goal.deposit_target_amount = target_amount
+                goal.save()
+                
+            elif product_type == 'S':
+                goal.saving_target_amount = target_amount
+                goal.save()
+    
+            return Response(status=status.HTTP_201_CREATED)
         
 
 # 사용자가 설정한 특정 상품 조회, 삭제, 수정
