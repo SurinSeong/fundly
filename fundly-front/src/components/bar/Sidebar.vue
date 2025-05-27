@@ -58,7 +58,7 @@ const basicMenu = ref([
   },
   {
     name: ['searchbank'],
-    labelname: '주변 은행 / ATM 찾기',
+    labelname: '주변 은행 찾기',
     path: '/searchbank',
   },
   {
@@ -73,7 +73,7 @@ const basicMenu = ref([
   },
   {
     name: ['chatbot'],
-    labelName: '챗봇',
+    labelname: '질문하기',
     path: '/chatbot',
   },
 ])

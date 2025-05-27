@@ -8,6 +8,6 @@
 </script>
 
 
-<style scopped>
+<style scoped>
 
 </style> 

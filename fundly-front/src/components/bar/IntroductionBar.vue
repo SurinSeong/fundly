@@ -9,7 +9,7 @@
 <script setup>
 </script>
 
-<style scopped>
+<style scoped>
 .introduction-bar {
   color: var(--p-primary-50);
   display: flex;

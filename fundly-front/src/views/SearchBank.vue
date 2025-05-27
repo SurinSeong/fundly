@@ -1,7 +1,7 @@
 <template>
   <div class="bank-container">
     <div class="title">
-      <h2>주변의 가까운 은행, ATM기를 찾아보세요.</h2>
+      <h2>주변의 가까운 은행을 찾아보세요.</h2>
     </div>
     <div class="container">
       <section>

@@ -13,7 +13,7 @@ defineProps({
 });
 </script>
 
-<style scopped>
+<style scoped>
 .btn-primary {
   background-color: var(--p-indigo-500) !important;
   color: var(--p-primary-100) !important;

@@ -13,7 +13,7 @@ defineProps({
 })
 </script>
 
-<style scopped>
+<style scoped>
 .social-btn-container {
   background-color: var(--p-primary-50);
   padding: 0.7rem 0.7rem 0.5rem 0.7rem;

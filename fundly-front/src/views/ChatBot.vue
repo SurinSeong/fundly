@@ -1,13 +1,19 @@
 <template>
     <div class="chatbot-container">
+        
         <h1>
             <img 
+            width="40px"
             src="@/assets/ChatGPT.png"
             alt="chatbot-logo"
             >
             안녕하세요.<br/>금융에 대해 궁금하신 점이 있나요?
         </h1>
         <p>금융 관련 지식, 상품에 대해서 질문해주세요!</p>
+        <div v-if="loading" class="loading">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2.5rem"></i>
+            <h3>불러오는 중입니다...</h3>
+        </div>
         <div class="result">
             <Message
                 v-if="answer"
@@ -65,27 +71,31 @@
     
     const appStore = useVideoStore()
     const question = ref('')
-    const answer = ref('');
+    const answer = ref(null);
     const relatedVideos = ref([]);
+    const loading = ref(false)
 
     // 버튼 클릭하면 영상 나타나게 하게
     const showVideos = ref(false)
 
     // 검색어 입력하면 호출되어서 답변과 영상 업데이트
     const handleSearch = async () => {
+        answer.value = null
         // 검색어가 있는 경우에만 처리
         if (question.value.trim()) {
             // 검색어에 대한 답변 >> 실제 로직에서는 API 호출이나 다른 처리 추가하기
-
+            if (answer.value === null) {
+                loading.value = true
+            }
             const response = await axiosInstance.post(
                 "http://127.0.0.1:8000/api/chatbot/",
                 {
                     question: question.value
                 }
             )
-            console.log(response)
 
             answer.value = `${response.data.answer}`
+            loading.value = false
             // 관련 동영상 리스트를 검색어 기반으로 업데이트
             appStore.searchKeyword(response.data.keyword);
             relatedVideos.value = appStore.videos;
