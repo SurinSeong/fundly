@@ -52,7 +52,6 @@ def finance_chatbot(question):
                 "answer": "AI의 답변" 
             }}
             - json 형식으로 출력해주세요.
-                - 쌍따옴표로 묶어주세요.
             
         3. 금융 관련 질문이 아닐 경우, 금융 관련 질문을 요청해주세요.
         4. 금융 서비스인 만큼, 신뢰도 있는 답변을 제공하세요.
@@ -69,6 +68,11 @@ def finance_chatbot(question):
     response = client.responses.create(
         model='gpt-4o-mini',
         input=conversation_history,
+        text={
+            "format": {
+                "type": "json_object"
+            }
+        },
         temperature=0.3,
         top_p=0.5,
     )
