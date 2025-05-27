@@ -96,9 +96,11 @@ def wish_list(request):
                 return Response({'message': '찜 등록', 'is_liked': True}, status=status.HTTP_201_CREATED)
 
        
-# 사용자가 설정한 상품 전체 조회 및 생성
+# 사용자가 설정한 상품 전체 조회 및 생성/수정
 @api_view(['GET', 'POST'])
 def custom_product(request):
+    user = request.user
+
     if request.method == 'GET':
         user_custom_products = ConnectedToGoal.objects.all()
         serializer = TotalCustomReadSerializer(user_custom_products, many=True)
@@ -107,7 +109,13 @@ def custom_product(request):
     if request.method == 'POST':
         data = request.data.copy()
         data['user'] = request.user.id
-        
+
+        goal = Goal.objects.get(pk=data['goal'])
+        product = FinancialProduct.objects.get(pk=data['financial_product'])
+
+        if ConnectedToGoal.objects.filter(goal=goal, financial_product=product, user=user).exists():
+            return Response({'error': '중복 상품입니다.'},
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
         custom_serializer = CustomCreateSerializer(data=data)
         if custom_serializer.is_valid(raise_exception=True):
             custom_serializer.save()
@@ -129,6 +137,8 @@ def custom_product(request):
                 goal.save()
     
             return Response(status=status.HTTP_201_CREATED)
+            
+
         
 
 # 사용자가 설정한 특정 상품 조회, 삭제, 수정
