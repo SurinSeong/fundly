@@ -6,39 +6,36 @@
         id="spot-type"
         v-model="selectedSpotType"
         :options="spotType"
-        optionValue="value" 
+        optionValue="value"
         optionLabel="name"
         fluid
-      />      
-    </div>  
+      />
+    </div>
     <div v-if="isGold" class="card">
       <h3>금 시세</h3>
-      <Chart
-        v-if="goldData"
-        type="line"
-        :data="chartGoldData"
-        :options="chartOptions"
-        fluid
-      />
+      <div class="chart">
+        <Chart
+          style="width: 90rem; height: 40rem"
+          v-if="goldData"
+          type="line"
+          :data="chartGoldData"
+          :options="chartOptions"
+          fluid
+        />
+      </div>
     </div>
     <div v-else class="card">
       <h3>은 시세</h3>
-      <Chart
-        v-if="silverData"
-        type="line"
-        :data="chartSilverData"
-        :options="chartOptions"
-        fluid
-      />
+      <Chart v-if="silverData" type="line" :data="chartSilverData" :options="chartOptions" fluid />
     </div>
-  </div>  
+  </div>
 </template>
 
 <script setup>
-import axiosInstance from "@/api/axiosInstance";
-import { ref, onMounted, watch } from "vue";
-import Chart from "primevue/chart";
-import SelectButton from "primevue/selectbutton";
+import axiosInstance from '@/api/axiosInstance'
+import { ref, onMounted, watch } from 'vue'
+import Chart from 'primevue/chart'
+import SelectButton from 'primevue/selectbutton'
 
 const isGold = ref(true)
 
@@ -62,14 +59,14 @@ const chartSilverData = ref()
 
 const chartOptions = ref()
 
-const selectedSpotType = ref('금');
+const selectedSpotType = ref('금')
 
 const spotType = ref([
-  { name: "금", value: "금" },
-  { name: "은", value: "은" }
-]);
+  { name: '금', value: '금' },
+  { name: '은', value: '은' },
+])
 
-const getSpotType = selection => {
+const getSpotType = (selection) => {
   if (selection.includes('금')) return true
   if (selection.includes('은')) return false
   return true
@@ -78,7 +75,6 @@ const getSpotType = selection => {
 watch(selectedSpotType, (newValue) => {
   isGold.value = getSpotType(newValue)
 })
-
 
 const setChartGoldData = () => {
   const documentStyle = getComputedStyle(document.documentElement)
@@ -93,7 +89,7 @@ const setChartGoldData = () => {
         borderColor: documentStyle.getPropertyValue('--p-cyan-500'),
         yAxisID: 'y',
         tension: 0.4,
-        pointStyle: false
+        pointStyle: false,
       },
       {
         label: '종가',
@@ -102,7 +98,7 @@ const setChartGoldData = () => {
         borderColor: documentStyle.getPropertyValue('--p-orange-500'),
         yAxisID: 'y',
         tension: 0.4,
-        pointStyle: false
+        pointStyle: false,
       },
       {
         label: '최고가',
@@ -111,7 +107,7 @@ const setChartGoldData = () => {
         borderColor: documentStyle.getPropertyValue('--p-red-500'),
         yAxisID: 'y',
         tension: 0.4,
-        pointStyle: true
+        pointStyle: true,
       },
       {
         label: '최저가',
@@ -120,7 +116,7 @@ const setChartGoldData = () => {
         borderColor: documentStyle.getPropertyValue('--p-blue-500'),
         yAxisID: 'y',
         tension: 0.4,
-        pointStyle: true
+        pointStyle: true,
       },
       {
         label: '거래량',
@@ -130,9 +126,9 @@ const setChartGoldData = () => {
         borderColor: documentStyle.getPropertyValue('--p-purple-500'),
         yAxisID: 'y1',
         tension: 0.4,
-        pointStyle: false
+        pointStyle: false,
       },
-    ]
+    ],
   }
 }
 
@@ -148,7 +144,7 @@ const setChartSilverData = () => {
         fill: false,
         borderColor: documentStyle.getPropertyValue('--p-cyan-500'),
         yAxisID: 'y',
-        tension: 0.4
+        tension: 0.4,
       },
       {
         label: '종가',
@@ -156,7 +152,7 @@ const setChartSilverData = () => {
         fill: false,
         borderColor: documentStyle.getPropertyValue('--p-orange-500'),
         yAxisID: 'y',
-        tension: 0.4
+        tension: 0.4,
       },
       {
         label: '최고가',
@@ -164,7 +160,7 @@ const setChartSilverData = () => {
         fill: false,
         borderColor: documentStyle.getPropertyValue('--p-red-500'),
         yAxisID: 'y',
-        tension: 0.4
+        tension: 0.4,
       },
       {
         label: '최저가',
@@ -172,7 +168,7 @@ const setChartSilverData = () => {
         fill: false,
         borderColor: documentStyle.getPropertyValue('--p-blue-500'),
         yAxisID: 'y',
-        tension: 0.4
+        tension: 0.4,
       },
       {
         label: '거래량',
@@ -180,17 +176,17 @@ const setChartSilverData = () => {
         fill: false,
         borderColor: documentStyle.getPropertyValue('--p-purple-500'),
         yAxisID: 'y1',
-        tension: 0.4
+        tension: 0.4,
       },
-    ]
+    ],
   }
 }
 
 const setChartOptions = () => {
-  const documentStyle = getComputedStyle(document.documentElement);
-  const textColor = documentStyle.getPropertyValue('--p-text-color');
-  const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
-  const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
+  const documentStyle = getComputedStyle(document.documentElement)
+  const textColor = documentStyle.getPropertyValue('--p-text-color')
+  const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color')
+  const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color')
 
   return {
     stacked: false,
@@ -199,67 +195,63 @@ const setChartOptions = () => {
     plugins: {
       legend: {
         labels: {
-            color: textColor
-        }
-      }
+          color: textColor,
+        },
+      },
     },
     scales: {
       x: {
         ticks: {
-            color: textColorSecondary
+          color: textColorSecondary,
         },
         grid: {
-            color: surfaceBorder
-        }
+          color: surfaceBorder,
+        },
       },
       y: {
         type: 'linear',
         display: true,
         position: 'left',
         ticks: {
-            color: textColorSecondary
+          color: textColorSecondary,
         },
         grid: {
-            color: surfaceBorder
+          color: surfaceBorder,
         },
         scales: {
           suggestedMin: 1500,
-          suggestedMax: 3000
-        }
+          suggestedMax: 3000,
+        },
       },
       y1: {
         type: 'linear',
         display: true,
         position: 'right',
         ticks: {
-            color: textColorSecondary
+          color: textColorSecondary,
         },
         grid: {
-            drawOnChartArea: false,
-            color: surfaceBorder
-        }
-      }
-    }
+          drawOnChartArea: false,
+          color: surfaceBorder,
+        },
+      },
+    },
   }
 }
 
-
-
 onMounted(async () => {
-  const res = await axiosInstance.get(
-    "http://127.0.0.1:8000/api/finance/show/spot/"
-  )
+  const res = await axiosInstance.get('http://127.0.0.1:8000/api/finance/show/spot/')
   goldData.value = res.data.gold_data
   silverData.value = res.data.silver_data
 
-  for (let i= 0; i < goldData.value.length; i++) {
+  for (let i = 0; i < goldData.value.length; i++) {
     const date = goldData.value[i]['date']
     const openPrice = goldData.value[i]['open_price']
     const closePrice = goldData.value[i]['close_price']
     const highPrice = goldData.value[i]['high_price']
     const lowPrice = goldData.value[i]['low_price']
     const volume = goldData.value[i]['volume']
-    
+
     goldDates.value.push(date)
     goldOpenPrices.value.push(openPrice)
     goldClosePrices.value.push(closePrice)
@@ -268,8 +260,8 @@ onMounted(async () => {
     goldVolumns.value.push(volume)
   }
 
-  for (let i= 0; i < res.data.silver_data.length; i++) {
-    const date = res.data.silver_data[i]['date'];
+  for (let i = 0; i < res.data.silver_data.length; i++) {
+    const date = res.data.silver_data[i]['date']
     const openPrice = res.data.silver_data[i]['open_price']
     const closePrice = res.data.silver_data[i]['close_price']
     const highPrice = res.data.silver_data[i]['high_price']
@@ -290,14 +282,16 @@ onMounted(() => {
   chartSilverData.value = setChartSilverData()
   chartOptions.value = setChartOptions()
 })
-
-
-
 </script>
 
 <style scoped>
 .checkspot-container {
   width: 100%;
+}
+
+.chart {
+  width: 60%;
+  overflow: scroll;
 }
 
 .card {
