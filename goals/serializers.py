@@ -141,3 +141,15 @@ class CustomDetailSerializer(serializers.ModelSerializer):
         model = ConnectedToGoal
         exclude = ('created_at', 'updated_at', )
 
+
+class CustomDetailUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConnectedToGoal
+        fields = [  # 수정 가능한 필드만 명시
+            'current_amount',
+            'target_amount',
+            'start_date',
+            'duration_months',
+            'is_active',
+            'monthly_pay',
+        ]

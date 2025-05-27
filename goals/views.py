@@ -14,6 +14,7 @@ from .serializers import (
                             TotalCustomReadSerializer,
                             CustomCreateSerializer,
                             CustomDetailSerializer,
+                            CustomDetailUpdateSerializer,
                         )
 
 from .models import Goal, WishList, ConnectedToGoal
@@ -155,18 +156,17 @@ def custom_detail(request, goal_pk, come_from, product_pk):
         product = AdditionalProduct.objects.get(pk=product_pk)
         connected_to_goal = ConnectedToGoal.objects.get(goal=goal, additional_product=product, user=user)
     
-
     if request.method == 'GET':
         serializer = CustomDetailSerializer(connected_to_goal)
         return Response(serializer.data)
-    
-    
+
     if request.method == 'PUT':
-        serializer = CustomDetailSerializer(connected_to_goal, data=request.data, partial=True)
-        if serializer.is_valid(raise_exception=True):
+        serializer = CustomDetailUpdateSerializer(connected_to_goal, data=request.data, partial=True)
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     if request.method == 'DELETE':
         connected_to_goal.delete()
