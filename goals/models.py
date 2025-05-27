@@ -49,5 +49,5 @@ class ConnectedToGoal(models.Model):
     duration_months = models.IntegerField(null=True, blank=True)                                                    # 지속 기간
     is_active = models.BooleanField(default=False)                                                                  # 중도 해지 여부
     created_at = models.DateTimeField(auto_now_add=True)                                                            # 생성 날짜
-    updated_at = models.DateTimeField(auto_now=True)                                                                # 수정 날짜
-    
+    updated_at = models.DateTimeField(auto_now=True)                                                               # 수정 날짜
+    monthly_pay = models.PositiveIntegerField(default=0)
