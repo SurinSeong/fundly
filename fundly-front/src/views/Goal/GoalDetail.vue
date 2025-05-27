@@ -16,7 +16,7 @@
           <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
         </div>
       </div>
-      <h3>시작이 반, 조금 더 힘내봐요!</h3>
+      <h3>{{ cheerUpMessage }}</h3>
       <div class="chart-container">
         <Chart
           type="bar"
@@ -44,7 +44,9 @@
               :is-duration-months="true"
               :start-date="slotProps.data.start_date"
               :card-title="slotProps.data.product_name"
-              :value="(slotProps.data.current_amount / slotProps.data.target_amount) * 100"
+              :value="
+                Math.floor((slotProps.data.current_amount / slotProps.data.target_amount) * 100)
+              "
               :duration-months="slotProps.data.duration_months"
             ></RouterCard>
           </template>
@@ -71,10 +73,12 @@
         <RouterLink
           v-for="product in recommendationProductList"
           :key="product.id"
-          :to="{ name: 'productdetail', params: { comeFrom: `${product.come_from}`, id: product.id } }"
+          :to="{
+            name: 'productdetail',
+            params: { comeFrom: `${product.come_from}`, id: product.id },
+          }"
         >
-          <Button :label="product.product_name" text fluid="">
-          </Button>
+          <Button :label="product.product_name" text fluid=""> </Button>
         </RouterLink>
       </div>
     </div>
@@ -83,7 +87,7 @@
 
 <script setup>
 import { useUserStore } from '@/stores/user'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watchEffect } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import Chart from 'primevue/chart'
 import RouterCard from '@/components/card/RouterCard.vue'
@@ -100,8 +104,6 @@ const goalId = route.params.goalid
 const goalData = ref({})
 const products = ref(null)
 const totalTargetAmount = ref(0)
-const depositTotal = ref(0)
-const savingTotal = ref(0)
 const userStore = useUserStore()
 
 onMounted(async () => {
@@ -115,6 +117,7 @@ const birthDate = ref(null)
 const workType = ref('')
 const salary = ref('')
 const assets = ref('')
+const cheerUpMessage = ref('')
 
 onMounted(async () => {
   try {
@@ -127,8 +130,11 @@ onMounted(async () => {
     for (const product of products.value) {
       const productComeFrom = product.financial_product ? 'original' : 'additional'
 
+      // 여기서 product.financial_product가 null일 수도 있으니 방어코드 추가 권장
+      const productId = product.financial_product ?? product.additional_product
+
       const productDetail = await axiosInstance.get(
-        `http://127.0.0.1:8000/api/finance/products/${productComeFrom}/${product.financial_product}`,
+        `http://127.0.0.1:8000/api/finance/products/${productComeFrom}/${productId}`,
       )
 
       enrichedProducts.push({
@@ -138,67 +144,96 @@ onMounted(async () => {
       })
     }
     products.value = enrichedProducts
-    console.log(products.value)
-
-    chartData.value = setChartData()
-    chartOptions.value = setChartOptions()
   } catch (error) {
     console.log(error)
   }
-  for (const product of products.value) {
-    if (product.product_type === 'D') {
-      depositTotal.value += goalData.value.curreent_amount
+
+  // 사용자 정보 요청 및 추천 상품 처리
+  try {
+    const userinfo = await axiosInstance.get('http://127.0.0.1:8000/api/user/profile/')
+    const requiredFields = ['assets', 'birth_date', 'salary', 'work_type']
+    const isAnyFieldMissing = requiredFields.some((field) => !userinfo.data[field])
+
+    if (isAnyFieldMissing) {
+      isUserInfo.value = false
     } else {
-      savingTotal.value += goalData.value.current_amount
+      birthDate.value = userinfo.data.birth_date
+      workType.value = userinfo.data.work_type
+      salary.value = userinfo.data.salary
+      assets.value = userinfo.data.assets
+      const payload = {
+        username: username.value,
+        birth_date: birthDate.value,
+        work_type: workType.value,
+        assets: assets.value,
+        salary: salary.value,
+        goal: goalData.value.goal_name,
+      }
+
+      await axiosInstance.post('http://127.0.0.1:8000/api/recommendation/', payload)
+      const recommendation = await axiosInstance.get('http://127.0.0.1:8000/api/recommendation/')
+      recommendationProductList.value = recommendation.data.products
     }
-  }
-
-  const userinfo = await axiosInstance.get('http://127.0.0.1:8000/api/user/profile/')
-  console.log(userinfo.data)
-  const requiredFields = ['assets', 'birth_date', 'salary', 'work_type']
-
-  const isAnyFieldMissing = requiredFields.some(
-    (field) => !userinfo.data[field],
-  )
-
-  if (isAnyFieldMissing) {
-    isUserInfo.value = false
-  } else {
-    birthDate.value = userinfo.data.birth_date
-    workType.value = userinfo.data.work_type
-    salary.value = userinfo.data.salary
-    assets.value = userinfo.data.assets
-    const payload = {
-      username: username.value,
-      birth_date: birthDate.value,
-      work_type: workType.value,
-      assets: assets.value,
-      salary: salary.value,
-      goal: goalData.value.goal_name,
-    }
-
-    console.log(payload)
-
-    await axiosInstance.post(
-      'http://127.0.0.1:8000/api/recommendation/',
-      payload,
-    )
-    const recommendation = await axiosInstance.get(
-      'http://127.0.0.1:8000/api/recommendation/'
-    )
-
-    recommendationProductList.value = recommendation.data.products
-    console.log(recommendationProductList.value)
+  } catch (error) {
+    console.log(error)
   }
 })
 
-// 데이터 설정
-const chartData = ref()
-const chartOptions = ref()
+// 총 적금 합산 (savingTotal)
+const savingTotal = computed(() => {
+  if (!products.value) return 0
+  return products.value
+    .filter((p) => p.product_type !== 'D')
+    .reduce((sum, p) => sum + p.current_amount, 0)
+})
+
+// 총 예금 합산 (depositTotal)
+const depositTotal = computed(() => {
+  if (!products.value) return 0
+  return products.value
+    .filter((p) => p.product_type === 'D')
+    .reduce((sum, p) => sum + p.current_amount, 0)
+})
+
+// 메시지 변화
+const currentTotal = computed(() => {
+  return depositTotal.value + savingTotal.value
+})
+
+watchEffect(() => {
+  const rate = currentTotal.value / totalTargetAmount.value
+
+  if (rate >= 1) {
+    cheerUpMessage.value = '목표 달성! 축하해요! 🎉'
+  } else if (rate >= 0.9) {
+    cheerUpMessage.value = '거의 다 왔어요! 마지막 한 걸음만 더!'
+  } else if (rate >= 0.8) {
+    cheerUpMessage.value = '고지가 눈 앞이에요! 조금만 더 힘내요!'
+  } else if (rate >= 0.7) {
+    cheerUpMessage.value = '좋아요, 70%까지 왔어요!'
+  } else if (rate >= 0.6) {
+    cheerUpMessage.value = '벌써 반을 넘었어요! 꾸준함이 빛나고 있어요.'
+  } else if (rate >= 0.5) {
+    cheerUpMessage.value = '절반 달성! 여기서부터가 진짜예요!'
+  } else if (rate >= 0.4) {
+    cheerUpMessage.value = '반환점에 거의 다왔어요! 계속 가봐요!'
+  } else if (rate >= 0.3) {
+    cheerUpMessage.value = '서서히 힘이 붙기 시작했어요!'
+  } else if (rate >= 0.2) {
+    cheerUpMessage.value = '좋은 출발이에요! 계속해서 나아가요!'
+  } else if (rate > 0) {
+    cheerUpMessage.value = '시작이 반이에요! 잘하고 있어요!'
+  } else {
+    cheerUpMessage.value = '목표를 향해 첫 걸음을 내딛어봐요!'
+  }
+})
+
 const date = new Date()
 const year = date.getFullYear()
 const month = date.getMonth() + 1
-const setChartData = () => {
+
+// 차트 데이터 computed
+const chartData = computed(() => {
   const documentStyle = getComputedStyle(document.documentElement)
 
   return {
@@ -207,20 +242,21 @@ const setChartData = () => {
       {
         type: 'bar',
         label: '적금',
-        backgroundColor: documentStyle.getPropertyValue('--p-indigo-700'),
+        backgroundColor: documentStyle.getPropertyValue('--p-indigo-300'),
         data: [savingTotal.value],
       },
       {
         type: 'bar',
         label: '예금',
-        backgroundColor: documentStyle.getPropertyValue('--p-indigo-500'),
+        backgroundColor: documentStyle.getPropertyValue('--p-indigo-600'),
         data: [depositTotal.value],
       },
     ],
   }
-}
+})
 
-const setChartOptions = () => {
+// 차트 옵션 computed
+const chartOptions = computed(() => {
   const documentStyle = getComputedStyle(document.documentElement)
   const textColor = documentStyle.getPropertyValue('--p-text-color')
   const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color')
@@ -263,7 +299,7 @@ const setChartOptions = () => {
       },
     },
   }
-}
+})
 
 // 목표 수정
 const editGoal = async () => {

@@ -44,7 +44,6 @@ import { onMounted, ref } from 'vue'
 import axiosInstance from '@/api/axiosInstance'
 
 const goals = ref(null)
-const products = ref(null)
 onMounted(async () => {
   try {
     const reponse = await axiosInstance.get('http://127.0.0.1:8000/api/goals/')
@@ -58,7 +57,7 @@ onMounted(async () => {
 <style scoped>
 .checkgoal-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4개씩 한 줄에 */
+  grid-template-columns: repeat(3, 1fr); /* 4개씩 한 줄에 */
   grid-template-rows: repeat(4, auto); /* 최대 4줄 */
   gap: 1rem;
   width: 100%;
