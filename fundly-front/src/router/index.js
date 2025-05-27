@@ -21,6 +21,8 @@ import Signup from "@/views/Signup/Signup.vue";
 import {createRouter, createWebHistory} from "vue-router";
 import WritePost from "@/views/Community/WritePost.vue";
 import AddData from "@/views/Goal/AddData.vue";
+import ShowYoutube from "@/views/ShowYoutube.vue";
+import ChatBot from "@/views/ChatBot.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -125,7 +127,16 @@ const router = createRouter({
       path: "/recommendedresult",
       name: "recommendedresult",
       component: RecommendedResult
+    }, {
+      path: '/showyoutube/:id',
+      name: 'showyoutube',
+      component: ShowYoutube
+    }, {
+      path: '/chatbot',
+      name: 'chatbot',
+      component: ChatBot
     },
+    
   ]
 });
 
