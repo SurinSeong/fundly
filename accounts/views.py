@@ -109,18 +109,13 @@ def social_login(request, provider):
         return redirect(kakao_auth_url)
 
 
-# 로그아웃
-@api_view(['POST'])
+# 회원 탈퇴
+@api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def logout(request):
-    if request.method == 'POST':
-        try:
-            refresh_token = request.data['refresh']
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+def signout(request):
+    user = request.user
+    user.delete()
+    return Response({'message': '탈퇴되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
     
     
 # 콜백 함수

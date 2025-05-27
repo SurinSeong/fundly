@@ -29,7 +29,16 @@ def simulate_precise_savings(
 
         current_amount = total
 
-    return months, round(current_amount)
+    if current_amount >= savings_target_amount:
+        return {
+            'months': None,
+            'current_amount': round(current_amount),
+            'note': f'{max_months}개월 내에 목표 수령액에 도달하지 못합니다.'
+        }
+    return {
+        'months': months,
+        'current_amount': round(current_amount)
+    }
 
 
 # 예금 설정 기간 결과 >> 단리S, 복리M
@@ -66,16 +75,12 @@ def simulate_precise_deposit(
         'note': f'{max_months}개월 내에 목표 수령액에 도달하지 못합니다.'
     }
 
-
-# 목표 설정 기간 결과 보여주기
-def simulate_precise():
-    pass
-
     
 # 목표 조기 달성 예상 함수
     # => 사용자가 설정한 목표 기간 보다 더 빨리 도달할 수 있는지 계산하기
 def is_early_achievable(principal_amount, interest_rate, save_type, duration_months, target_amount):
     result = simulate_precise_deposit(principal_amount, interest_rate, save_type, duration_months)
+    return result['current_amount'] >= target_amount
     
 
 

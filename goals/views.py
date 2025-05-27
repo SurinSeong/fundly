@@ -19,6 +19,10 @@ from .serializers import (
 
 from .models import Goal, WishList, ConnectedToGoal
 from finance.models import FinancialProduct, AdditionalProduct
+from .utils import simulate_precise_savings, simulate_precise_deposit
+from .utils_openai import finance_chatbot
+
+import json
 
 User = get_user_model()
 
@@ -182,3 +186,12 @@ def check_product_connected(request, goal_id, product_id):
         user=user
     ).exists()
     return Response({'is_connected': exists})
+
+
+@api_view(['POST'])
+def use_finance_chatbot(request):
+    question = request.data.get('question')
+    result = finance_chatbot(question)
+    result = result.replace('**', "")
+    data = json.loads(result)
+    return Response(data, status=status.HTTP_201_CREATED)

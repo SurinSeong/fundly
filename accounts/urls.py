@@ -11,7 +11,7 @@ urlpatterns = [
     # 회원가입 / 로그인 / 로그아웃 
     path('auth/signup/', views.signup),                         # 회원가입
     path('auth/login/', views.login),                           # 로그인
-    path('auth/logout/', views.logout),                  # 로그아웃
+    path('auth/signout/', views.signout),                       # 로그아웃
     path('auth/<str:provider>/login/', views.social_login),     # 소셜 로그인
     path('auth/<str:provider>/callback/', views.callback),      # 콜백 함수
 

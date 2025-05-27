@@ -8,4 +8,5 @@ urlpatterns = [
     path('wishlist/', views.wish_list),    # 찜하기 전체 조회 / 찜하기 / 삭제
     path('custom/', views.custom_product), # 사용자 설정 상품
     path('custom/goals/<int:goal_pk>/come-from/<str:come_from>/product/<int:product_pk>/', views.custom_detail), 
+    path('chatbot/', views.use_finance_chatbot),
 ]
