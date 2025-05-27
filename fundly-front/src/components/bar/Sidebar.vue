@@ -71,6 +71,11 @@ const basicMenu = ref([
     labelname: '현물 시세 확인하기',
     path: '/checkspot',
   },
+  {
+    name: ['chatbot'],
+    labelName: '챗봇',
+    path: '/chabot',
+  }
 ])
 
 const myPage = [
