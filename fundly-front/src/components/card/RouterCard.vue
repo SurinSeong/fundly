@@ -1,9 +1,9 @@
 <!-- RouterCard.vue -->
 <template>
   <RouterLink class="decorate" :to="{ name: pageName, params: params }">
-    <Card :class="backgroundcolor" class="hover card center">
+    <Card :class="[backgroundcolor,{ 'flex': isFlex }]" class="hover card center lightcolor">
       <template #title>
-        {{ cardTitle }}
+        <div class="custom-card-title">{{ cardTitle }}</div>
       </template>
       <template #content>
         <ul
@@ -16,7 +16,7 @@
         <ProgressBar v-if="isProgressbar" :value="value"></ProgressBar>
         <div v-if="isIcon" class="icon-container">
           <div class="icon">
-            <i :class="iconClass"></i>
+            <i :class="[iconClass, { 'is-round': isRound }]"></i>
           </div>
         </div>
         <p v-if="isDurationMonths" class="text-end">{{ durationMonths }} 개월</p>
@@ -36,7 +36,9 @@ defineProps({
   cardTitle: String,
   startDate: String,
   isIcon: Boolean,
+  isFlex: Boolean,
   iconClass: String,
+  isRound: Boolean,
   productList: Array,
   isProgressbar: Boolean,
   isDurationMonths: Boolean,
@@ -44,7 +46,6 @@ defineProps({
   durationMonths: Number,
   backgroundcolor: String,
 })
-
 </script>
 
 <style scoped>
@@ -65,13 +66,31 @@ defineProps({
   height: 100%;
 }
 
+.lightcolor {
+  background-color: var(--p-primary-100);
+}
+
+.custom-card-title {
+  font-size: 1rem;
+}
+
 .text-end {
   text-align: end;
 }
-.pi {
+
+.is-round {
   padding: 0.4rem;
   border: 0.1px solid;
   border-radius: 1rem;
+}
+
+.flex.card.center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
 }
 
 .backgroundcolor {

@@ -68,6 +68,7 @@ const props = defineProps({
   pageName: String,
 })
 
+
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 })

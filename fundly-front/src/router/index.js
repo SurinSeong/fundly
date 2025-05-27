@@ -53,6 +53,10 @@ const router = createRouter({
       path: "/checkproducts/:comeFrom/:id",
       name: "productdetail",
       component: ProductDetail
+    },{
+      path: "/checkproducts/connected/:comeFrom/goal/:goalid/product/:id",
+      name: "connectedproductdetail",
+      component: ProductDetail
     }, {
       path: "/community",
       name: "community",

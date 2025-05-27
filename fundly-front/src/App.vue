@@ -5,7 +5,6 @@
       'total-container': route.name != 'login',
     }"
   >
-
     <ConfirmDialog></ConfirmDialog>
 
     <Sidebar class="side-bar" v-if="route.name != 'signup' && route.name != 'login'" />
@@ -25,29 +24,30 @@ const route = useRoute()
 
 <style scoped>
 .login {
+  display: grid;
+  grid-template-columns: 1fr; /* 루트 컨테이너 */
   width: 100%;
   height: 100%;
-  display: flex;
 }
 
 .total-container {
-  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 4fr; /* 좌:사이드바(1/3), 우:메인(2/3) */
   max-width: 1200px;
-  height: 100%;
-  display: flex;
+  width: 100%;
   margin: 0 auto;
+  height: 100%;
 }
 
+
+
 main {
-  height: 100%;
-  width: 100%;
-  flex: 4;
+  padding: 2rem 3rem;
   display: flex;
-  align-items: center;
-  padding: 0 3rem 0 5rem;
-}
-.side-bar {
-  flex: 2;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  height: 100%;
 }
 
 h1,
@@ -62,13 +62,12 @@ p {
 
 @media (max-width: 768px) {
   .total-container {
-    width: 100%;
-    height: 100%;
-    border: none;
+    grid-template-columns: 1fr; /* 모바일에선 한 줄 */
   }
 
   main {
-    margin: 3rem 0 0 0;
+    padding: 1rem;
+    margin-top: 2rem;
   }
 }
 </style>
