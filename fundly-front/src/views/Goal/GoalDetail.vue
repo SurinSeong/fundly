@@ -55,27 +55,38 @@
           <i class="pi pi-check-circle" style="font-size: 1rem"></i>
           금융 상품 추천
         </h3>
-        <!-- <RouterLink
-          v-for="product in productList"
-          :key="product.id"
-          :to="{ name: 'productdetail', params: { comeFrom: `${goal.come_from}`, id: product.id } }"
+        <RouterCard
+          v-if="!isUserInfo"
+          class="card-item"
+          :page-name="'setgoal'"
+          :card-title="'개인 정보 설정하기'"
+          :is-icon="true"
+          :is-progressbar="false"
+          :icon-class="'pi pi-chevron-right'"
+          :is-round="true"
+          :is-flex="true"
+          :is-duration-months="false"
         >
-          <CustomTextButton :label-name="product.title">
-            {{ product.title }}
-          </CustomTextButton>
-        </RouterLink> -->
+        </RouterCard>
+        <RouterLink
+          v-for="product in recommendationProductList"
+          :key="product.id"
+          :to="{ name: 'productdetail', params: { comeFrom: `${product.come_from}`, id: product.id } }"
+        >
+          <Button :label="product.product_name" text fluid="">
+          </Button>
+        </RouterLink>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useUserStore } from "@/stores/user";
+import { useUserStore } from '@/stores/user'
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import Chart from 'primevue/chart'
 import RouterCard from '@/components/card/RouterCard.vue'
-import CustomTextButton from '@/components/button/CustomTextButton.vue'
 import Carousel from 'primevue/carousel'
 import { useConfirm } from 'primevue/useconfirm'
 import Button from 'primevue/button'
@@ -89,18 +100,21 @@ const goalId = route.params.goalid
 const goalData = ref({})
 const products = ref(null)
 const totalTargetAmount = ref(0)
+const depositTotal = ref(0)
+const savingTotal = ref(0)
+const userStore = useUserStore()
 
-const userStore = useUserStore();
 onMounted(async () => {
-  await userStore.fetchUser();
+  await userStore.fetchUser()
+})
 
-});
-
-const username = computed(() => userStore.user?.username ?? "");
+const recommendationProductList = ref([])
+const isUserInfo = ref(true)
+const username = computed(() => userStore.user?.username ?? '')
 const birthDate = ref(null)
-const workType = ref("")
-const salary = ref("")
-const assets = ref("")
+const workType = ref('')
+const salary = ref('')
+const assets = ref('')
 
 onMounted(async () => {
   try {
@@ -116,9 +130,11 @@ onMounted(async () => {
       const productDetail = await axiosInstance.get(
         `http://127.0.0.1:8000/api/finance/products/${productComeFrom}/${product.financial_product}`,
       )
+
       enrichedProducts.push({
         ...product,
         product_name: productDetail.data.product.product_name,
+        product_type: productDetail.data.product.product_type,
       })
     }
     products.value = enrichedProducts
@@ -129,33 +145,51 @@ onMounted(async () => {
   } catch (error) {
     console.log(error)
   }
-
-
-
-  const userinfo = await axiosInstance.get(
-    "http://127.0.0.1:8000/api/user/profile/"
-  )
-
-  birthDate.value = userinfo.data.birth_date
-  workType.value = userinfo.data.work_type
-  salary.value = userinfo.data.salary
-  assets.value = userinfo.data.assets
-
-  const payload = {
-    username: username.value,
-    birth_date: birthDate.value,
-    work_type: workType.value,
-    assets: assets.value,
-    salary: salary.value,
-    goal: goalData.value.goal_name,
+  for (const product of products.value) {
+    if (product.product_type === 'D') {
+      depositTotal.value += goalData.value.curreent_amount
+    } else {
+      savingTotal.value += goalData.value.current_amount
+    }
   }
 
-  console.log(payload)
+  const userinfo = await axiosInstance.get('http://127.0.0.1:8000/api/user/profile/')
+  console.log(userinfo.data)
+  const requiredFields = ['assets', 'birth_date', 'salary', 'work_type']
 
-  await axiosInstance.post(
-    "http://127.0.0.1:8000/api/recommendation/",
-    payload
+  const isAnyFieldMissing = requiredFields.some(
+    (field) => !userinfo.data[field],
   )
+
+  if (isAnyFieldMissing) {
+    isUserInfo.value = false
+  } else {
+    birthDate.value = userinfo.data.birth_date
+    workType.value = userinfo.data.work_type
+    salary.value = userinfo.data.salary
+    assets.value = userinfo.data.assets
+    const payload = {
+      username: username.value,
+      birth_date: birthDate.value,
+      work_type: workType.value,
+      assets: assets.value,
+      salary: salary.value,
+      goal: goalData.value.goal_name,
+    }
+
+    console.log(payload)
+
+    await axiosInstance.post(
+      'http://127.0.0.1:8000/api/recommendation/',
+      payload,
+    )
+    const recommendation = await axiosInstance.get(
+      'http://127.0.0.1:8000/api/recommendation/'
+    )
+
+    recommendationProductList.value = recommendation.data.products
+    console.log(recommendationProductList.value)
+  }
 })
 
 // 데이터 설정
@@ -163,7 +197,7 @@ const chartData = ref()
 const chartOptions = ref()
 const date = new Date()
 const year = date.getFullYear()
-const month = date.getMonth()
+const month = date.getMonth() + 1
 const setChartData = () => {
   const documentStyle = getComputedStyle(document.documentElement)
 
@@ -174,19 +208,13 @@ const setChartData = () => {
         type: 'bar',
         label: '적금',
         backgroundColor: documentStyle.getPropertyValue('--p-indigo-700'),
-        data: [50, 25, 12, 48, 90, 76, 42],
+        data: [savingTotal.value],
       },
       {
         type: 'bar',
         label: '예금',
         backgroundColor: documentStyle.getPropertyValue('--p-indigo-500'),
-        data: [21, 84, 24, 75, 37, 65, 34],
-      },
-      {
-        type: 'bar',
-        label: '그 외',
-        backgroundColor: documentStyle.getPropertyValue('--p-indigo-300'),
-        data: [41, 52, 24, 74, 23, 21, 32],
+        data: [depositTotal.value],
       },
     ],
   }
@@ -244,12 +272,6 @@ const editGoal = async () => {
   } catch (err) {
     console.log(err)
   }
-}
-
-// 데이터 추가 로직 작성
-const addData = async () => {
-  try {
-  } catch (error) {}
 }
 
 // Dialog 설정 - 목표 삭제 확인용

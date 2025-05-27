@@ -293,17 +293,31 @@ const connectToGoal = async () => {
     const goalId = goalObj.id
     const durationMonths = getMonthDifference(startDate.value, endDate.value)
 
-    const payload = {
-      goal: goalId,
-      financial_product: productId,
-      start_date: new Date(startDate.value).toISOString().slice(0, 10),
-      target_amount: targetAmount.value * 10000,
-      duration_months: durationMonths,
-      monthly_pay: monthlyPay.value,
-    }
+    if (route.path.includes('connected')) {
+      const payload = {
+        goal: goalId,
+        financial_product: productId,
+        start_date: new Date(startDate.value).toISOString().slice(0, 10),
+        target_amount: targetAmount.value * 10000,
+        duration_months: durationMonths,
+        monthly_pay: monthlyPay.value * 10000,
+        current_amount: currentAmount.value * 10000
+      }
 
-    await axiosInstance.post('http://127.0.0.1:8000/api/custom/', payload)
-    confirmCheckGoal(goalId)
+      await axiosInstance.put('http://127.0.0.1:8000/api/custom/', payload)
+    } else {
+      const payload = {
+        goal: goalId,
+        financial_product: productId,
+        start_date: new Date(startDate.value).toISOString().slice(0, 10),
+        target_amount: targetAmount.value * 10000,
+        duration_months: durationMonths,
+        monthly_pay: monthlyPay.value  * 10000,
+      }
+
+      await axiosInstance.post('http://127.0.0.1:8000/api/custom/', payload)
+      confirmCheckGoal(goalId)
+    }
   } catch (error) {
     console.log(error)
   }
