@@ -130,3 +130,13 @@ def custom_detail(request, custom_pk):
         if request.method == 'DELETE':
             custom_product.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def check_product_connected(request, goal_id, product_id):
+    user = request.user
+    exists = ConnectedToGoal.objects.filter(
+        goal_id=goal_id,
+        product_id=product_id,
+        user=user
+    ).exists()
+    return Response({'is_connected': exists})

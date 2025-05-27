@@ -31,7 +31,7 @@ class GoalTitleSerializer(serializers.ModelSerializer):
         
         class Meta:
             model = ConnectedToGoal
-            fields = ('id', 'user', 'goal', 'current_amount', 'target_amount', )
+            fields = ('id', 'user', 'goal', 'current_amount', 'target_amount', 'financial_product' )
             read_only_fields = ('current_amount', 'target_amount', )
             
         
