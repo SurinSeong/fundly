@@ -14,6 +14,7 @@ import LoginSuccess from "@/views/Login/LoginSuccess.vue";
 import ProductDetail from "@/views/Product/ProductDetail.vue";
 import QnA from "@/views/MyPage/QnA.vue";
 import RecommendProducts from "@/views/Product/RecommendProducts.vue";
+import RecommendedResult from "@/views/Product/RecommendedResult.vue";
 import SearchBank from "@/views/SearchBank.vue";
 import SetGoal from "@/views/Goal/SetGoal.vue";
 import Signup from "@/views/Signup/Signup.vue";
@@ -116,6 +117,10 @@ const router = createRouter({
       path: "/checkspot",
       name: "checkspot",
       component: CheckSpot
+    }, {
+      path: "/recommendedresult",
+      name: "recommendedresult",
+      component: RecommendedResult
     },
   ]
 });
