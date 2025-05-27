@@ -13,6 +13,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'username']  # 필요한 필드만 작성
 
 # 회원 가입을 위한 시리얼라이저
+from rest_framework import serializers
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 class UserSignupSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True, style={'input_type': 'password'})
     password2 = serializers.CharField(write_only=True, style={'input_type': 'password'})
@@ -21,17 +26,26 @@ class UserSignupSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'password1', 'password2', )
 
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("이미 존재하는 이메일입니다.")
+        return value
+
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("이미 존재하는 닉네임입니다.")
+        return value
+
     def validate(self, data):
         if data['password1'] != data['password2']:
             raise serializers.ValidationError("비밀번호가 일치하지 않습니다.")
         return data
-        
+
     def create(self, validated_data):
         validated_data.pop('password2')
         password = validated_data.pop('password1')
         user = User.objects.create_user(password=password, **validated_data)
         return user
-        
 
 # 로그인을 위한 시리얼라이저
 class UserLoginSerializer(serializers.ModelSerializer):
