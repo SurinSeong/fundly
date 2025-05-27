@@ -248,7 +248,6 @@ onMounted(async () => {
   }
 })
 
-const likeClass = computed(() => (isLiked.value ? 'pi pi-heart-fill' : 'pi pi-heart'))
 
 const confirmCheckGoal = (goalId) => {
   confirm.require({
