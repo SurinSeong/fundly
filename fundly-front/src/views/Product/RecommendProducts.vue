@@ -171,7 +171,7 @@ const handleRecommend = async () => {
       "http://127.0.0.1:8000/api/user/profile/",
       userInfo
     )
-    alert('정보 수정 완료')
+    alert('결과 생성 완료! 추천 상품을 확인해보세요!')
 
     router.replace('/recommendedresult')
   }

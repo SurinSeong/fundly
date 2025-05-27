@@ -83,7 +83,7 @@
         <RouterCard
           v-if="!isUserInfo"
           class="card-item"
-          :page-name="'setgoal'"
+          :page-name="'recommendproducts'"
           :card-title="'개인 정보 설정하기'"
           :is-icon="true"
           :is-progressbar="false"
@@ -93,6 +93,10 @@
           :is-duration-months="false"
         >
         </RouterCard>
+        <div class="loading" v-if="recommendationProductList === null">
+          <i class="pi pi-spin pi-spinner" style="font-size: 2.5rem"></i>
+          <h3>불러오는 중입니다...</h3>
+        </div>
         <RouterLink
           v-for="product in recommendationProductList"
           :key="product.id"
@@ -133,7 +137,7 @@ onMounted(async () => {
   await userStore.fetchUser();
 });
 
-const recommendationProductList = ref([]);
+const recommendationProductList = ref(null);
 const isUserInfo = ref(true);
 const username = computed(() => userStore.user?.username ?? "");
 const birthDate = ref(null);
@@ -448,6 +452,11 @@ const toggle = event => {
   width: 35%;
 }
 
+.loading {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
 h3 {
   margin: 0 0 1rem 0;
 }
