@@ -69,6 +69,7 @@ const handelLogin = async () => {
     localStorage.setItem("user", user.email)
 
     console.log(access)
+    console.log(user)
 
     // 로그인 성공 후 리다이렉트 (예: 홈으로)
     router.replace("/");

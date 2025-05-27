@@ -34,8 +34,9 @@
           <template #item="slotProps">
             <RouterCard
               class="card-item"
-              :page-name="'productdetail'"
+              :page-name="'connectedproductdetail'"
               :params="{
+                goalid: goalId,
                 comeFrom: slotProps.data.financial_product ? 'original' : 'additional',
                 id: slotProps.data.financial_product ?? slotProps.data.additional_product,
               }"
@@ -157,14 +158,18 @@ onMounted(async () => {
   )
 })
 
+
+// 데이터 설정
 const chartData = ref()
 const chartOptions = ref()
 const date = new Date()
+const year = date.getFullYear()
+const month = date.getMonth()
 const setChartData = () => {
   const documentStyle = getComputedStyle(document.documentElement)
 
   return {
-    labels: ['2025-05'],
+    labels: [`${year}-${month}`],
     datasets: [
       {
         type: 'bar',
@@ -187,6 +192,7 @@ const setChartData = () => {
     ],
   }
 }
+
 const setChartOptions = () => {
   const documentStyle = getComputedStyle(document.documentElement)
   const textColor = documentStyle.getPropertyValue('--p-text-color')
@@ -241,17 +247,18 @@ const editGoal = async () => {
   }
 }
 
+// 데이터 추가 로직 작성
 const addData = async () => {
   try {
-    // 데이터 추가 로직 작성
   } catch (error) {}
 }
 
+// Dialog 설정 - 목표 삭제 확인용
 const menu = ref()
 const confirm = useConfirm()
 const lastClickEvent = ref(null)
 
-const deletePost = async () => {
+const deleteGoal = async () => {
   try {
     await axiosInstance.delete(`http://127.0.0.1:8000/api/goals/${goalId}/`)
     router.push('/')
@@ -263,7 +270,7 @@ const deletePost = async () => {
 const showConfirmDelete = () => {
   confirm.require({
     message: '정말 삭제하시겠습니까?',
-    header: '삭제 하기',
+    header: '목표 삭제 하기',
     icon: 'pi pi-exclamation-triangle',
     rejectProps: {
       label: '취소',
@@ -274,7 +281,7 @@ const showConfirmDelete = () => {
       label: '삭제 하기',
     },
     accept() {
-      deletePost()
+      deleteGoal()
     },
     reject() {
       // 취소 시 처리
@@ -301,116 +308,6 @@ const toggle = (event) => {
   lastClickEvent.value = event
   menu.value.toggle(event)
 }
-
-const deposit = ref([
-  {
-    id: 1,
-    goal: 1,
-    user: 1,
-    title: '싸피 청년 우대 예금',
-    finance_product: 1,
-    additional_product: null,
-    option_product: 1,
-    target_amount: 500,
-    current_amount: 200,
-    duration_months: 12,
-    start_date: '2025-05-24',
-  },
-  {
-    id: 2,
-    goal: 1,
-    user: 1,
-    title: '예금 2',
-    finance_product: null,
-    additional_product: 2,
-    option_product: 1,
-    target_amount: 500,
-    current_amount: 200,
-    duration_months: 12,
-    start_date: '2025-05-24',
-  },
-  {
-    id: 3,
-    goal: 1,
-    user: 1,
-    title: '예금 3',
-    finance_product: 3,
-    additional_product: null,
-    option_product: 1,
-    target_amount: 500,
-    current_amount: 200,
-    duration_months: 12,
-    start_date: '2025-05-24',
-  },
-])
-
-const saving = ref([
-  {
-    id: 4,
-    goal: 1,
-    user: 1,
-    title: '적금 4',
-    finance_product: 3,
-    additional_product: null,
-    option_product: 1,
-    target_amount: 600,
-    current_amount: 300,
-    duration_months: 12,
-    start_date: '2025-05-24',
-  },
-])
-
-const goal = ref({
-  title: '유학 자금 마련하기',
-  target_amount: 2000,
-  current_amount: 500,
-  saving: saving.value,
-  deposit: deposit.value,
-})
-
-const goalProducts = goal.value.deposit.concat(goal.value.saving)
-
-const productList = ref([
-  {
-    id: 1,
-    goal: 1,
-    user: 1,
-    title: '추천 1',
-    finance_product: 1,
-    additional_product: null,
-    option_product: 1,
-    target_amount: 500,
-    current_amount: 200,
-    duration_months: 12,
-    start_date: '2025-05-24',
-  },
-  {
-    id: 2,
-    goal: 1,
-    user: 1,
-    title: '추천 2',
-    finance_product: null,
-    additional_product: 2,
-    option_product: 1,
-    target_amount: 500,
-    current_amount: 200,
-    duration_months: 12,
-    start_date: '2025-05-24',
-  },
-  {
-    id: 3,
-    goal: 1,
-    user: 1,
-    title: '추천 3',
-    finance_product: 3,
-    additional_product: null,
-    option_product: 1,
-    target_amount: 500,
-    current_amount: 200,
-    duration_months: 12,
-    start_date: '2025-05-24',
-  },
-])
 </script>
 
 <style scoped>

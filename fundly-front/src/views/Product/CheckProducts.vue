@@ -37,7 +37,10 @@ const options = ref([])
 const productType = ref('전체')
 
 onMounted(async () => {
+  // await axiosInstance.get('http://127.0.0.1:8000/api/finance/save/')
+  
   const response = await axiosInstance.get('http://127.0.0.1:8000/api/finance/products/')
+  console.log(response.data);
   officialProducts.value = response.data.official_products || []
   additionalProducts.value = response.data.additional_products || []
   totalProducts.value = officialProducts.value.concat(additionalProducts.value)
