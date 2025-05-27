@@ -17,7 +17,7 @@ from .serializers import (
                         )
 
 from .models import Goal, WishList, ConnectedToGoal
-from finance.models import FinancialProduct
+from finance.models import FinancialProduct, AdditionalProduct
 
 User = get_user_model()
 
@@ -133,24 +133,35 @@ def custom_product(request):
 
 # 사용자가 설정한 특정 상품 조회, 삭제, 수정
 @api_view(['GET', 'PUT', 'DELETE'])
-def custom_detail(request, custom_pk):
+def custom_detail(request, goal_pk, come_from, product_pk):
     user = request.user
-    custom_product = ConnectedToGoal.objects.get(pk=custom_pk)
+
+    goal = Goal.objects.get(pk=goal_pk)
+    if come_from == 'original':
+        product = FinancialProduct.objects.get(pk=product_pk)
+        connected_to_goal = ConnectedToGoal.objects.get(goal=goal, financial_product=product, user=user)
+
+    elif come_from == 'additional':
+        product = AdditionalProduct.objects.get(pk=product_pk)
+        connected_to_goal = ConnectedToGoal.objects.get(goal=goal, additional_product=product, user=user)
     
-    if custom_product.user == user:
-        if request.method == 'GET':
-            serializer = CustomDetailSerializer(custom_product)
-            return Response(serializer.data)
+
+    if request.method == 'GET':
+        serializer = CustomDetailSerializer(connected_to_goal)
+        return Response(serializer.data)
+    
+    
+    if request.method == 'PUT':
+        serializer = CustomDetailSerializer(connected_to_goal, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         
-        if request.method == 'PUT':
-            serializer = CustomDetailSerializer(custom_product, data=request.data, partial=True)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-            
-        if request.method == 'DELETE':
-            custom_product.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+
+    if request.method == 'DELETE':
+        connected_to_goal.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 @api_view(['GET'])
 def check_product_connected(request, goal_id, product_id):
