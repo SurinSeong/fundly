@@ -70,7 +70,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { useUserStore } from "@/stores/user";
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import Chart from 'primevue/chart'
 import RouterCard from '@/components/card/RouterCard.vue'
@@ -88,6 +89,18 @@ const goalId = route.params.goalid
 const goalData = ref({})
 const products = ref(null)
 const totalTargetAmount = ref(0)
+
+const userStore = useUserStore();
+onMounted(async () => {
+  await userStore.fetchUser();
+
+});
+
+const username = computed(() => userStore.user?.username ?? "");
+const birthDate = ref(null)
+const workType = ref("")
+const salary = ref("")
+const assets = ref("")
 
 onMounted(async () => {
   try {
@@ -116,6 +129,33 @@ onMounted(async () => {
   } catch (error) {
     console.log(error)
   }
+
+
+
+  const userinfo = await axiosInstance.get(
+    "http://127.0.0.1:8000/api/user/profile/"
+  )
+
+  birthDate.value = userinfo.data.birth_date
+  workType.value = userinfo.data.work_type
+  salary.value = userinfo.data.salary
+  assets.value = userinfo.data.assets
+
+  const payload = {
+    username: username.value,
+    birth_date: birthDate.value,
+    work_type: workType.value,
+    assets: assets.value,
+    salary: salary.value,
+    goal: goalData.value.goal_name,
+  }
+
+  console.log(payload)
+
+  await axiosInstance.post(
+    "http://127.0.0.1:8000/api/recommendation/",
+    payload
+  )
 })
 
 
