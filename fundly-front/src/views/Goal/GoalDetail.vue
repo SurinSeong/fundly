@@ -3,7 +3,10 @@
   <div class="goaldetail-container">
     <div class="top">
       <div class="goal-title">
-        <h1>{{ goalData.goal_name }}</h1>
+        <h1>
+          <i class="pi pi-pen-to-square" style="font-size: 1.8rem"></i>
+          {{ goalData.goal_name }}
+        </h1>
         <div class="edit-delete">
           <Button
             type="button"

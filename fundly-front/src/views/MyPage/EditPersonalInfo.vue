@@ -1,6 +1,20 @@
 <template>
   <div class="editpersonalinfo-container">
-    <h1>개인 정보 수정</h1>
+    <div class="title">
+      <h1>
+      개인 정보 수정
+      </h1>
+      <Button
+        icon="pi pi-sign-out"
+        label="탈퇴"
+        iconPos="top"
+        severity="danger"
+        rounded
+        variant="text"
+        @click="confirmSignout"
+      />
+    </div>
+    
     <CustomButton
       label-name="비밀번호 변경하기"
       :justify="'home'"
@@ -56,6 +70,7 @@
         ></Select>
       </div>
       <br />
+      
       <CustomButton
         label-name="수정하기"
         :justify="'end'"
@@ -70,6 +85,7 @@ import { Form } from "@primevue/forms";
 import CustomInputText from "@/components/input/CustomInputText.vue";
 import CustomInputNumber from "@/components/input/CustomInputNumber.vue";
 import CustomButton from "@/components/button/CustomButton.vue";
+import { Button } from "primevue";
 import axiosInstance from "@/api/axiosInstance";
 import DatePicker from "primevue/datepicker";
 import Select from "primevue/select";
@@ -192,11 +208,42 @@ const handleEditPersonalInfo = async () => {
 const handleEditPassword = () => {
   router.replace("/edit/password");
 };
+
+const signout = async() => {
+  await axiosInstance.delete(
+    "http://127.0.0.1:8000/api/auth/signout/"
+  )
+  router.replace("/login")
+}
+
+const confirmSignout = () => {
+  confirm.require({
+    message: '회원 탈퇴 하시겠습니까?',
+    header: '확인',
+    icon: 'pi pi-exclamation-triangle',
+    rejectProps: {
+      label: '회원 유지 하기',
+      severity: 'secondary',
+      outlined: true,
+    },
+    acceptProps: {
+      label: '회원 탈퇴 하기',
+    },
+    accept: () => {
+      signout()
+    },
+  })
+}
 </script>
 
 <style scoped>
 .editpersonalinfo-container {
   width: 100%;
+}
+
+.title {
+  display: flex;
+  gap: 1rem;
 }
 
 .date-picker {
