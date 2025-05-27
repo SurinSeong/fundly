@@ -63,7 +63,7 @@ const basicMenu = ref([
   },
   {
     name: ['checkspot'],
-    labelname: '현물 시세 확인하기',
+    labelName: '현물 시세 확인하기',
     path: '/checkspot',
   },
 ])
@@ -71,7 +71,7 @@ const basicMenu = ref([
 const myPage = [
   {
     name: ['checkuser'],
-    labelname: '개인 정보 변경',
+    labelName: '개인 정보 변경',
     path: '/checkuser',
   },
   {

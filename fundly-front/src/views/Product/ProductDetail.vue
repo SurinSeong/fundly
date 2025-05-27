@@ -3,6 +3,14 @@
     <div class="product-container">
       <h2>
         {{ productName }}
+        <Button 
+          :icon="likeClass" 
+          severity="danger" 
+          variant="text" 
+          rounded aria-label="Favorite"
+          @click="handleIsLiked"
+        />
+
         <span :class="likeClass" @click="handleIsLiked"></span>
       </h2>
       <h3>{{ companyName }}</h3>
@@ -92,12 +100,15 @@ const joinWay = ref('')
 const endInterestRate = ref('')
 const etcNote = ref('')
 const isLiked = ref(false)
+const likeClass = computed(() => (isLiked.value ? 'pi pi-heart-fill' : 'pi pi-heart'))
+
 const placeholder = ref('')
 const targetAmountPlaceholder = ref('')
 const startDatePlaceholder = ref('')
 const endDatePlaceholder = ref('')
 const companyInfo = ref('')
 const productInfo = ref('')
+
 
 // 목표에 연결
 const goals = ref([])
@@ -119,17 +130,22 @@ const getMonthDifference = (startDate, endDate) => {
 }
 
 const handleIsLiked = async () => {
-  try {
-    const response = await axiosInstance.post('http://127.0.0.1:8000/api/wishlist/', {
-      product_pk: productId,
-      come_from: comeFrom,
-    })
+  try{
+    const response = await axiosInstance.post(
+      'http://127.0.0.1:8000/api/wishlist/',
+      {
+        product_pk: productId,
+        come_from: comeFrom,
+      }
+    )
     if (response.data.is_liked) {
       isLiked.value = true
-    } else {
+    }
+    else {
       isLiked.value = false
     }
-  } catch (err) {
+  }
+  catch (err) {
     console.error(err)
   }
 }
@@ -185,6 +201,19 @@ onMounted(async () => {
   )
   productInfo.value = response.data.product
   console.log(productInfo.value)
+
+    // 찜 확인용
+    const wishlistResponse = await axiosInstance.get('http://127.0.0.1:8000/api/wishlist/')
+
+    const wishlist = wishlistResponse.data
+    const productInfo = { id: productId, come_from: comeFrom }
+
+    isLiked.value = wishlist.some(item => {
+      const product = item.financial_product || item.additional_product
+      return product?.id === productInfo.id && product?.come_from === productInfo.come_from
+    })
+
+    const companyInfo = response.data.product
 
 
   const goalsResponse = await axiosInstance.get('http://127.0.0.1:8000/api/goals/')

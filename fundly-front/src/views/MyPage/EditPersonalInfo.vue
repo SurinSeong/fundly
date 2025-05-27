@@ -40,7 +40,7 @@
         :label-name="'현재 자산현황을 입력해주세요.'"
         input-placeholder="단위 : 만원"
         :is-icon="true"
-        :icon-class="'pi pi-star'"
+        :icon-class="'pi pi-wallet'"
       />
       <CustomInputNumber
         v-model="salary"
@@ -48,7 +48,7 @@
         :label-name="'현재 급여를 입력해주세요.'"
         input-placeholder="단위 : 만원"
         :is-icon="true"
-        :icon-class="'pi pi-star'"
+        :icon-class="'pi pi-money-bill'"
       />
       <br />
       <CustomButton

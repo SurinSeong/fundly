@@ -1,5 +1,31 @@
 <template>
   <div v-if="goals && goals.length > 0" class="checkgoal-container">
+
+    <div v-for="goal in goals">
+      <RouterCard
+        v-if="goal.id"
+        class="card-item"
+        :page-name="'goaldetail'"
+        :params="{ goalid: `${goal.id}` }"
+        :card-title="goal.goal_name"
+        :is-progressbar="true"
+        :is-duration-months="true"
+        :value="goal.achievement_rate"
+        :duration-months="goal.duration_months"
+      ></RouterCard>
+    </div>
+    <div>
+      <RouterCard
+        class="card-item"
+        :page-name="'setgoal'"
+        :card-title="'목표 추가하기'"
+        :is-icon="true"
+        :is-progressbar="false"
+        :icon-class="'pi pi-plus'"
+        :is-duration-months="false"
+        :backgroundcolor="'backgroundcolor'"
+      ></RouterCard>
+    </div>
     <RouterCard
       v-for="goal in goals"
       class="card-item"

@@ -6,6 +6,7 @@
         <div class="custom-card-title">{{ cardTitle }}</div>
       </template>
       <template #content>
+        {{ cardContent }}
         <ul
           v-for="product in productList"
           :key="product.finance_product ?? product.additional_product"
@@ -34,6 +35,7 @@ defineProps({
   pageName: String,
   params: Object,
   cardTitle: String,
+  cardContent: String,
   startDate: String,
   isIcon: Boolean,
   isFlex: Boolean,
@@ -77,6 +79,7 @@ defineProps({
 .text-end {
   text-align: end;
 }
+
 
 .is-round {
   padding: 0.4rem;

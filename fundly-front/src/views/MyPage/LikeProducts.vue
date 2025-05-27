@@ -1,4 +1,5 @@
 <template>
+
   <div class="title">
     <h2>찜한 상품을 확인할 수 있어요.</h2>
   </div>
@@ -43,7 +44,8 @@ onMounted(async () => {
     const response = await axiosInstance.get('http://127.0.0.1:8000/api/wishlist/')
 
     for (let i = 0; i < response.data.length; i++) {
-      const products = response.data[i]
+      const products = response.data[i];
+
       if (products.financial_product) {
         wishlist.value.push(products.financial_product)
         console.log(products.financial_product)
@@ -54,7 +56,9 @@ onMounted(async () => {
       }
     }
     console.log(wishlist.value)
+
   } catch (err) {
+
     console.log(err)
   }
 })
@@ -62,6 +66,7 @@ onMounted(async () => {
 
 <style scoped>
 .likeproducts-container {
+
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* 가로 4칸 */
   grid-template-rows: repeat(4, auto); /* 세로 최대 4줄 */
