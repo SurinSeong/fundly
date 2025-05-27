@@ -11,6 +11,7 @@
         ></iframe>
         <!-- 제목 -->
         <h1>{{ video.snippet.title }}</h1>
+        <p>{{ video.snippet.publishedAt }}</p>
         <!-- 채널명 -->
         <h3 class="channel-name">채널명 : {{ video.snippet.channelTitle }}</h3>
         <!-- 상세정보 -->

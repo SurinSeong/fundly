@@ -1,13 +1,19 @@
 <template>
     <div class="chatbot-container">
-        <h1>안녕하세요. 어떤 것이 궁금하신가요?</h1>
+        <h1>
+            <img 
+            src="@/assets/ChatGPT.png"
+            alt="chatbot-logo"
+            >
+            안녕하세요.<br/>금융에 대해 궁금하신 점이 있나요?
+        </h1>
         <p>금융 관련 지식, 상품에 대해서 질문해주세요!</p>
         <div class="result">
             <Message
                 v-if="answer"
-                icon="pi pi-check"
+                icon="pi pi-comment"
             >
-                {{ answer }}
+                <pre class="answer">{{ answer }}</pre>
             </Message>
             
             <CustomButton
@@ -35,8 +41,13 @@
                 v-model="question"
                 type="text" 
                 variant="filled" 
-                @input="handleSearch"
                 placeholder="어떤 것이 궁금하세요?"
+            />
+            <Button
+                class="search-button"
+                type="button"
+                icon="pi pi-search"
+                @click="handleSearch"
             />
         </div>
     </div>
@@ -45,7 +56,9 @@
 <script setup>
     import { ref } from 'vue';
     import { InputText } from 'primevue';
+    import axiosInstance from '@/api/axiosInstance';
     import Message from 'primevue/message';
+    import Button from "primevue/button";
     import CustomButton from '@/components/button/CustomButton.vue';
     import VideoCard from '@/components/card/VideoCard.vue';
     import { useVideoStore } from '@/stores/video';
@@ -59,13 +72,22 @@
     const showVideos = ref(false)
 
     // 검색어 입력하면 호출되어서 답변과 영상 업데이트
-    const handleSearch = () => {
+    const handleSearch = async () => {
         // 검색어가 있는 경우에만 처리
         if (question.value.trim()) {
             // 검색어에 대한 답변 >> 실제 로직에서는 API 호출이나 다른 처리 추가하기
-            answer.value = `${question.value}에 대한 답변입니다.`
+
+            const response = await axiosInstance.post(
+                "http://127.0.0.1:8000/api/chatbot/",
+                {
+                    question: question.value
+                }
+            )
+            console.log(response)
+
+            answer.value = `${response.data.answer}`
             // 관련 동영상 리스트를 검색어 기반으로 업데이트
-            appStore.searchKeyword(question.value);
+            appStore.searchKeyword(response.data.keyword);
             relatedVideos.value = appStore.videos;
         }
         else {
@@ -87,6 +109,13 @@
     flex-direction: column;
     gap: 1rem;
 }
+.answer {
+    text-decoration: none;
+    font-size: 1rem;
+    font-family: noto-sans;
+    white-space: pre-wrap;
+    margin-bottom: 2rem;
+}
 
 .video-grid {
     display: grid;
@@ -100,6 +129,9 @@
 }
 .search-bar {
     align-content: end;
+    margin-top: 10px;
+}
+.search-button {
     margin-top: 10px;
 }
 </style>

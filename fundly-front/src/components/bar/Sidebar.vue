@@ -74,8 +74,8 @@ const basicMenu = ref([
   {
     name: ['chatbot'],
     labelName: '챗봇',
-    path: '/chabot',
-  }
+    path: '/chatbot',
+  },
 ])
 
 const myPage = [
