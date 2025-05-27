@@ -12,35 +12,40 @@
         size="small"
       />
     </div>
-    <CustomDataTable
-      v-if="filteredProducts.length > 0 && columnInfos.length > 0"
-      :type="'products'"
-      :search-placeholder="'은행 이름 / 상품 이름'"
-      :data="filteredProducts"
-      :column-infos="columnInfos"
-      :page-name="'productdetail'"
-    >
-    </CustomDataTable>
+    <DataTable :value="finalProducts" paginator :rows="5" table-style="min-width: 60rem">
+      <Column v-for="col of columnInfos" :key="col.field" :field="col.field" :header="col.header">
+        <template v-if="col.field === 'product_name'" #body="slotProps">
+          <RouterLink
+            :to="{
+              name: 'productdetail',
+              params: { id: slotProps.data.id, comeFrom: slotProps.data.come_from },
+            }"
+          >
+            <Button :label="slotProps.data[col.field]" text />
+          </RouterLink>
+        </template>
+      </Column>
+    </DataTable>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watchEffect } from 'vue'
-import CustomDataTable from '@/components/table/CustomDataTable.vue'
+import { ref, onMounted, computed, watchEffect, watch } from 'vue'
+import { DataTable } from 'primevue'
+import Column from 'primevue/column'
+import Button from 'primevue/button'
 import Select from 'primevue/select'
 import axiosInstance from '@/api/axiosInstance.js'
 
 const totalProducts = ref([])
 const officialProducts = ref([])
 const additionalProducts = ref([])
-const options = ref([])
 const productType = ref('전체')
 
 onMounted(async () => {
   // await axiosInstance.get('http://127.0.0.1:8000/api/finance/save/')
-  
+
   const response = await axiosInstance.get('http://127.0.0.1:8000/api/finance/products/')
-  console.log(response.data);
   officialProducts.value = response.data.official_products || []
   additionalProducts.value = response.data.additional_products || []
   totalProducts.value = officialProducts.value.concat(additionalProducts.value)
@@ -48,9 +53,17 @@ onMounted(async () => {
 
 const columnNames = computed(() => {
   if (totalProducts.value.length === 0) return []
-  return ['financial_company', 'product_name', 'product_type']
+  return [
+    'financial_company',
+    'product_name',
+    'product_type',
+    'six',
+    'twelve',
+    'twentyfour',
+    'thirtysix',
+  ]
 })
-const headers = ['은행 이름', '상품 이름', '상품 유형']
+const headers = ['은행 이름', '상품 이름', '상품 유형', '6 개월', '12 개월', '24 개월', '36 개월']
 
 const columnInfos = ref([])
 
@@ -77,6 +90,32 @@ const filteredProducts = computed(() => {
   const filterType = typeMapping[productType.value]
   return totalProducts.value.filter((product) => product.product_type === filterType)
 })
+
+const finalProducts = computed(() =>
+  filteredProducts.value.map((product) => {
+    console.log(product)
+    const typeMapping = { D: '예금', S: '적금' }
+    const rates = { 6: '-', 12: '-', 24: '-', 36: '-' }
+
+    for (const option of product.options) {
+      if (rates.hasOwnProperty(option.save_month)) {
+        rates[option.save_month] = `${option.interest_rate} %`
+      }
+    }
+
+    return {
+      come_from: product.come_from,
+      id: product.id,
+      financial_company: product.financial_company.company_name,
+      product_name: product.product_name,
+      product_type: typeMapping[product.product_type] || '기타',
+      six: rates[6],
+      twelve: rates[12],
+      twentyfour: rates[24],
+      thirtysix: rates[36],
+    }
+  }),
+)
 </script>
 
 <style scoped>

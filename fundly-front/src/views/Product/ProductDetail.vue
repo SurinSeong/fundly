@@ -3,35 +3,50 @@
     <div class="product-container">
       <h2>
         {{ productName }}
-        <Button 
-          :icon="likeClass" 
-          severity="danger" 
-          variant="text" 
-          rounded aria-label="Favorite"
+        <Button
+          :icon="likeClass"
+          severity="danger"
+          variant="text"
+          rounded
+          aria-label="Favorite"
           @click="handleIsLiked"
         />
-
-        <span :class="likeClass" @click="handleIsLiked"></span>
       </h2>
       <h3>{{ companyName }}</h3>
     </div>
     <p class="join-way">{{ joinWay }}</p>
-    <p class="description-title"><b>상세 설명</b></p>
+    <h4 class="description-title">상세 설명</h4>
     <pre class="description">{{ etcNote }}</pre>
-
+    <div class="rate-info">
+      <h4>이율</h4>
+      <p v-for="option in productOptions">
+        {{ option.save_month }} 개월: {{ option.interest_rate }} % (최고
+        {{ option.max_interest_rate }} %)
+      </p>
+    </div>
     <div class="connect-to-data">
-      <Select
-        v-model="selectedGoal"
-        :placeholder="placeholder"
-        optionLabel="label"
-        optionValue="value"
-        :options="goalNames"
-      ></Select>
+      <div class="select-goal">
+        <Select
+          v-model="selectedGoal"
+          :placeholder="placeholder"
+          optionLabel="label"
+          optionValue="value"
+          :options="goalNames"
+        ></Select>
+      </div>
       <div class="target-amount">
         <CustomInputNumber
           v-model="targetAmount"
           :input-id="'target-amount'"
-          :input-placeholder="targetAmountPlaceholder"
+          :is-label="true"
+          :label-name="targetAmountPlaceholder"
+          :unit="'만 원'"
+        />
+        <CustomInputNumber
+          v-model="monthlyPay"
+          :input-id="'monthly-payu'"
+          :is-label="true"
+          :label-name="monthlyPayPlaceholder"
           :unit="'만 원'"
         />
       </div>
@@ -41,11 +56,13 @@
           date-format="yy/mm/dd"
           v-model="startDate"
           showButtonBar
+          style="width: 100%"
         />
         <DatePicker
           :placeholder="endDatePlaceholder"
           date-format="yy/mm/dd"
           v-model="endDate"
+          style="width: 100%"
           showButtonBar
         />
       </div>
@@ -101,14 +118,14 @@ const endInterestRate = ref('')
 const etcNote = ref('')
 const isLiked = ref(false)
 const likeClass = computed(() => (isLiked.value ? 'pi pi-heart-fill' : 'pi pi-heart'))
+const productOptions = ref('')
 
 const placeholder = ref('')
 const targetAmountPlaceholder = ref('')
+const monthlyPayPlaceholder = ref('')
 const startDatePlaceholder = ref('')
 const endDatePlaceholder = ref('')
-const companyInfo = ref('')
 const productInfo = ref('')
-
 
 // 목표에 연결
 const goals = ref([])
@@ -118,6 +135,7 @@ const startDate = ref('')
 const endDate = ref('')
 const targetAmount = ref()
 const currentAmount = ref()
+const monthlyPay = ref()
 
 const getMonthDifference = (startDate, endDate) => {
   const start = new Date(startDate)
@@ -130,22 +148,17 @@ const getMonthDifference = (startDate, endDate) => {
 }
 
 const handleIsLiked = async () => {
-  try{
-    const response = await axiosInstance.post(
-      'http://127.0.0.1:8000/api/wishlist/',
-      {
-        product_pk: productId,
-        come_from: comeFrom,
-      }
-    )
+  try {
+    const response = await axiosInstance.post('http://127.0.0.1:8000/api/wishlist/', {
+      product_pk: productId,
+      come_from: comeFrom,
+    })
     if (response.data.is_liked) {
       isLiked.value = true
-    }
-    else {
+    } else {
       isLiked.value = false
     }
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err)
   }
 }
@@ -199,33 +212,28 @@ onMounted(async () => {
   const response = await axiosInstance.get(
     `http://127.0.0.1:8000/api/finance/products/${comeFrom}/${productId}/`,
   )
+
+  // 찜 확인용
+  const wishlistResponse = await axiosInstance.get('http://127.0.0.1:8000/api/wishlist/')
+
+  const wishlist = wishlistResponse.data
+  const productInfoLike = { id: productId, come_from: comeFrom }
+
+  isLiked.value = wishlist.some((item) => {
+    const product = item.financial_product || item.additional_product
+    return product?.id === productInfoLike.id && product?.come_from === productInfoLike.come_from
+  })
+
   productInfo.value = response.data.product
-  console.log(productInfo.value)
-
-    // 찜 확인용
-    const wishlistResponse = await axiosInstance.get('http://127.0.0.1:8000/api/wishlist/')
-
-    const wishlist = wishlistResponse.data
-    const productInfo = { id: productId, come_from: comeFrom }
-
-    isLiked.value = wishlist.some(item => {
-      const product = item.financial_product || item.additional_product
-      return product?.id === productInfo.id && product?.come_from === productInfo.come_from
-    })
-
-    const companyInfo = response.data.product
-
-
+  productOptions.value = response.data.options
+  console.log(productOptions.value)
   const goalsResponse = await axiosInstance.get('http://127.0.0.1:8000/api/goals/')
 
-  companyInfo.value = response.data.product
-
-  companyName.value = companyInfo.value.financial_company.company_name
-  productName.value = companyInfo.value.product_name
-  joinWay.value = companyInfo.value.join_way
-  endInterestRate.value = companyInfo.value.end_interest_rate
-  etcNote.value = companyInfo.value.etc_note
-
+  companyName.value = productInfo.value.financial_company.company_name
+  productName.value = productInfo.value.product_name
+  joinWay.value = productInfo.value.join_way
+  endInterestRate.value = productInfo.value.end_interest_rate
+  etcNote.value = productInfo.value.etc_note
   goals.value = goalsResponse.data
 
   goalNames.value = goals.value.map((goal) => ({
@@ -242,12 +250,16 @@ onMounted(async () => {
     }
   } else {
     placeholder.value = '연결할 목표를 설정해주세요.'
-    targetAmountPlaceholder.value = '목표 금액을 설정해주세요.'
+    if (productInfo.value.product_type === 'S') {
+      monthlyPayPlaceholder.value = '매월 납입할 금액'
+    } else {
+      monthlyPayPlaceholder.value = '납입할 금액'
+    }
+    targetAmountPlaceholder.value = '전체 목표 금액'
     startDatePlaceholder.value = '납입 시작 날짜'
     endDatePlaceholder.value = '납입 끝 날짜'
   }
 })
-
 
 const confirmCheckGoal = (goalId) => {
   confirm.require({
@@ -273,7 +285,6 @@ const confirmCheckGoal = (goalId) => {
 const connectToGoal = async () => {
   try {
     const goalObj = goals.value.find((goal) => goal.id === selectedGoal.value)
-    console.log(goalObj)
 
     if (!goalObj) {
       console.error('해당 목표를 찾을 수 없습니다.')
@@ -288,6 +299,7 @@ const connectToGoal = async () => {
       start_date: new Date(startDate.value).toISOString().slice(0, 10),
       target_amount: targetAmount.value * 10000,
       duration_months: durationMonths,
+      monthly_pay: monthlyPay.value,
     }
 
     await axiosInstance.post('http://127.0.0.1:8000/api/custom/', payload)
@@ -299,7 +311,6 @@ const connectToGoal = async () => {
 
 watch(selectedGoal, (newGoalId) => {
   const selected = goals.value.find((goal) => goal.id === newGoalId)
-  console.log(selected)
   if (!selected) return
 
   // 선택된 목표의 정보로 값 채우기
@@ -314,9 +325,16 @@ watch(selectedGoal, (newGoalId) => {
     currentGoal.value = selected.connected_to_goal.find(
       (product) => product.financial_product === productId,
     )
+    console.log(currentGoal.value)
+    targetAmount.value = currentGoal.value.target_amount / 10000
     currentAmount.value = currentGoal.value.current_amount / 10000
+    monthlyPay.value = currentGoal.value.monthly_pay
   }
 })
+
+for (const option of productOptions.value) {
+  console.log(option)
+}
 </script>
 
 <style scoped>
@@ -333,26 +351,37 @@ watch(selectedGoal, (newGoalId) => {
   text-align: end;
 }
 
+.select-goal {
+  margin-bottom: 2rem;
+}
 .description {
   text-decoration: none;
   font-size: 1rem;
   font-family: noto-sans;
   white-space: pre-wrap;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .date-picker {
+  width: 84%;
   display: flex;
-  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
 .target-amount {
+  display: flex;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
+.rate-info {
+  border-bottom: 0.1px solid var(--p-primary-300);
+  margin-bottom: 3rem;
+}
+
 .connect-to-data {
-  width: 75%;
+  width: 80%;
   margin-bottom: 1rem;
 }
 
@@ -360,5 +389,10 @@ watch(selectedGoal, (newGoalId) => {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
+}
+
+h2,
+h3 {
+  margin: 0;
 }
 </style>

@@ -32,14 +32,12 @@ const route = useRoute()
 
 .total-container {
   display: grid;
-  grid-template-columns: 2fr 4fr; /* 좌:사이드바(1/3), 우:메인(2/3) */
+  grid-template-columns: 280px 1fr; /* 좌:사이드바(1/3), 우:메인(2/3) */
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   height: 100%;
 }
-
-
 
 main {
   padding: 2rem 3rem;

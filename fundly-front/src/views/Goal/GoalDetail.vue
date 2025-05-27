@@ -99,7 +99,7 @@ onMounted(async () => {
     const enrichedProducts = []
     for (const product of products.value) {
       const productComeFrom = product.financial_product ? 'original' : 'additional'
-      
+
       const productDetail = await axiosInstance.get(
         `http://127.0.0.1:8000/api/finance/products/${productComeFrom}/${product.financial_product}`,
       )
@@ -117,7 +117,6 @@ onMounted(async () => {
     console.log(error)
   }
 })
-
 
 // 데이터 설정
 const chartData = ref()
@@ -226,8 +225,9 @@ const deleteGoal = async () => {
     console.log(err)
   }
 }
-
 const showConfirmDelete = () => {
+  if (!lastClickEvent.value) return // 방어코드 추가
+
   confirm.require({
     message: '정말 삭제하시겠습니까?',
     header: '목표 삭제 하기',
@@ -243,9 +243,7 @@ const showConfirmDelete = () => {
     accept() {
       deleteGoal()
     },
-    reject() {
-      // 취소 시 처리
-    },
+    reject() {},
     target: lastClickEvent.value?.currentTarget,
   })
 }
@@ -259,7 +257,6 @@ const items = ref([
         icon: 'pi pi-times',
         command: showConfirmDelete,
       },
-      { label: '데이터 추가', icon: 'pi pi-plus', command: addData },
     ],
   },
 ])
