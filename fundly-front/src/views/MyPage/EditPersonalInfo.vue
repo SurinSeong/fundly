@@ -1,12 +1,8 @@
 <template>
   <div class="editpersonalinfo-container">
     <h1>개인 정보 수정</h1>
-    <CustomButton
-      label-name="비밀번호 변경하기"
-      :justify="'home'"
-      @click="handleEditPassword"
-    />
-    <Form style="width: 100%;">
+    <CustomButton label-name="비밀번호 변경하기" :justify="'home'" @click="handleEditPassword" />
+    <Form style="width: 100%">
       <CustomInputText
         v-model="username"
         :input-id="'user-id'"
@@ -25,14 +21,26 @@
           />
         </div>
       </div>
+      <h3>재직 여부를 선택해주세요.</h3>
+
       <div class="job mb-2">
-        <h3>재직 여부를 선택해주세요.</h3>
-        <Select
-          v-model="selectedJob"
-          :options="job"
-          placeholder="재직 여부"
-          fluid=""
-        ></Select>
+        <Select v-model="selectedJob" :options="job" placeholder="재직 여부" fluid=""></Select>
+        <CustomInputNumber
+          v-model="assets"
+          :input-id="'assets'"
+          :label-name="'현재 자산현황을 입력해주세요.'"
+          input-placeholder="단위 : 만원"
+          :is-icon="true"
+          :icon-class="'pi pi-wallet'"
+        />
+        <CustomInputNumber
+          v-model="salary"
+          :input-id="'salary'"
+          :label-name="'현재 급여를 입력해주세요.'"
+          input-placeholder="단위 : 만원"
+          :is-icon="true"
+          :icon-class="'pi pi-money-bill'"
+        />
       </div>
       <div class="finanacial-status mb-2">
         <h3>현재 자산 현황을 선택해주세요.</h3>
@@ -53,27 +61,24 @@
         ></Select>
       </div>
       <br />
-      <CustomButton
-        label-name="수정하기"
-        :justify="'end'"
-        @click="handleEditPersonalInfo"
-      />
+      <CustomButton label-name="수정하기" :justify="'end'" @click="handleEditPersonalInfo" />
     </Form>
   </div>
 </template>
 
 <script setup>
-  import { Form } from '@primevue/forms';
-  import CustomInputText from '@/components/input/CustomInputText.vue';
-  import CustomInputNumber from "@/components/input/CustomInputNumber.vue";
-  import CustomButton from '@/components/button/CustomButton.vue';
-  import axiosInstance from '@/api/axiosInstance';
-  import DatePicker from "primevue/datepicker";
-  import Select from "primevue/select";
-  import { ref, onMounted } from 'vue';
-  import { useRouter } from 'vue-router';
+import { Form } from '@primevue/forms'
+import CustomInputText from '@/components/input/CustomInputText.vue'
+import CustomInputNumber from '@/components/input/CustomInputNumber.vue'
+import CustomButton from '@/components/button/CustomButton.vue'
+import axiosInstance from '@/api/axiosInstance'
+import DatePicker from 'primevue/datepicker'
+import Select from 'primevue/select'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-  const router = useRouter()
+const router = useRouter()
+
 
   const username = ref("")
   const birthDate = ref(null)
@@ -99,11 +104,10 @@
   const selectedFinancialStatus = ref("");
   const selectedSalary = ref("");
 
-  onMounted(async () => {
-    const response = await axiosInstance.get(
-        "http://127.0.0.1:8000/api/user/profile/",
-    )
-    console.log(response)
+onMounted(async () => {
+  const response = await axiosInstance.get('http://127.0.0.1:8000/api/user/profile/')
+  console.log(response)
+
 
     username.value = response.data.username
     birthDate.value = response.data.birth_date
@@ -136,15 +140,46 @@
     }
   }
 
-  const handleEditPassword = () => {
-    router.replace('/edit/password')
-  }
+})
 
+
+const handleEditPersonalInfo = async () => {
+  try {
+    const response = await axiosInstance.put('http://127.0.0.1:8000/api/user/profile/', {
+      username: username.value,
+      birth_date: new Date(birthDate.value).toISOString().split('T')[0],
+      work_type: selectedJob.value,
+      assets: assets.value,
+      salary: salary.value,
+    })
+    alert('수정 완료')
+    router.push('/')
+  } catch (err) {
+    console.error(err)
+    alert('수정 실패')
+    router.push('/edit/personalinfo')
+  }
+}
+
+const handleEditPassword = () => {
+  router.replace('/edit/password')
+}
 </script>
 
 <style scoped>
+.editpersonalinfo-container {
+  width: 100%;
+}
+
 .date-picker {
   display: flex;
   gap: 1rem;
+}
+
+.job {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
 }
 </style>

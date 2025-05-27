@@ -32,7 +32,6 @@ onMounted(async () => {
             router.push('/edit/personalinfo')    // 개인 정보 수정페이지로 이동
         }
         else {
-            alert("목표 설정 페이지로 이동합니다.")
             router.push('/')
         }
     }

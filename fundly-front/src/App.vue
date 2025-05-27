@@ -2,13 +2,15 @@
   <div
     class="login"
     :class="{
-      'total-container': route.name != 'login',
+      'total-container': route.name !== 'login' && route.name !== 'signup',
+      'intro-container': route.name === 'signup' || route.name === 'login',
     }"
   >
     <ConfirmDialog></ConfirmDialog>
 
-    <Sidebar class="side-bar" v-if="route.name != 'signup' && route.name != 'login'" />
-    <IntroductionBar v-else-if="route.name != 'signup'" />
+    <Sidebar class="side-bar" v-if="route.name !== 'signup' && route.name !== 'login'" />
+    <IntroductionBar class="introduction-bar" v-else />
+
     <main><RouterView /></main>
   </div>
 </template>
@@ -20,6 +22,7 @@ import { ConfirmDialog } from 'primevue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
+console.log(route.name)
 </script>
 
 <style scoped>
@@ -30,16 +33,21 @@ const route = useRoute()
   height: 100%;
 }
 
+.intro-container {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: 1500px 1fr;
+}
+
 .total-container {
   display: grid;
-  grid-template-columns: 2fr 4fr; /* 좌:사이드바(1/3), 우:메인(2/3) */
+  grid-template-columns: 280px 1fr; /* 좌:사이드바(1/3), 우:메인(2/3) */
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   height: 100%;
 }
-
-
 
 main {
   padding: 2rem 3rem;

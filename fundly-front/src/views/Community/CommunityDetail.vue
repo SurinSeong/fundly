@@ -54,6 +54,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useConfirm } from 'primevue/useconfirm'
 import { useUserStore } from '@/stores/user'
 import axiosInstance from '@/api/axiosInstance'
 import Textarea from 'primevue/textarea'
@@ -157,6 +158,28 @@ const editPost = async () => {
   }
 }
 
+const confirm = useConfirm()
+
+const showDetailDelete = () => {
+  confirm.require({
+    message: '정말 삭제하시겠습니까?',
+    header: '목표 삭제 하기',
+    icon: 'pi pi-exclamation-triangle',
+    rejectProps: {
+      label: '취소',
+      severity: 'secondary',
+      outlined: true,
+    },
+    acceptProps: {
+      label: '삭제 하기',
+    },
+    accept() {
+      deletePost()
+    },
+    reject() {},
+  })
+}
+
 // 좋아요 버튼
 const toggleLike = async () => {
   try {
@@ -187,7 +210,7 @@ const items = ref([
       {
         label: '삭제',
         icon: 'pi pi-times',
-        command: deletePost,
+        command: showDetailDelete,
       },
     ],
   },

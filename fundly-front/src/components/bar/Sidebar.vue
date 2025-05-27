@@ -18,6 +18,7 @@
             :label-name="menu.labelname"
             :class-name="{ active: menu.name.includes(route.name) }"
         /></RouterLink>
+        <CustomTextButton @click="confirmLogout" :label-name="'로그아웃'"> </CustomTextButton>
       </div>
     </div>
   </div>
@@ -25,10 +26,14 @@
 
 <script setup>
 import { RouterLink } from 'vue-router'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useConfirm } from 'primevue/useconfirm'
 import { ref } from 'vue'
 import CustomTextButton from '@/components/button/CustomTextButton.vue'
+
 const route = useRoute()
+const router = useRouter()
+const confirm = useConfirm()
 
 const basicMenu = ref([
   {
@@ -63,7 +68,7 @@ const basicMenu = ref([
   },
   {
     name: ['checkspot'],
-    labelName: '현물 시세 확인하기',
+    labelname: '현물 시세 확인하기',
     path: '/checkspot',
   },
   {
@@ -76,7 +81,7 @@ const basicMenu = ref([
 const myPage = [
   {
     name: ['checkuser'],
-    labelName: '개인 정보 변경',
+    labelname: '개인 정보 변경',
     path: '/checkuser',
   },
   {
@@ -84,12 +89,36 @@ const myPage = [
     labelname: '찜한 상품 보기',
     path: '/likeproducts',
   },
-  {
-    name: ['qna'],
-    labelname: '자주 묻는 질문',
-    path: '/qna',
-  },
 ]
+
+// 로그아웃
+const logout = () => {
+  // 예: localStorage에 저장된 토큰 삭제
+  localStorage.removeItem('access_token')
+  localStorage.removeItem('refresh_token')
+  localStorage.removeItem('user')
+
+  // 로그인 페이지로 이동 (vue-router 사용 시)
+  router.push({ name: 'login' })
+}
+const confirmLogout = () => {
+  confirm.require({
+    message: '로그아웃 하시겠습니까?',
+    header: '확인',
+    icon: 'pi pi-exclamation-triangle',
+    rejectProps: {
+      label: '로그인 유지 하기',
+      severity: 'secondary',
+      outlined: true,
+    },
+    acceptProps: {
+      label: '로그아웃 하기',
+    },
+    accept: () => {
+      logout()
+    },
+  })
+}
 </script>
 
 <style scoped>
@@ -101,7 +130,8 @@ const myPage = [
   border-right: 0.3px solid var(--p-gray-300);
 }
 
-.basic-menu, .my-page {
+.basic-menu,
+.my-page {
   text-align: end;
 }
 
