@@ -26,7 +26,7 @@
     </div>
     <div v-else class="card">
       <h3>은 시세</h3>
-      <Chart v-if="silverData" type="line" :data="chartSilverData" :options="chartOptions" fluid />
+      <Chart style="width: 90rem; height: 40rem" v-if="silverData" type="line" :data="chartSilverData" :options="chartOptions" fluid />
     </div>
   </div>
 </template>

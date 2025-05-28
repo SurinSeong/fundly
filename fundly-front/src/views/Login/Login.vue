@@ -91,7 +91,7 @@ const handelLogin = async () => {
     console.log(user);
 
     // 로그인 성공 후 리다이렉트 (예: 홈으로)
-    await axiosInstance.get("http://127.0.0.1:8000/api/finance/save/");
+    // await axiosInstance.get("http://127.0.0.1:8000/api/finance/save/");
     router.replace("/");
   } catch (error) {
     failBasicLogin();

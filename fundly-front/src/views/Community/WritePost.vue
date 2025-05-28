@@ -45,7 +45,7 @@ const isEdit = computed(() => !!postId);
 const title = ref("");
 const content = ref("");
 const category = ref("");
-const categories = ref(["금융 상품 문의", "자유"]);
+const categories = ref(["금융 상품 문의", "기본 지식 공유", "꿀팁 공유", "자유"]);
 
 onMounted(async () => {
   if (isEdit.value) {

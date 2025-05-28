@@ -19,7 +19,7 @@
       <p class="content-written-day">{{ date }}</p>
     </div>
     <article class="content">
-      {{ content }}
+      <pre class="content">{{ content }}</pre>
     </article>
     <div class="detail-bottom">
       <div class="likes">
@@ -262,9 +262,18 @@ const formatDate = (isoString) => {
   margin-bottom: 0.5rem;
 }
 
-.content {
+article.content {
   margin: 2rem;
 }
+
+pre.content {
+  text-decoration: none;
+  font-size: 1rem;
+  font-family: noto-sans;
+  white-space: pre-wrap;
+  margin-bottom: 2rem;
+}
+  
 
 .likes {
   display: flex;

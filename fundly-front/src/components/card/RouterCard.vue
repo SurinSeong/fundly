@@ -13,7 +13,7 @@
         >
           <li>{{ product.title }}</li>
         </ul>
-        <p class="text-end">{{ startDate }}</p>
+        <p >{{ startDate }}</p>
         <ProgressBar v-if="isProgressbar" :value="value"></ProgressBar>
         <div v-if="isIcon" class="icon-container">
           <div class="icon">

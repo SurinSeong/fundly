@@ -1,4 +1,8 @@
 <template>
+  <div v-if="loading" class="loading">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2.5rem"></i>
+    <h3>상품 추천 중입니다...</h3>
+  </div>
   <div class="goal-container">
     <h2>{{ username }}님과 비슷한 상황과 목표를 가진 사람들은<br />어떤 상품을 선택했을까요?</h2>
     <h4>상품 정보를 확인 하기 위해 다음 항목을 입력해주세요.</h4>
@@ -57,7 +61,7 @@ import Select from "primevue/select";
 import CustomButton from "@/components/button/CustomButton.vue";
 import { palette } from "@primeuix/themes";
 
-
+const loading = ref(false)
 const router = useRouter()
 const userStore = useUserStore();
 onMounted(async () => {
@@ -162,6 +166,7 @@ const handleRecommend = async () => {
   console.log(payload)
 
   try {
+    loading.value = true
     await axiosInstance.post(
       "http://127.0.0.1:8000/api/recommendation/",
       payload
@@ -171,11 +176,13 @@ const handleRecommend = async () => {
       "http://127.0.0.1:8000/api/user/profile/",
       userInfo
     )
+    loading.value = false
     alert('결과 생성 완료! 추천 상품을 확인해보세요!')
 
     router.replace('/recommendedresult')
   }
   catch (err) {
+    loading.value = false
     console.error(err)
   }
 }
