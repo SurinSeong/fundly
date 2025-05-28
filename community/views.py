@@ -60,7 +60,7 @@ def comments(request, post_pk):
     user = request.user
     
     if request.method == 'GET':
-        comments = Comment.objects.all()
+        comments = Comment.objects.filter(post=post)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
     

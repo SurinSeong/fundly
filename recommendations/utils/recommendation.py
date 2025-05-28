@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
+import random
 
 from sklearn.metrics.pairwise import cosine_similarity
 from .make_personal_embedding_vector import parse_user_input
@@ -77,6 +78,6 @@ def recommendation_with_userinfo_and_goal(user_input_vector, model):
     similarities = cosine_similarity(user_pref_vector, product_vectors).flatten()
 
     products["similarity"] = similarities
-    recommended = products.sort_values(by="similarity", ascending=False).head(5)
+    recommended = products.sort_values(by="similarity", ascending=False).head(20).sample(5)
 
     return recommended[["product_id", "similarity", "text"]]
