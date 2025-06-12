@@ -13,12 +13,12 @@
 
 
 ## II. 설계내용(아키텍처등) 및 실제 구현 정도
-![기능 설명](readme_images/기능_표.png)
+![기능 설명](https://github.com/user-attachments/assets/2ecbd9b7-3509-40ba-92ff-d055a193d42a)
 
 
 ## III. 데이터베이스 모델링(ERD)
 
-![fundly.png](readme_images/fundly.png)
+![fundly.png](https://github.com/user-attachments/assets/46201b33-cc5a-49b6-bf3b-755cc22d78a7)
 
 ## IV. 금융상품 추천 알고리즘에 대한 기술적 설명
 
@@ -35,32 +35,32 @@
 
 ### 목표 생성
 
-![image.png](readme_images/image.png)
+![image.png](https://github.com/user-attachments/assets/d2f281e5-c77e-4500-8a94-e8cffdcf00af)
 
 - 로그인 후 목표 생성으로 이어짐
 
 ### 목표 추가
 
-![image.png](readme_images/image 1.png)
+![image.png](https://github.com/user-attachments/assets/1d1b52ea-b772-4e7b-9cfb-e2d02ae4d617)
 
 ### 목표 추가 완료 시 화면
 
-![image.png](readme_images/image 2.png)
+![image.png](https://github.com/user-attachments/assets/f186325d-b0da-4631-b2d9-f3189af8d424)
 
 
 ### 상품 상세 정보 - 목표와 연동 가능
 
-![image.png](readme_images/image 3.png)
+![image.png](https://github.com/user-attachments/assets/223d3060-a3df-4f82-89e9-5387ff451816)
 
-![image.png](readme_images/image 4.png)
+![image.png](https://github.com/user-attachments/assets/3b2f677b-9fbb-4a17-aaa6-e375044810f9)
 
 ### 목표 디테일 페이지
 
-![image.png](readme_images/image 5.png)
+![image.png](https://github.com/user-attachments/assets/3046f026-0b4f-40d6-99e5-3fb607fac7a1)
 
 - 달성률에 따라 다른 메시지를 출력해 참여 독려
 
-![image.png](readme_images/image 6.png)
+![image.png](https://github.com/user-attachments/assets/4f0e3a0e-3f6e-415d-ba5e-596b1b3d4616)
 
 - 개인 정보 설정 시 5개의 추천 금융 상품 확인 가능
 
@@ -68,13 +68,13 @@
 
 - 개인 정보 설정 후 결과 확인 가능
 
-![image.png](readme_images/image 7.png)
+![image.png](https://github.com/user-attachments/assets/f901df9c-4782-4643-8a8f-b9225abcacd0)
 
-![image.png](readme_images/image 8.png)
+![image.png](https://github.com/user-attachments/assets/03ce13e7-2515-4a2d-ae4b-b7f23e536b3c)
 
 ### 목표 달성 시
 
-![image.png](readme_images/image 9.png)
+![image.png](https://github.com/user-attachments/assets/0e39bc54-0b9e-4579-b0d8-28f2985d6b3b)
 
 - 색 변화와 이모티콘을 이용해 상태 변화 출력
 
